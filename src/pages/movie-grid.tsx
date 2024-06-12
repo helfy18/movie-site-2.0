@@ -1,11 +1,12 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/layout";
-// import MovieGrid from "@/components/movieGrid";
+import MovieGrid from "@/components/movieGrid";
 // import GenerateFilter from "@/components/generateFilter";
 // import dataQuery from "@/components/dataQuery";
 import { Row, Col } from "react-grid-system";
 import { Slider, Grid, Select } from "@mui/material";
+import { useMoviesList } from "@/contexts/apiContext";
 
 // function searchFilter(text, data) {
 //   return data.filter(
@@ -37,9 +38,23 @@ const MoviePage = () => {
   //     setTable(dataQuery([], { data }, sliderValue));
   //     setShowDropdown(false);
   //   }
-  const [movies, setMovies] = useState(["AAAA"]);
-
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [params, setParams] = useState<MovieListQuery>({});
   const [showDropdown, setShowDropdown] = useState(false);
+
+  const listMovies = useMoviesList(params, {
+    enabled: true,
+    refetchOnWindowFocus: false,
+  });
+
+  useEffect(() => {
+    if (listMovies.isSuccess) {
+      setMovies(listMovies.data.sort((a, b) => b.jh_score - a.jh_score));
+    } else if (listMovies.isError) {
+      console.log(listMovies.error);
+    }
+  }, [listMovies.isFetching]);
+
   //   const [table, setTable] = useState(nodes);
   //   const [selected, setSelected] = useState([]);
   //   const filter = GenerateFilter({ data });
@@ -189,7 +204,9 @@ const MoviePage = () => {
             })} */}
         </Grid>
       ) : null}
-      {/* <Row><MovieGrid nodes={movies} /></Row> */}
+      <Row>
+        <MovieGrid movies={movies} />
+      </Row>
     </Layout>
   );
 };

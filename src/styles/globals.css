@@ -5,7 +5,7 @@
 /* Apply colors */
 body {
   color: #f9fafb; /* Set text color */
-  background-color: #374151; /* Set background color */
+  background-color: #292524; /* Set background color */
 }
 
 @layer utilities {

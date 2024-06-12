@@ -28,7 +28,7 @@ export const useApiContext = () => useContext(ApiContext);
 export const useMoviesList = (
   params: MovieListQuery,
   options?: any
-): UseQueryResult<any, Error> => {
+): UseQueryResult<Movie[], Error> => {
   return useQuery({
     queryKey: [params],
     queryFn: async () => {
@@ -36,7 +36,7 @@ export const useMoviesList = (
         params: params,
         paramsSerializer: { indexes: null },
       });
-      return data;
+      return data as Movie[];
     },
     ...options,
   });
@@ -45,14 +45,14 @@ export const useMoviesList = (
 export const useMovieGet = (
   params: MovieGetQuery,
   options?: any
-): UseQueryResult<any, Error> => {
+): UseQueryResult<Movie, Error> => {
   return useQuery({
     queryKey: [params],
     queryFn: async () => {
       const { data } = await axios.get(`${BASEURL}/movies/get`, {
         params: params,
       });
-      return data;
+      return data as Movie;
     },
     ...options,
   });
