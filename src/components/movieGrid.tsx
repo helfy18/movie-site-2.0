@@ -104,7 +104,7 @@ export default function MovieGrid({ movies }: MovieGridProps) {
         <div className="">
           {generatePageNumbers().map((page, index) =>
             page === "..." ? (
-              <span key={index} className="mx-2 text-yellow-500">
+              <span key={index} className="mx-2">
                 {page}
               </span>
             ) : (

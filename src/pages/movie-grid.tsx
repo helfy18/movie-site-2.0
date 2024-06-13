@@ -2,23 +2,34 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import Layout from "@/components/layout";
 import MovieGrid from "@/components/movieGrid";
-// import GenerateFilter from "@/components/generateFilter";
-// import dataQuery from "@/components/dataQuery";
-import { Row, Col } from "react-grid-system";
-import { Slider, Grid, Select } from "@mui/material";
+import Filters from "@/components/filters";
+import {
+  Slider,
+  Grid,
+  Select,
+  Stack,
+  Button,
+  TextField,
+  InputAdornment,
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import { useMoviesList } from "@/contexts/apiContext";
 
-// function searchFilter(text, data) {
-//   return data.filter(
-//     (movie) =>
-//       movie.Movie.toLowerCase().includes(text.toLowerCase()) ||
-//       movie.Actors.toLowerCase().includes(text.toLowerCase()) ||
-//       movie.Director.toLowerCase().includes(text.toLowerCase()) ||
-//       movie.Universe.toLowerCase().includes(text.toLowerCase()) ||
-//       movie.Sub_Universe.toLowerCase().includes(text.toLowerCase()) ||
-//       movie.Studio.toLowerCase().includes(text.toLowerCase())
-//   );
-// }
+function movieSearch(text: string, movies: Movie[]) {
+  const lowerText = text.toLowerCase();
+  const keys: (keyof Movie)[] = [
+    "movie",
+    "actors",
+    "director",
+    "universe",
+    "sub_universe",
+    "studio",
+  ];
+
+  return movies.filter((movie) =>
+    keys.some((key) => movie[key]?.toString().toLowerCase().includes(lowerText))
+  );
+}
 
 // function selectedOptions(data: any, toAdd: any, label: any) {
 //   if (data) {
@@ -32,13 +43,8 @@ const MoviePage = () => {
   //     setSliderValue(newValue);
   //   };
 
-  //   function resetFilter() {
-  //     setSelected([]);
-  //     setSliderValue([0, 1000]);
-  //     setTable(dataQuery([], { data }, sliderValue));
-  //     setShowDropdown(false);
-  //   }
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const [allMovies, setAllMovies] = useState<Movie[]>([]);
+  const [displayMovies, setDisplayMovies] = useState<Movie[]>([]);
   const [params, setParams] = useState<MovieListQuery>({});
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -49,7 +55,8 @@ const MoviePage = () => {
 
   useEffect(() => {
     if (listMovies.isSuccess) {
-      setMovies(listMovies.data.sort((a, b) => b.jh_score - a.jh_score));
+      setAllMovies(listMovies.data.sort((a, b) => b.jh_score - a.jh_score));
+      setDisplayMovies(allMovies);
     } else if (listMovies.isError) {
       console.log(listMovies.error);
     }
@@ -57,7 +64,6 @@ const MoviePage = () => {
 
   //   const [table, setTable] = useState(nodes);
   //   const [selected, setSelected] = useState([]);
-  //   const filter = GenerateFilter({ data });
   //   const [sliderValue, setSliderValue] = useState([0, 1000]);
 
   //   function getSelected(type) {
@@ -73,140 +79,68 @@ const MoviePage = () => {
 
   return (
     <Layout pageTitle="Movies">
-      <Row>
-        <Col md={2}></Col>
-        <Col md={4} style={{ textAlign: "center" }}>
-          {/* <ReactSearchBox
-              placeholder="Search for Title, Actor, Director..."
-              onChange={(value) =>
-                searchFilter(value, dataQuery(selected, { data }, sliderValue))
-                  .length !== 0
-                  ? setTable(
-                      searchFilter(
-                        value,
-                        dataQuery(selected, { data }, sliderValue)
-                      )
-                    )
-                  : setTable(nodes)
-              }
-            /> */}
-        </Col>
-        <Col md={4}>
-          <button
-            style={{ borderRadius: "8px" }}
+      <Stack direction="row" className="justify-center">
+        <Grid className="text-center mx-2 my-4">
+          <TextField
+            placeholder="Search for Title, Actor, Director..."
+            onChange={(event) => {
+              setDisplayMovies(movieSearch(event.target.value, allMovies));
+            }}
+            color="secondary"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon className="text-yellow-500" />
+                </InputAdornment>
+              ),
+              style: {
+                color: "#eab308",
+              },
+            }}
+          />
+        </Grid>
+        <Grid>
+          <Button
             onClick={() => {
               setShowDropdown(!showDropdown);
             }}
+            className="px-20 py-4 mx-2 my-4 text-yellow-500 outline-1 outline align-center"
           >
             {showDropdown ? "Hide" : "Filters"} &#8597;
-          </button>
-        </Col>
-      </Row>
+          </Button>
+        </Grid>
+      </Stack>
       {showDropdown ? (
-        <Grid
-          container
-          style={{
-            marginBottom: "1rem",
-            background: "#d4f0f0",
-            paddingTop: "0.5rem",
-          }}
-        >
-          {/* <Grid
-              xs={6}
-              item={true}
-              key={1}
-              style={{
-                marginBottom: "0.5rem",
-                textAlign: "right",
-                paddingRight: "0.5rem",
+        <Grid container className="mb-4 pt-2 bg-stone-700">
+          <Grid xs={6} item key={1} className="mb-2 px-2 text-right">
+            <Button
+              className="w-1/2 rounded-lg text-yellow-500 outline-1 outline"
+              onClick={() => {
+                setShowDropdown(!showDropdown);
+                // apply the filters
               }}
             >
-              <button
-                style={{ width: "40%", borderRadius: "8px" }}
-                onClick={() => {
-                  setShowDropdown(!showDropdown);
-                  setTable(dataQuery(selected, { data }, sliderValue));
-                }}
-              >
-                Apply
-              </button>
-            </Grid> */}
-          {/* <Grid
-              xs={6}
-              item={true}
-              key={2}
-              style={{ marginBottom: "0.5rem", paddingLeft: "0.5rem" }}
+              Apply
+            </Button>
+          </Grid>
+          <Grid xs={6} item key={2} className="mb-2 px-2">
+            <Button
+              className="w-1/2 rounded-lg text-yellow-500 outline-1 outline"
+              onClick={() => {
+                setParams({});
+                listMovies.refetch();
+                setShowDropdown(!showDropdown);
+              }}
             >
-              <button
-                style={{ width: "40%", borderRadius: "8px" }}
-                onClick={() => {
-                  resetFilter();
-                }}
-              >
-                Reset
-              </button>
-            </Grid> */}
-          {/* {filter.map((opt) => {
-              if (!opt["Runtime"]) {
-                return (
-                  <Grid xs={12} md={6} item={true} key={`${opt["label"]}-12`}>
-                    <div
-                      key={`${opt["label"]}-select-picker`}
-                      style={{ textAlign: "center" }}
-                    >
-                      {opt["label"]}
-                    </div>
-                    <Select
-                      className={reactSelectContainer}
-                      classNamePrefix="react-select"
-                      defaultValue={getSelected(opt["label"])}
-                      options={opt["options"]}
-                      isMulti
-                      closeMenuOnSelect={false}
-                      isSearchable
-                      placeholder={
-                        opt["label"] === "Genre"
-                          ? "Ex: Animated, Horror"
-                          : `Ex: ${opt["options"][0]["label"]}`
-                      }
-                      onChange={(e) => {
-                        setSelected((prevState) =>
-                          selectedOptions(prevState, e, opt["label"])
-                        );
-                      }}
-                    ></Select>
-                  </Grid>
-                );
-              } else {
-                return (
-                  <Grid xs={12} md={6} item={true} key={`runtime-12`}>
-                    <div key={`runtime-slider`} style={{ textAlign: "center" }}>
-                      Runtime
-                    </div>
-                    <Slider
-                      min={opt["Runtime"][0]}
-                      max={opt["Runtime"][opt["Runtime"].length - 1]}
-                      onChange={handleChange}
-                      style={{
-                        width: "95%",
-                        marginLeft: "2.5%",
-                        color: "#55CBCD",
-                      }}
-                      value={sliderValue}
-                      valueLabelDisplay="auto"
-                      valueLabelFormat={(x) => {
-                        return `${x} min`;
-                      }}
-                    />
-                  </Grid>
-                );
-              }
-            })} */}
+              Reset
+            </Button>
+          </Grid>
+          <Filters movies={allMovies}></Filters>
         </Grid>
       ) : null}
-      <Row>
-        <MovieGrid movies={movies} />
-      </Row>
+      <Stack direction="row">
+        <MovieGrid movies={displayMovies} />
+      </Stack>
     </Layout>
   );
 };

@@ -13,7 +13,7 @@ const Layout = (props: layoutProps) => {
     <div className="my-[1%] mx-[5%] font-sans">
       <title>{props.pageTitle}</title>
       <Link href="/">
-        <header className="text-4xl text-yellow-500 flex items-center justify-center">
+        <header className="text-5xl flex items-center justify-center font-bold font-mono">
           <Image
             src="/popcorn.png"
             height={50}
@@ -21,7 +21,7 @@ const Layout = (props: layoutProps) => {
             alt=""
             className="mx-2.5"
           />
-          JD Movies
+          JD MOVIES
           <Image
             src="/popcorn.png"
             height={50}
