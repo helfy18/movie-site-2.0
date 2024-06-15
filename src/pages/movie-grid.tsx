@@ -135,7 +135,7 @@ const MoviePage = () => {
               Reset
             </Button>
           </Grid>
-          <Filters movies={allMovies}></Filters>
+          {/* <Filters movies={allMovies}></Filters> */}
         </Grid>
       ) : null}
       <Stack direction="row">
