@@ -55,8 +55,11 @@ const MoviePage = () => {
 
   useEffect(() => {
     if (listMovies.isSuccess) {
-      setAllMovies(listMovies.data.sort((a, b) => b.jh_score - a.jh_score));
-      setDisplayMovies(allMovies);
+      const sortedMovies: Movie[] = listMovies.data.sort(
+        (a, b) => b.jh_score - a.jh_score
+      );
+      setAllMovies(sortedMovies);
+      setDisplayMovies(sortedMovies);
     } else if (listMovies.isError) {
       console.log(listMovies.error);
     }
