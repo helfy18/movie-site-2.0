@@ -27,6 +27,7 @@ interface Movie {
   studio?: string;
   year: number;
   review?: string;
+  ranking: string;
   plot: string;
   poster: string;
   actors: string;

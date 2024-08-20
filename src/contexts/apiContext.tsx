@@ -57,3 +57,15 @@ export const useMovieGet = (
     ...options,
   });
 };
+
+// GOCANES UPDATE ANY TO USE CUSTOM TYPE
+export const useTypesList = (options?: any): UseQueryResult<any, Error> => {
+  return useQuery({
+    queryKey: ["useTypesList"],
+    queryFn: async () => {
+      const { data } = await axios.get(`${BASEURL}/types/list`);
+      return data as any;
+    },
+    ...options,
+  });
+};
