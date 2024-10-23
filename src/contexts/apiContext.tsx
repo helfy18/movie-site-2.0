@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-query";
 import axios from "axios";
 
-const BASEURL = process.env.NEXT_PUBLIC_APIURL;
+const BASEURL = process.env.NEXT_PUBLIC_APIURL || "http://localhost:8080";
 
 const queryClient = new QueryClient();
 
