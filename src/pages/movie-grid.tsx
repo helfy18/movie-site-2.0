@@ -11,11 +11,13 @@ import {
   Button,
   TextField,
   InputAdornment,
+  CircularProgress,
+  Box,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { useMoviesList } from "@/contexts/apiContext";
+import { useMoviesList, useTypesList } from "@/contexts/apiContext";
 
-function movieSearch(text: string, movies: Movie[]) {
+const movieSearch = (text: string, movies: Movie[]) => {
   const lowerText = text.toLowerCase();
   const keys: (keyof Movie)[] = [
     "movie",
@@ -29,7 +31,7 @@ function movieSearch(text: string, movies: Movie[]) {
   return movies.filter((movie) =>
     keys.some((key) => movie[key]?.toString().toLowerCase().includes(lowerText))
   );
-}
+};
 
 // function selectedOptions(data: any, toAdd: any, label: any) {
 //   if (data) {
@@ -47,6 +49,7 @@ const MoviePage = () => {
   const [displayMovies, setDisplayMovies] = useState<Movie[]>([]);
   const [params, setParams] = useState<MovieListQuery>({});
   const [showDropdown, setShowDropdown] = useState(false);
+  const [filterTypes, setFilterTypes] = useState<AllType>();
 
   const listMovies = useMoviesList(params, {
     enabled: true,
@@ -65,20 +68,24 @@ const MoviePage = () => {
     }
   }, [listMovies.isFetching]);
 
-  //   const [table, setTable] = useState(nodes);
-  //   const [selected, setSelected] = useState([]);
-  //   const [sliderValue, setSliderValue] = useState([0, 1000]);
+  const typesList = useTypesList({
+    enabled: true,
+    refetchOnWindowFocus: false,
+  });
 
-  //   function getSelected(type) {
-  //     var defselected = [];
-  //     selected
-  //       ? selected.forEach((value) => {
-  //           if (type.toLowerCase() === value.category.toLowerCase())
-  //             defselected.push(value);
-  //         })
-  //       : (defselected = []);
-  //     return defselected;
-  //   }
+  useEffect(() => {
+    if (typesList.isSuccess) {
+      setFilterTypes(typesList.data);
+    } else if (typesList.isError) {
+      console.log(typesList.error);
+    }
+  }, [typesList.isFetching]);
+
+  useEffect(() => {
+    console.log(
+      `Success:${listMovies.isSuccess} Loading:${listMovies.isError}`
+    );
+  }, [listMovies]);
 
   return (
     <Layout pageTitle="Movies">
@@ -131,6 +138,7 @@ const MoviePage = () => {
               className="w-1/2 rounded-lg text-yellow-500 outline-1 outline"
               onClick={() => {
                 setParams({});
+                setDisplayMovies([]);
                 listMovies.refetch();
                 setShowDropdown(!showDropdown);
               }}
@@ -138,11 +146,22 @@ const MoviePage = () => {
               Reset
             </Button>
           </Grid>
-          {/* <Filters movies={allMovies}></Filters> */}
+          {filterTypes && <Filters filterTypes={filterTypes}></Filters>}
         </Grid>
       ) : null}
       <Stack direction="row">
-        <MovieGrid movies={displayMovies} />
+        {listMovies.isLoading && (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="80vh"
+            width="100%"
+          >
+            <CircularProgress color="secondary" />
+          </Box>
+        )}
+        {displayMovies && <MovieGrid movies={displayMovies} />}
       </Stack>
     </Layout>
   );

@@ -1,138 +1,51 @@
 import { Grid, Select, Slider } from "@mui/material";
 
 interface fitersProps {
-  movies: Movie[];
+  filterTypes: AllType;
 }
 
-// function genreManagement(temp_genre, genre2) {
-//   // Data management for the genre filter
-//   var genre = JSON.parse(JSON.stringify(temp_genre));
-//   for (let entry of genre2) {
-//     if (entry.fieldValue === "") continue;
-//     var genreIndex = temp_genre.findIndex(
-//       (e) => e.fieldValue === entry.fieldValue
-//     );
-//     if (genreIndex !== -1) {
-//       genre[genreIndex].totalCount += entry.totalCount;
-//     } else {
-//       genre.push(entry);
-//     }
-//   }
-//   genre.sort((a, b) => b.totalCount - a.totalCount);
-//   var firstGenre = genre.slice(1, 11);
-//   var secondGenre = genre.slice(11);
-//   firstGenre.sort((a, b) => {
-//     return a.fieldValue > b.fieldValue
-//       ? 1
-//       : a.fieldValue < b.fieldValue
-//       ? -1
-//       : 0;
-//   });
-//   secondGenre.sort((a, b) => {
-//     return a.fieldValue > b.fieldValue
-//       ? 1
-//       : a.fieldValue < b.fieldValue
-//       ? -1
-//       : 0;
-//   });
-//   return [
-//     { label: "Popular Genres", options: firstGenre },
-//     { label: "More Genres", options: secondGenre },
-//   ];
-// }
+function buildGenreFilter(genres: FilterType[]) {
+  // Data management for the genre filter
+  let genreStrings = genres
+    .sort((a, b) => b.totalCount - a.totalCount)
+    .map((genre) => genre.fieldValue);
+  var popularGenres = genreStrings.slice(1, 11).sort((a, b) => {
+    return a.localeCompare(b);
+  });
+  var moreGenres = genreStrings.slice(11).sort((a, b) => {
+    return a.localeCompare(b);
+  });
+  return { Popular: popularGenres, More: moreGenres };
+}
 
-// function universeManagement(temp_universes) {
-//   var universes = JSON.parse(JSON.stringify(temp_universes));
-//   universes = universes
-//     .filter((universe) => universe.fieldValue !== "")
-//     .sort((a, b) => b.totalCount - a.totalCount);
-//   var with_sub = universes.filter((universe) => universe.group.length > 1);
-//   var no_sub = universes.filter((universe) => universe.group.length <= 1);
-//   with_sub.forEach((universe, index) => {
-//     universe.group = universe.group
-//       .filter((sub_universe) => {
-//         return sub_universe.fieldValue !== "";
-//       })
-//       .map((sub_universe) => {
-//         return {
-//           value: sub_universe.fieldValue,
-//           label: sub_universe.fieldValue,
-//           category: "Universe",
-//         };
-//       });
-//     universe.group.unshift({
-//       value: universe.fieldValue,
-//       label: `All ${universe.fieldValue}`,
-//       category: "Universe",
-//     });
-//     with_sub[index] = { label: universe.fieldValue, options: universe.group };
-//   });
-//   no_sub.sort((a, b) => {
-//     return a.fieldValue > b.fieldValue
-//       ? 1
-//       : a.fieldValue < b.fieldValue
-//       ? -1
-//       : 0;
-//   });
-//   no_sub = no_sub.map((universe) => {
-//     return {
-//       value: universe.fieldValue,
-//       label: universe.fieldValue,
-//       category: "Universe",
-//     };
-//   });
-//   return [...with_sub, { label: "Others", options: no_sub }];
-// }
+function generateDecades(years: number[]) {
+  return Array.from(
+    new Set(
+      years.map((year) => {
+        const start = Math.floor(year / 10) * 10;
+        const end = start + 9;
+        return `${start}-${end}`;
+      })
+    )
+  );
+}
 
-// function generateDecades(years) {
-//   var minDecade = parseInt(Math.min.apply(Math, years) / 10);
-//   var maxDecade = parseInt(Math.max.apply(Math, years) / 10);
-//   var decades = [];
-//   for (minDecade; minDecade <= maxDecade; minDecade++) {
-//     decades.push(`${minDecade}0 - ${minDecade}9`);
-//   }
-//   return decades;
-// }
-
-export default function Filters({ movies }: fitersProps) {
-  console.log(movies);
-  var genres: string[] = Array.from(new Set(movies.map((m) => m.genre)));
-  console.log(genres);
+export default function Filters({ filterTypes }: fitersProps) {
+  console.log(filterTypes);
+  console.log(buildGenreFilter(filterTypes?.genre));
+  console.log(generateDecades(filterTypes.year));
   return <div></div>;
-  // var temp_genre = data.genrealt.group;
-  // var genre2 = data.genre2alt.group;
-  // var universes = data.universes.distinct.filter((item) => item !== "");
-  // var universes_together = data.universes_together.group;
-  // var years = data.years.distinct;
-  // var exclusive = data.exclusive.distinct.filter((item) => item !== "");
-  // var holiday = data.holiday.distinct.filter((item) => item !== "");
-  // var studio = data.studio.distinct;
-  // var rated = data.rated.distinct;
-  // var director = data.director.group;
-  // var runtime = data.runtime.distinct;
-  // runtime.forEach(function (part, index) {
-  //   if (typeof part === "string") this[index] = parseInt(part.split(" ")[0]);
-  // }, runtime);
-  // runtime = runtime.sort((a, b) => {
-  //   return a - b;
-  // });
   // // Data management for the director filter
   // director.sort((a, b) => {
   //   return b.totalCount - a.totalCount;
   // });
-  // director = director.slice(0, 30);
-  // director.sort((a, b) => {
+  // director = director.slice(0, 30).sort((a, b) => {
   //   return a.fieldValue > b.fieldValue
   //     ? 1
   //     : a.fieldValue < b.fieldValue
   //     ? -1
   //     : 0;
-  // });
-  // director = director.map((dir) => dir.fieldValue);
-  // // Data management for the decades filter
-  // var extraGenres = genreManagement(temp_genre, genre2);
-  // var builtUniverses = universeManagement(universes_together);
-  // var decades = generateDecades(years);
+  // }).map((dir) => dir.fieldValue);
   // var everything = [
   //   { Genre: extraGenres },
   //   { Universe: universes },
