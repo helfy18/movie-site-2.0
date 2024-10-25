@@ -1,4 +1,18 @@
-import { Grid, Select, Slider } from "@mui/material";
+import {
+  Box,
+  Chip,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  SelectChangeEvent,
+  Slider,
+  Theme,
+  useTheme,
+} from "@mui/material";
+import { useState } from "react";
 
 interface fitersProps {
   filterTypes: AllType;
@@ -30,118 +44,82 @@ function generateDecades(years: number[]) {
   );
 }
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+const names = [
+  "Oliver Hansen",
+  "Van Henry",
+  "April Tucker",
+  "Ralph Hubbard",
+  "Omar Alexander",
+  "Carlos Abbott",
+  "Miriam Wagner",
+  "Bradley Wilkerson",
+  "Virginia Andrews",
+  "Kelly Snyder",
+];
+
+function getStyles(name: string, personName: string[], theme: Theme) {
+  return {
+    fontWeight: personName.includes(name)
+      ? theme.typography.fontWeightMedium
+      : theme.typography.fontWeightRegular,
+  };
+}
+
 export default function Filters({ filterTypes }: fitersProps) {
   console.log(filterTypes);
   console.log(buildGenreFilter(filterTypes?.genre));
   console.log(generateDecades(filterTypes.year));
-  return <div></div>;
-  // // Data management for the director filter
-  // director.sort((a, b) => {
-  //   return b.totalCount - a.totalCount;
-  // });
-  // director = director.slice(0, 30).sort((a, b) => {
-  //   return a.fieldValue > b.fieldValue
-  //     ? 1
-  //     : a.fieldValue < b.fieldValue
-  //     ? -1
-  //     : 0;
-  // }).map((dir) => dir.fieldValue);
-  // var everything = [
-  //   { Genre: extraGenres },
-  //   { Universe: universes },
-  //   { Exclusive: exclusive },
-  //   { Studio: studio },
-  //   { Holiday: holiday },
-  //   { Year: years.sort().reverse() },
-  //   { Director: director },
-  //   { Rated: rated },
-  //   { Decade: decades },
-  //   { Runtime: runtime },
-  // ];
-  // for (var headerIndex in everything) {
-  //   if (headerIndex !== (everything.length - 1).toString()) {
-  //     for (const type in everything[headerIndex]) {
-  //       let optionsArray = [];
-  //       if (type === "Genre") {
-  //         for (let arr of everything[headerIndex][type]) {
-  //           let subOptionsArray = [];
-  //           for (let entry of arr.options) {
-  //             subOptionsArray.push({
-  //               value: entry.fieldValue,
-  //               label: entry.fieldValue,
-  //               category: "Genre",
-  //             });
-  //           }
-  //           optionsArray.push({ label: arr.label, options: subOptionsArray });
-  //         }
-  //       } else if (type === "Universe") {
-  //         optionsArray = builtUniverses;
-  //       } else {
-  //         for (let opt of everything[headerIndex][type]) {
-  //           optionsArray.push({ value: opt, label: opt, category: type });
-  //         }
-  //       }
-  //       everything[headerIndex] = {
-  //         label: type,
-  //         options: optionsArray,
-  //       };
-  //     }
-  //   }
-  // }
-  // return everything.map((opt) => {
-  //   if (!opt["Runtime"]) {
-  //     return (
-  //       <Grid xs={12} md={6} item={true} key={`${opt["label"]}-12`}>
-  //         <div
-  //           key={`${opt["label"]}-select-picker`}
-  //           style={{ textAlign: "center" }}
-  //         >
-  //           {opt["label"]}
-  //         </div>
-  //         <Select
-  //           className={reactSelectContainer}
-  //           classNamePrefix="react-select"
-  //           defaultValue={getSelected(opt["label"])}
-  //           options={opt["options"]}
-  //           isMulti
-  //           closeMenuOnSelect={false}
-  //           isSearchable
-  //           placeholder={
-  //             opt["label"] === "Genre"
-  //               ? "Ex: Animated, Horror"
-  //               : `Ex: ${opt["options"][0]["label"]}`
-  //           }
-  //           onChange={(e) => {
-  //             setSelected((prevState) =>
-  //               selectedOptions(prevState, e, opt["label"])
-  //             );
-  //           }}
-  //         ></Select>
-  //       </Grid>
-  //     );
-  //   } else {
-  //     return (
-  //       <Grid xs={12} md={6} item={true} key={`runtime-12`}>
-  //         <div key={`runtime-slider`} style={{ textAlign: "center" }}>
-  //           Runtime
-  //         </div>
-  //         <Slider
-  //           min={opt["Runtime"][0]}
-  //           max={opt["Runtime"][opt["Runtime"].length - 1]}
-  //           onChange={handleChange}
-  //           style={{
-  //             width: "95%",
-  //             marginLeft: "2.5%",
-  //             color: "#55CBCD",
-  //           }}
-  //           value={sliderValue}
-  //           valueLabelDisplay="auto"
-  //           valueLabelFormat={(x) => {
-  //             return `${x} min`;
-  //           }}
-  //         />
-  //       </Grid>
-  //     );
-  //   }
-  // });
+
+  const theme = useTheme();
+  const [personName, setPersonName] = useState<string[]>([]);
+
+  const handleChange = (event: SelectChangeEvent<typeof personName>) => {
+    const {
+      target: { value },
+    } = event;
+    setPersonName(typeof value === "string" ? value.split(",") : value);
+  };
+
+  return (
+    <Grid xs={12} md={6} item={true} key={`director-12`}>
+      <div key={`director-select-picker`} style={{ textAlign: "center" }}>
+        Director
+      </div>
+      <div>
+        <FormControl sx={{ m: 1, width: 300 }}>
+          <InputLabel id="demo-multiple-name-label">Name</InputLabel>
+          <Select
+            labelId="demo-multiple-name-label"
+            id="demo-multiple-name"
+            multiple
+            value={personName}
+            onChange={handleChange}
+            input={<OutlinedInput label="Name" />}
+            MenuProps={MenuProps}
+          >
+            {names.map((name) => (
+              <MenuItem
+                key={name}
+                value={name}
+                style={getStyles(name, personName, theme)}
+              >
+                {name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </div>
+    </Grid>
+  );
 }

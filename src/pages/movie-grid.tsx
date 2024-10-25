@@ -5,9 +5,7 @@ import Layout from "@/components/layout";
 import MovieGrid from "@/components/movieGrid";
 import Filters from "@/components/filters";
 import {
-  Slider,
   Grid,
-  Select,
   Stack,
   Button,
   TextField,
@@ -34,18 +32,7 @@ const movieSearch = (text: string, movies: Movie[]) => {
   );
 };
 
-// function selectedOptions(data: any, toAdd: any, label: any) {
-//   if (data) {
-//     data = data.filter((entry: any) => entry["category"] !== label);
-//   }
-//   return data ? data.concat(toAdd) : toAdd;
-// }
-
 const MoviePage = () => {
-  //   const handleChange = (event, newValue) => {
-  //     setSliderValue(newValue);
-  //   };
-
   const [allMovies, setAllMovies] = useState<Movie[]>([]);
   const [displayMovies, setDisplayMovies] = useState<Movie[]>([]);
   const [params, setParams] = useState<MovieListQuery>({});
@@ -81,12 +68,6 @@ const MoviePage = () => {
       console.log(typesList.error);
     }
   }, [typesList.isFetching]);
-
-  useEffect(() => {
-    console.log(
-      `Success:${listMovies.isSuccess} Loading:${listMovies.isError}`
-    );
-  }, [listMovies]);
 
   return (
     <Layout pageTitle="Movies">
@@ -152,13 +133,7 @@ const MoviePage = () => {
       ) : null}
       <Stack direction="row">
         {listMovies.isLoading && (
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            height="80vh"
-            width="100%"
-          >
+          <Box className="flex justify-center items-center h-[80vh] w-full">
             <CircularProgress color="secondary" />
           </Box>
         )}
