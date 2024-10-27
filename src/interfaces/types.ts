@@ -3,7 +3,7 @@ interface AllType {
   exclusive: string[];
   genre: FilterType[];
   holiday: string[];
-  runtime: Runtime;
+  runtime: Runtime[];
   studio: string[];
   universes: Universe[];
   year: number[];

@@ -1,25 +1,29 @@
 import {
-  Box,
-  Chip,
-  FormControl,
+  Button,
+  Divider,
   Grid,
-  InputLabel,
+  IconButton,
+  ListSubheader,
   MenuItem,
-  OutlinedInput,
   Select,
-  SelectChangeEvent,
   Slider,
-  Theme,
-  useTheme,
 } from "@mui/material";
 import { useState } from "react";
+import ClearIcon from "@mui/icons-material/Clear";
+import SelectWrapper, {
+  getMenuProps,
+  handleChange,
+  sxProp,
+} from "./selectWrapper";
 
 interface fitersProps {
   filterTypes: AllType;
+  onClear: () => void;
+  onApply: (params: MovieListQuery) => void;
+  values: MovieListQuery;
 }
 
-function buildGenreFilter(genres: FilterType[]) {
-  // Data management for the genre filter
+const buildGenreFilter = (genres: FilterType[]) => {
   let genreStrings = genres
     .sort((a, b) => b.totalCount - a.totalCount)
     .map((genre) => genre.fieldValue);
@@ -30,9 +34,9 @@ function buildGenreFilter(genres: FilterType[]) {
     return a.localeCompare(b);
   });
   return { Popular: popularGenres, More: moreGenres };
-}
+};
 
-function generateDecades(years: number[]) {
+const generateDecades = (years: number[]) => {
   return Array.from(
     new Set(
       years.map((year) => {
@@ -42,84 +46,251 @@ function generateDecades(years: number[]) {
       })
     )
   );
-}
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
 };
 
-const names = [
-  "Oliver Hansen",
-  "Van Henry",
-  "April Tucker",
-  "Ralph Hubbard",
-  "Omar Alexander",
-  "Carlos Abbott",
-  "Miriam Wagner",
-  "Bradley Wilkerson",
-  "Virginia Andrews",
-  "Kelly Snyder",
-];
+const getDirectors = (directors: FilterType[]) => {
+  return directors
+    .map((director) => director.fieldValue)
+    .sort((a, b) => a.localeCompare(b));
+};
 
-function getStyles(name: string, personName: string[], theme: Theme) {
-  return {
-    fontWeight: personName.includes(name)
-      ? theme.typography.fontWeightMedium
-      : theme.typography.fontWeightRegular,
+export default function Filters({
+  filterTypes,
+  onApply,
+  onClear,
+  values,
+}: fitersProps) {
+  const [directors, setDirectors] = useState<string[]>(values.director ?? []);
+  const [exclusives, setExclusives] = useState<string[]>(
+    values.exclusive ?? []
+  );
+  const [studios, setStudios] = useState<string[]>(values.studio ?? []);
+  const [years, setYears] = useState<string[]>(values.year ?? []);
+  const [holidays, setHolidays] = useState<string[]>(values.holiday ?? []);
+  const [decades, setDecades] = useState<string[]>(values.decade ?? []);
+  const [genres, setGenres] = useState<string[]>(values.genre ?? []);
+  const [universes, setUniverses] = useState<string[]>(values.universe ?? []);
+  const [runtime, setRuntime] = useState<number[]>(
+    values.runtime ?? [filterTypes.runtime[0].min, filterTypes.runtime[0].max]
+  );
+
+  const handleRuntimeChange = (_: Event, newValue: number | number[]) => {
+    setRuntime(newValue as number[]);
   };
-}
 
-export default function Filters({ filterTypes }: fitersProps) {
-  console.log(filterTypes);
-  console.log(buildGenreFilter(filterTypes?.genre));
-  console.log(generateDecades(filterTypes.year));
-
-  const theme = useTheme();
-  const [personName, setPersonName] = useState<string[]>([]);
-
-  const handleChange = (event: SelectChangeEvent<typeof personName>) => {
-    const {
-      target: { value },
-    } = event;
-    setPersonName(typeof value === "string" ? value.split(",") : value);
+  const onSubmit = () => {
+    onApply({
+      genre: genres,
+      director: directors,
+      exclusive: exclusives,
+      studio: studios,
+      year: years,
+      holiday: holidays,
+      universe: universes,
+      runtime: runtime,
+      decade: decades,
+    });
   };
+
+  const genreOptions = buildGenreFilter(filterTypes.genre);
+  const sortedUniverses = filterTypes.universes
+    .filter((val) => val.fieldValue)
+    .sort((a, b) => {
+      // Step 1: Sort by whether `subUniverses` array has items
+      if (a.subUniverses.length > 1 && b.subUniverses.length <= 1) return -1;
+      if (a.subUniverses.length <= 1 && b.subUniverses.length > 1) return 1;
+      // Step 2: If both have `subUniverses`, sort by `totalCount` descending
+      if (a.subUniverses.length > 1 && b.subUniverses.length > 1) {
+        return b.totalCount - a.totalCount;
+      }
+      // Step 3: If both have empty `subUniverses`, sort by `fieldValue` ascending
+      return a.fieldValue.localeCompare(b.fieldValue);
+    });
 
   return (
-    <Grid xs={12} md={6} item={true} key={`director-12`}>
-      <div key={`director-select-picker`} style={{ textAlign: "center" }}>
-        Director
-      </div>
-      <div>
-        <FormControl sx={{ m: 1, width: 300 }}>
-          <InputLabel id="demo-multiple-name-label">Name</InputLabel>
-          <Select
-            labelId="demo-multiple-name-label"
-            id="demo-multiple-name"
-            multiple
-            value={personName}
-            onChange={handleChange}
-            input={<OutlinedInput label="Name" />}
-            MenuProps={MenuProps}
+    <>
+      <Grid container className="mb-4 pt-2 bg-stone-700">
+        <Grid xs={6} item key={1} className="mb-2 px-2 text-right">
+          <Button
+            className="w-1/2 rounded-lg text-yellow-500 outline-1 outline"
+            onClick={onSubmit}
           >
-            {names.map((name) => (
-              <MenuItem
-                key={name}
-                value={name}
-                style={getStyles(name, personName, theme)}
+            Apply
+          </Button>
+        </Grid>
+        <Grid xs={6} item key={2} className="mb-2 px-2">
+          <Button
+            className="w-1/2 rounded-lg text-yellow-500 outline-1 outline"
+            onClick={onClear}
+          >
+            Reset
+          </Button>
+        </Grid>
+        <Grid xs={12} md={6} item={true} className="py-0 px-2">
+          <div className="text-center">Genre</div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <Select
+              multiple
+              value={genres}
+              onChange={(event) => handleChange(event, setGenres)}
+              className="w-full text-secondary"
+              MenuProps={getMenuProps()}
+              displayEmpty
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return (
+                    <span className="text-secondary text-opacity-20">
+                      Ex: {genreOptions.Popular[0]}, {genreOptions.Popular[1]}
+                    </span>
+                  );
+                }
+                return selected.join(", ");
+              }}
+              sx={sxProp}
+            >
+              <ListSubheader>Popular Genres</ListSubheader>
+              {genreOptions.Popular.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+              <ListSubheader>More Genres</ListSubheader>
+              {genreOptions.More.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+            {genres.length > 0 && (
+              <IconButton
+                onClick={() => setGenres([])}
+                aria-label="clear selection"
               >
-                {name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </div>
-    </Grid>
+                <ClearIcon color="secondary" />
+              </IconButton>
+            )}
+          </div>
+        </Grid>
+        <Grid xs={12} md={6} item={true} className="py-0 px-2">
+          <div className="text-center">Universe</div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <Select
+              multiple
+              value={universes}
+              onChange={(event) => handleChange(event, setUniverses)}
+              className="w-full text-secondary"
+              MenuProps={getMenuProps()}
+              displayEmpty
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return (
+                    <span className="text-secondary text-opacity-20">
+                      Ex: {sortedUniverses[0].fieldValue},{" "}
+                      {sortedUniverses[1].fieldValue}
+                    </span>
+                  );
+                }
+                return selected.join(", ");
+              }}
+              sx={sxProp}
+            >
+              {sortedUniverses.flatMap((universe) =>
+                universe.subUniverses.length > 1
+                  ? [
+                      <ListSubheader key={`header-${universe.fieldValue}`}>
+                        {universe.fieldValue}
+                      </ListSubheader>,
+                      ...universe.subUniverses
+                        .sort((a, b) =>
+                          a.fieldValue.localeCompare(b.fieldValue)
+                        )
+                        .map((subUniverse) => (
+                          <MenuItem
+                            key={`${universe.fieldValue}-${subUniverse.fieldValue}`}
+                            value={subUniverse.fieldValue}
+                          >
+                            {subUniverse.fieldValue}
+                          </MenuItem>
+                        )),
+                      <MenuItem
+                        key={`all-${universe.fieldValue}`}
+                        value={universe.fieldValue}
+                      >
+                        All {universe.fieldValue}
+                      </MenuItem>,
+                      <Divider key={`divider-${universe.fieldValue}`} />,
+                    ]
+                  : [
+                      <MenuItem
+                        key={universe.fieldValue}
+                        value={universe.fieldValue}
+                      >
+                        {universe.fieldValue}
+                      </MenuItem>,
+                    ]
+              )}
+            </Select>
+            {universes.length > 0 && (
+              <IconButton
+                onClick={() => setUniverses([])}
+                aria-label="clear selection"
+              >
+                <ClearIcon color="secondary" />
+              </IconButton>
+            )}
+          </div>
+        </Grid>
+        <SelectWrapper
+          selected={directors}
+          setSelected={setDirectors}
+          options={getDirectors(filterTypes.director)}
+          title="Director"
+        />
+        <SelectWrapper
+          selected={studios}
+          setSelected={setStudios}
+          options={filterTypes.studio}
+          title="Studio"
+        />
+        <SelectWrapper
+          selected={years}
+          setSelected={setYears}
+          options={filterTypes.year.map(String)}
+          title="Year"
+        />
+        <SelectWrapper
+          selected={exclusives}
+          setSelected={setExclusives}
+          options={filterTypes.exclusive}
+          title="Exclusive"
+        />
+        <SelectWrapper
+          selected={holidays}
+          setSelected={setHolidays}
+          options={filterTypes.holiday}
+          title="Holiday"
+        />
+        <SelectWrapper
+          selected={decades}
+          setSelected={setDecades}
+          options={generateDecades(filterTypes.year)}
+          title="Decade"
+        />
+        <Grid xs={12} item={true} className="py-0 px-2">
+          <div className="text-center">Runtime</div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <Slider
+              min={filterTypes.runtime[0].min}
+              max={filterTypes.runtime[0].max}
+              valueLabelDisplay="auto"
+              color="secondary"
+              value={runtime}
+              valueLabelFormat={(val: number) => `${val} min`}
+              onChange={handleRuntimeChange}
+            />
+          </div>
+        </Grid>{" "}
+      </Grid>
+    </>
   );
 }

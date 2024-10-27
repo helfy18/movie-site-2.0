@@ -69,6 +69,18 @@ const MoviePage = () => {
     }
   }, [typesList.isFetching]);
 
+  const onFilterApply = (filterValues: MovieListQuery) => {
+    if (params !== filterValues) setDisplayMovies([]);
+    setParams(filterValues);
+    setShowDropdown(!showDropdown);
+  };
+
+  const onFilterClear = () => {
+    setDisplayMovies([]);
+    setParams({});
+    setShowDropdown(!showDropdown);
+  };
+
   return (
     <Layout pageTitle="Movies">
       <Stack direction="row" className="justify-center">
@@ -102,35 +114,14 @@ const MoviePage = () => {
           </Button>
         </Grid>
       </Stack>
-      {showDropdown ? (
-        <Grid container className="mb-4 pt-2 bg-stone-700">
-          <Grid xs={6} item key={1} className="mb-2 px-2 text-right">
-            <Button
-              className="w-1/2 rounded-lg text-yellow-500 outline-1 outline"
-              onClick={() => {
-                setShowDropdown(!showDropdown);
-                // apply the filters
-              }}
-            >
-              Apply
-            </Button>
-          </Grid>
-          <Grid xs={6} item key={2} className="mb-2 px-2">
-            <Button
-              className="w-1/2 rounded-lg text-yellow-500 outline-1 outline"
-              onClick={() => {
-                setParams({});
-                setDisplayMovies([]);
-                listMovies.refetch();
-                setShowDropdown(!showDropdown);
-              }}
-            >
-              Reset
-            </Button>
-          </Grid>
-          {filterTypes && <Filters filterTypes={filterTypes}></Filters>}
-        </Grid>
-      ) : null}
+      {showDropdown && filterTypes && (
+        <Filters
+          filterTypes={filterTypes}
+          onApply={onFilterApply}
+          onClear={onFilterClear}
+          values={params}
+        ></Filters>
+      )}
       <Stack direction="row">
         {listMovies.isLoading && (
           <Box className="flex justify-center items-center h-[80vh] w-full">

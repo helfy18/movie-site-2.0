@@ -4,9 +4,10 @@ interface MovieListQuery {
   exclusive?: string[];
   studio?: string[];
   holiday?: string[];
-  year?: number[];
+  year?: string[];
   director?: string[];
   runtime?: number[];
+  decade?: string[];
 }
 
 interface MovieGetQuery {
