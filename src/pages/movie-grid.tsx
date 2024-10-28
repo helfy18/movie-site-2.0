@@ -14,7 +14,11 @@ import {
   Box,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { useMoviesList, useTypesList } from "@/contexts/apiContext";
+import {
+  useMoviesList,
+  useTypesList,
+  activeFilter,
+} from "@/contexts/apiContext";
 
 const movieSearch = (text: string, movies: Movie[]) => {
   const lowerText = text.toLowerCase();
@@ -32,10 +36,10 @@ const movieSearch = (text: string, movies: Movie[]) => {
   );
 };
 
-const MoviePage = () => {
+const MovieGridPage = () => {
   const [allMovies, setAllMovies] = useState<Movie[]>([]);
   const [displayMovies, setDisplayMovies] = useState<Movie[]>([]);
-  const [params, setParams] = useState<MovieListQuery>({});
+  const [params, setParams] = useState<MovieListQuery>(activeFilter);
   const [showDropdown, setShowDropdown] = useState(false);
   const [filterTypes, setFilterTypes] = useState<AllType>();
 
@@ -134,4 +138,4 @@ const MoviePage = () => {
   );
 };
 
-export default MoviePage;
+export default MovieGridPage;

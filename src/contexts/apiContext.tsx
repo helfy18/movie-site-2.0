@@ -13,6 +13,8 @@ const queryClient = new QueryClient();
 
 const ApiContext = createContext({});
 
+export let activeFilter: MovieListQuery = {};
+
 export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -32,6 +34,7 @@ export const useMoviesList = (
   return useQuery({
     queryKey: [params],
     queryFn: async () => {
+      activeFilter = params;
       const { data } = await axios.get(`${BASEURL}/movies/list`, {
         params: params,
         paramsSerializer: { indexes: null },
