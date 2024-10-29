@@ -128,7 +128,7 @@ export default function Filters({
         </Grid>
         <Grid xs={12} md={6} item={true} className="py-0 px-2">
           <div className="text-center">Genre</div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div className="flex items-center gap-2">
             <Select
               multiple
               value={genres}
@@ -173,7 +173,7 @@ export default function Filters({
         </Grid>
         <Grid xs={12} md={6} item={true} className="py-0 px-2">
           <div className="text-center">Universe</div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div className="flex items-center gap-2">
             <Select
               multiple
               value={universes}

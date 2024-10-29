@@ -1,7 +1,6 @@
 import {
   Grid,
   IconButton,
-  ListSubheader,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -55,7 +54,7 @@ export default function SelectWrapper({
   return (
     <Grid xs={12} md={6} item={true} className="py-0 px-2">
       <div className="text-center">{title}</div>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+      <div className="flex items-center gap-2">
         <Select
           multiple
           value={selected}
