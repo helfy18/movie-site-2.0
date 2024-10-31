@@ -41,6 +41,7 @@ export const useMoviesList = (
       });
       return data as Movie[];
     },
+    retry: 0,
     ...options,
   });
 };
@@ -57,6 +58,25 @@ export const useMovieGet = (
       });
       return data as Movie;
     },
+    retry: 0,
+    ...options,
+  });
+};
+
+export const useMovieListById = (
+  params: MovieListByIdQuery,
+  options?: any
+): UseQueryResult<Movie[], Error> => {
+  return useQuery({
+    queryKey: [params],
+    queryFn: async () => {
+      const { data } = await axios.get(`${BASEURL}/movies/list/id`, {
+        params: params,
+        paramsSerializer: { indexes: null },
+      });
+      return data as Movie[];
+    },
+    retry: 0,
     ...options,
   });
 };
@@ -68,6 +88,19 @@ export const useTypesList = (options?: any): UseQueryResult<AllType, Error> => {
       const { data } = await axios.get(`${BASEURL}/types/list`);
       return data as AllType;
     },
+    retry: 0,
+    ...options,
+  });
+};
+
+export const useMovieCount = (options?: any): UseQueryResult<number, Error> => {
+  return useQuery({
+    queryKey: ["useMovieCount"],
+    queryFn: async () => {
+      const { data } = await axios.get(`${BASEURL}/movies/count`);
+      return data as number;
+    },
+    retry: 0,
     ...options,
   });
 };

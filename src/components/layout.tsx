@@ -13,7 +13,7 @@ const Layout = (props: layoutProps) => {
     <div className="my-[1%] mx-[5%] font-sans">
       <title>{props.pageTitle}</title>
       <Link href="/">
-        <header className="text-5xl flex items-center justify-center font-bold font-mono">
+        <header className="text-4xl flex items-center justify-center font-bold font-mono">
           <Image
             src="/popcorn.png"
             height={50}
@@ -31,7 +31,7 @@ const Layout = (props: layoutProps) => {
           />
         </header>
       </Link>
-      <Stack direction="row" spacing={4} className="justify-center">
+      <Stack direction="row" spacing={4} className="justify-center my-4">
         <Link href="/">Home</Link>
         <Link href="/about">About</Link>
         <Link href="/movie-grid">Ratings</Link>

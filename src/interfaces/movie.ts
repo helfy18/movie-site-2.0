@@ -16,6 +16,10 @@ interface MovieGetQuery {
   year?: string;
 }
 
+interface MovieListByIdQuery {
+  tmdbid: number[];
+}
+
 interface Movie {
   movie: string;
   jh_score: number;
@@ -41,6 +45,10 @@ interface Movie {
   budget: string;
   tmdbid: number;
   recommendations: number[];
+  rottentomates: string;
+  imdb: string;
+  metacritic: string;
+  trailer: string;
 }
 
 interface Rating {

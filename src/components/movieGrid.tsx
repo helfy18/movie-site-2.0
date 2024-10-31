@@ -18,7 +18,7 @@ export const PosterItem = styled(Paper)(({ theme }) => ({
   justifyContent: "center",
 }));
 
-export const gradientArray = new Gradient()
+export const gradient = new Gradient()
   .setColorGradient("#b91c1c", "#facc15", "#15803d")
   .setMidpoint(101)
   .getColors();
@@ -87,7 +87,7 @@ export default function MovieGrid({ movies }: MovieGridProps) {
                   />
                   <div
                     style={{
-                      color: gradientArray[movie.jh_score],
+                      color: gradient[movie.jh_score],
                       fontWeight: "bolder",
                     }}
                   >

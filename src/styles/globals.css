@@ -13,3 +13,24 @@ body {
     text-wrap: balance;
   }
 }
+
+th,
+td {
+  padding: 0.5rem;
+  border-right: 1px solid;
+  border-color: #eab308;
+}
+
+tr {
+  border-bottom: 1px solid;
+}
+
+table {
+  border: 1px solid;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+tr:nth-child(odd) {
+  background-color: #44403c;
+}
