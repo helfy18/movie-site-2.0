@@ -10,9 +10,9 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { gradient, PosterItem } from "@/components/movieGrid";
-import { getProviderLink } from "@/utils";
 import Link from "next/link";
 import InfoTable from "@/components/infoTable";
+import ProviderTable from "@/components/providerTable";
 
 function getReview(review: string | undefined) {
   return (
@@ -146,63 +146,7 @@ const MoviePage = () => {
             </Grid>
             <Grid item sm={12} md={5} className="space-y-4">
               <InfoTable movie={movie} />
-              <table>
-                <thead>
-                  <tr>
-                    <th colSpan={2}>
-                      Providers - Brought to You By JustWatch.com
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr key="stream">
-                    <td>With Account</td>
-                    <td className="flex flex-wrap gap-0.5">
-                      {movie.provider.flatrate?.map((provider, index) => {
-                        return (
-                          <Link
-                            href={getProviderLink(provider.provider_id)}
-                            target="_blank"
-                            className="pr-4"
-                            rel="noopener noreferrer"
-                            key={index}
-                          >
-                            <Image
-                              src={`https://image.tmdb.org/t/p/w154/${provider.logo_path}`}
-                              height={45}
-                              width={45}
-                              alt="provider"
-                            />
-                          </Link>
-                        );
-                      })}
-                    </td>
-                  </tr>
-                  <tr key="rent">
-                    <td>For Rent</td>
-                    <td className="flex flex-wrap gap-0.5">
-                      {movie.provider.rent?.map((provider, index) => {
-                        return (
-                          <Link
-                            href={getProviderLink(provider.provider_id)}
-                            target="_blank"
-                            className="pr-4"
-                            rel="noopener noreferrer"
-                            key={`rent-${index}`}
-                          >
-                            <Image
-                              src={`https://image.tmdb.org/t/p/w154/${provider.logo_path}`}
-                              height={45}
-                              width={45}
-                              alt="provider"
-                            />
-                          </Link>
-                        );
-                      })}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <ProviderTable movie={movie} />
             </Grid>
             <Grid
               item
