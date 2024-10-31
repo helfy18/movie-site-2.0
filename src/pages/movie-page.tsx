@@ -101,7 +101,8 @@ const MoviePage = () => {
                 width="275"
                 height="400"
                 alt="Not Found"
-                className="mx-auto"
+                layout="responsive"
+                className="mx-auto px-4"
               />
               <div className="w-100 flex items-center justify-center">
                 <Item className="text-center flex flex-col text-xl w-fit font-mono font-black">
