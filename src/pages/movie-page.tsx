@@ -17,7 +17,7 @@ import ProviderTable from "@/components/providerTable";
 function getReview(review: string | undefined) {
   return (
     review && (
-      <Item>
+      <Item className="text-left">
         Review:
         <br />
         {review}
@@ -28,7 +28,6 @@ function getReview(review: string | undefined) {
 
 const Item = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(1),
-  textAlign: "left",
   fontFamily: "Arial",
   color: "#eab308",
   backgroundColor: "#44403c",
@@ -156,7 +155,7 @@ const MoviePage = () => {
               lg
               textAlign="center"
             >
-              <Item>
+              <Item className="text-left">
                 Plot:
                 <br />
                 {movie.plot}
