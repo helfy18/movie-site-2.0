@@ -112,7 +112,15 @@ const MovieGridPage = () => {
             onClick={() => {
               setShowDropdown(!showDropdown);
             }}
-            className="px-20 py-4 mx-2 my-4 text-yellow-500 outline-1 outline align-center"
+            sx={{
+              px: 10,
+              py: 2,
+              mx: 1,
+              my: 2,
+              color: "#EAB308",
+              outline: "1px solid",
+              textAlign: "center",
+            }}
           >
             {showDropdown ? "Hide" : "Filters"} &#8597;
           </Button>
