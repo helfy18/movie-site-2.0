@@ -174,50 +174,54 @@ const MoviePage = () => {
               <OtherSiteReviews movie={movie} />
             </Grid2>
           </Grid2>
-          <header className="text-center w-full font-bold text-xl my-2">
-            More Like This
-          </header>
-          <Grid2
-            container
-            spacing={2}
-            wrap="nowrap"
-            style={{ overflowX: "scroll" }}
-          >
-            {recommended.map((recommendation) => {
-              return (
-                movie && (
-                  <Grid2
-                    size={{ xs: "auto" }}
-                    key={recommendation.tmdbid}
-                    mb={1}
-                  >
-                    <Link
-                      href={`/movie-page?id=${recommendation.tmdbid}`}
-                      style={{ textDecoration: "none" }}
-                    >
-                      <PosterItem>
-                        <Image
-                          src={recommendation.poster}
-                          height={163}
-                          width={110}
-                          alt="Not Found"
-                        />
-                        <Box
-                          style={{
-                            color: gradient[recommendation.jh_score],
-                            fontWeight: "bolder",
-                          }}
+          {recommended && (
+            <>
+              <header className="text-center w-full font-bold text-xl my-2">
+                More Like This
+              </header>
+              <Grid2
+                container
+                spacing={2}
+                wrap="nowrap"
+                style={{ overflowX: "scroll" }}
+              >
+                {recommended.map((recommendation) => {
+                  return (
+                    movie && (
+                      <Grid2
+                        size={{ xs: "auto" }}
+                        key={recommendation.tmdbid}
+                        mb={1}
+                      >
+                        <Link
+                          href={`/movie-page?id=${recommendation.tmdbid}`}
+                          style={{ textDecoration: "none" }}
                         >
-                          {recommendation.jh_score}/100
-                        </Box>
-                        <Box>{recommendation.movie}</Box>
-                      </PosterItem>
-                    </Link>
-                  </Grid2>
-                )
-              );
-            })}
-          </Grid2>
+                          <PosterItem>
+                            <Image
+                              src={recommendation.poster}
+                              height={163}
+                              width={110}
+                              alt="Not Found"
+                            />
+                            <Box
+                              style={{
+                                color: gradient[recommendation.jh_score],
+                                fontWeight: "bolder",
+                              }}
+                            >
+                              {recommendation.jh_score}/100
+                            </Box>
+                            <Box>{recommendation.movie}</Box>
+                          </PosterItem>
+                        </Link>
+                      </Grid2>
+                    )
+                  );
+                })}
+              </Grid2>
+            </>
+          )}
         </>
       )}
     </Layout>
