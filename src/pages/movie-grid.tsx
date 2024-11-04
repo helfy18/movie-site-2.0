@@ -74,6 +74,7 @@ const MovieGridPage = () => {
 
   const onFilterClear = () => {
     setDisplayMovies([]);
+    listMovies.refetch();
     setParams({});
     setShowDropdown(!showDropdown);
   };
