@@ -43,6 +43,7 @@ export default function MovieGrid({ movies }: MovieGridProps) {
   const handlePageChange = (page: number) => {
     if (page > 0 && page <= totalPages) {
       setCurrentPage(page);
+      window.scrollTo(0, 0);
     }
   };
 
