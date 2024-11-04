@@ -45,7 +45,7 @@ interface Movie {
   budget: string;
   tmdbid: number;
   recommendations: number[];
-  rottentomates: string;
+  rottentomatoes: string;
   imdb: string;
   metacritic: string;
   trailer: string;

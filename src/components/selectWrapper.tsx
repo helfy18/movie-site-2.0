@@ -1,5 +1,5 @@
 import {
-  Grid,
+  Grid2,
   IconButton,
   MenuItem,
   Select,
@@ -25,6 +25,7 @@ export const sxProp = {
   "&:hover .MuiOutlinedInput-notchedOutline": {
     borderColor: "secondary.light",
   },
+  color: "secondary.main",
 };
 
 export const getMenuProps = () => {
@@ -52,7 +53,7 @@ export default function SelectWrapper({
   title,
 }: selectWrapperProps) {
   return (
-    <Grid xs={12} md={6} item={true} className="py-0 px-2">
+    <Grid2 size={{ xs: 12, md: 6 }} className="py-0 px-2">
       <div className="text-center">{title}</div>
       <div className="flex items-center gap-2">
         <Select
@@ -89,6 +90,6 @@ export default function SelectWrapper({
           </IconButton>
         )}
       </div>
-    </Grid>
+    </Grid2>
   );
 }

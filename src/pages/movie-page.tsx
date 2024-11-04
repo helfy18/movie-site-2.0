@@ -5,7 +5,7 @@ import {
   useMovieGet,
   useMovieListById,
 } from "@/contexts/apiContext";
-import { Box, CircularProgress, Grid, Paper, styled } from "@mui/material";
+import { Box, Grid2, Paper, styled } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -13,23 +13,11 @@ import { gradient, PosterItem } from "@/components/movieGrid";
 import Link from "next/link";
 import InfoTable from "@/components/infoTable";
 import ProviderTable from "@/components/providerTable";
-
-function getReview(review: string | undefined) {
-  return (
-    review && (
-      <Item className="text-left">
-        Review:
-        <br />
-        {review}
-      </Item>
-    )
-  );
-}
+import Spinner from "@/components/spinner";
+import OtherSiteReviews from "@/components/otherSiteReviews";
 
 const Item = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(1),
-  fontFamily: "Arial",
-  color: "#eab308",
   backgroundColor: "#44403c",
   fontSize: "16px",
 }));
@@ -62,6 +50,7 @@ const MoviePage = () => {
   );
 
   const getTotalCount = useMovieCount({ refetchOnWindowFocus: false });
+  console.log(movie);
 
   useEffect(() => {
     if (movieGet.isSuccess) {
@@ -81,11 +70,7 @@ const MoviePage = () => {
 
   return (
     <Layout pageTitle="Movie">
-      {movieGet.isLoading && (
-        <Box className="flex justify-center items-center h-[80vh] w-full">
-          <CircularProgress color="secondary" />
-        </Box>
-      )}
+      {movieGet.isLoading && <Spinner />}
       {!movieGet.isLoading && !movie && (
         <Box className="flex justify-center items-center h-[80vh] w-full">
           Not Found
@@ -93,44 +78,68 @@ const MoviePage = () => {
       )}
       {movie && (
         <>
-          <Grid container className="flex flex-wrap" spacing={2.5}>
-            <Grid item xs textAlign="center" className="space-y-4">
-              <Image
-                src={movie.poster}
-                width="275"
-                height="400"
-                alt="Not Found"
-                layout="responsive"
-                className="mx-auto px-4"
-              />
-              <div className="w-100 flex items-center justify-center">
-                <Item className="text-center flex flex-col text-xl w-fit font-mono font-black">
+          <Grid2 container className="flex flex-wrap" spacing={2.5}>
+            <Grid2
+              size={{ xs: 12, md: 2.8 }}
+              textAlign="center"
+              className="space-y-4"
+            >
+              <Box
+                sx={{
+                  px: { xs: "2rem", md: "0rem" },
+                }}
+              >
+                <Image
+                  src={movie.poster}
+                  width="275"
+                  height="400"
+                  alt="Not Found"
+                  layout="responsive"
+                />
+              </Box>
+              <Box className="w-100 flex items-center justify-center">
+                <Item
+                  sx={{
+                    textAlign: "center",
+                    color: "secondary.main",
+                    display: "flex",
+                    flexDirection: "column",
+                    fontSize: "1.3em",
+                    width: "fit-content",
+                    fontWeight: "bold",
+                  }}
+                >
                   Ranking:
-                  <span
+                  <Box
                     style={{
                       color: gradient[movie.jh_score],
                     }}
                   >
                     {movie.ranking}
-                  </span>
-                  <span className="relative">
+                  </Box>
+                  <Box className="relative">
                     <hr
                       className="absolute top-1/2 w-full"
                       style={{
                         borderColor: gradient[movie.jh_score],
-                        borderTopWidth: "1px",
                       }}
                     />
-                  </span>
-                  <span
+                  </Box>
+                  <Box
                     style={{
                       color: gradient[movie.jh_score],
                     }}
                   >
                     {getTotalCount.data}
-                  </span>
+                  </Box>
                 </Item>
-              </div>
+              </Box>
+            </Grid2>
+            <Grid2 size={{ sm: 12, md: 5 }} className="space-y-4">
+              <InfoTable movie={movie} />
+              <ProviderTable movie={movie} />
+            </Grid2>
+            <Grid2 size={{ sm: 12, md: 4.2 }} className="space-y-4">
               {movie.trailer && (
                 <div className="w-full aspect-[16/9]">
                   <iframe
@@ -142,91 +151,33 @@ const MoviePage = () => {
                   />
                 </div>
               )}
-            </Grid>
-            <Grid item sm={12} md={5} className="space-y-4">
-              <InfoTable movie={movie} />
-              <ProviderTable movie={movie} />
-            </Grid>
-            <Grid
-              item
-              sm={12}
-              margin={"1rem"}
-              marginTop={0}
-              lg
-              textAlign="center"
-            >
-              <Item className="text-left">
+              <Item
+                sx={{
+                  color: "secondary.main",
+                }}
+              >
                 Plot:
                 <br />
                 {movie.plot}
               </Item>
-              <br />
-              {getReview(movie.review)}
-              <br />
-              <table>
-                <tbody>
-                  {movie.ratings.map((rating) => {
-                    switch (rating.source) {
-                      case "Internet Movie Database":
-                        return (
-                          <tr key="imdb">
-                            <td>
-                              <div className="flex justify-center">
-                                <Image
-                                  src="/imdb.png"
-                                  height={40}
-                                  width={80}
-                                  alt="IMDB"
-                                />
-                              </div>
-                            </td>
-                            <td>{rating.value}</td>
-                          </tr>
-                        );
-                      case "Rotten Tomatoes":
-                        return (
-                          <tr key="rt">
-                            <td>
-                              <div className="flex justify-center">
-                                <Image
-                                  src="/rt.png"
-                                  height={40}
-                                  width={140}
-                                  alt="Rotten Tomatoes"
-                                />
-                              </div>
-                            </td>
-                            <td>{rating.value}</td>
-                          </tr>
-                        );
-                      case "Metacritic":
-                        return (
-                          <tr key="metacritic">
-                            <td>
-                              <div className="flex justify-center">
-                                <Image
-                                  src="/metacritic.png"
-                                  height={40}
-                                  width={175}
-                                  alt="Metacritic"
-                                />
-                              </div>
-                            </td>
-                            <td>{rating.value}</td>
-                          </tr>
-                        );
-                      default:
-                        return <tr />;
-                    }
-                  })}
-                </tbody>
-              </table>
-            </Grid>
-          </Grid>
-          <header className="text-center w-full font-bold text-xl">
+              {movie.review && (
+                <Item
+                  sx={{
+                    color: "secondary.main",
+                  }}
+                >
+                  Review:
+                  <br />
+                  {movie.review}
+                </Item>
+              )}
+              <OtherSiteReviews movie={movie} />
+            </Grid2>
+          </Grid2>
+          <header className="text-center w-full font-bold text-xl my-2">
             More Like This
           </header>
-          <Grid
+          <Grid2
             container
             spacing={2}
             wrap="nowrap"
@@ -235,7 +186,11 @@ const MoviePage = () => {
             {recommended.map((recommendation) => {
               return (
                 movie && (
-                  <Grid item xs={"auto"} key={recommendation.tmdbid}>
+                  <Grid2
+                    size={{ xs: "auto" }}
+                    key={recommendation.tmdbid}
+                    mb={1}
+                  >
                     <Link
                       href={`/movie-page?id=${recommendation.tmdbid}`}
                       style={{ textDecoration: "none" }}
@@ -247,22 +202,22 @@ const MoviePage = () => {
                           width={110}
                           alt="Not Found"
                         />
-                        <div
+                        <Box
                           style={{
                             color: gradient[recommendation.jh_score],
                             fontWeight: "bolder",
                           }}
                         >
                           {recommendation.jh_score}/100
-                        </div>
-                        <div>{recommendation.movie}</div>
+                        </Box>
+                        <Box>{recommendation.movie}</Box>
                       </PosterItem>
                     </Link>
-                  </Grid>
+                  </Grid2>
                 )
               );
             })}
-          </Grid>
+          </Grid2>
         </>
       )}
     </Layout>

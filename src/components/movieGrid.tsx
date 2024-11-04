@@ -1,6 +1,6 @@
 import { styled } from "@mui/material/styles";
 import { useState } from "react";
-import { Paper, Grid, Button } from "@mui/material";
+import { Paper, Grid, Button, Grid2 } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import Gradient from "javascript-color-gradient";
@@ -71,11 +71,11 @@ export default function MovieGrid({ movies }: MovieGridProps) {
   };
 
   return (
-    <Grid>
-      <Grid container spacing={2} className="justify-center">
+    <Grid2>
+      <Grid2 container spacing={2} className="justify-center">
         {currentMovies.map((movie) => {
           return (
-            <Grid item xs={"auto"} key={movie.tmdbid}>
+            <Grid2 size={{ xs: "auto" }} key={movie.tmdbid}>
               <Link href={`/movie-page?id=${movie.tmdbid}`}>
                 <PosterItem>
                   <Image
@@ -96,12 +96,12 @@ export default function MovieGrid({ movies }: MovieGridProps) {
                   <div>{movie.movie}</div>
                 </PosterItem>
               </Link>
-            </Grid>
+            </Grid2>
           );
         })}
-      </Grid>
-      <Grid container spacing={2} className="justify-center text-center mt-5">
-        <div className="">
+      </Grid2>
+      <Grid2 container spacing={2} className="justify-center text-center mt-5">
+        <div>
           {generatePageNumbers().map((page, index) =>
             page === "..." ? (
               <span key={index} className="mx-2">
@@ -112,16 +112,17 @@ export default function MovieGrid({ movies }: MovieGridProps) {
                 key={index}
                 onClick={() => handlePageChange(Number(page))}
                 disabled={page === currentPage}
-                className={`mx-1 ${
-                  page === currentPage ? "text-stone-500" : "text-yellow-500"
-                }`}
+                sx={{
+                  color:
+                    page === currentPage ? "text-stone-500" : "secondary.main",
+                }}
               >
                 {page}
               </Button>
             )
           )}
         </div>
-      </Grid>
-    </Grid>
+      </Grid2>
+    </Grid2>
   );
 }

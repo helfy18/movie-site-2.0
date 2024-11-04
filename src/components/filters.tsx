@@ -2,6 +2,7 @@ import {
   Button,
   Divider,
   Grid,
+  Grid2,
   IconButton,
   ListSubheader,
   MenuItem,
@@ -109,31 +110,41 @@ export default function Filters({
 
   return (
     <>
-      <Grid container className="mb-4 pt-2 bg-stone-700">
-        <Grid xs={6} item key={1} className="mb-2 px-2 text-right">
+      <Grid2 container className="mb-4 pt-2 bg-stone-700">
+        <Grid2 size={{ xs: 6 }} key={1} className="mb-2 px-2 text-right">
           <Button
-            className="w-1/2 rounded-lg text-yellow-500 outline-1 outline"
+            sx={{
+              width: "50%",
+              borderRadius: "0.5rem",
+              color: "secondary.main",
+              outline: "1px solid",
+            }}
             onClick={onSubmit}
           >
             Apply
           </Button>
-        </Grid>
-        <Grid xs={6} item key={2} className="mb-2 px-2">
+        </Grid2>
+        <Grid2 size={{ xs: 6 }} key={2} className="mb-2 px-2">
           <Button
-            className="w-1/2 rounded-lg text-yellow-500 outline-1 outline"
+            sx={{
+              width: "50%",
+              borderRadius: "0.5rem",
+              color: "secondary.main",
+              outline: "1px solid",
+            }}
             onClick={onClear}
           >
             Reset
           </Button>
-        </Grid>
-        <Grid xs={12} md={6} item={true} className="py-0 px-2">
+        </Grid2>
+        <Grid2 size={{ xs: 12, md: 6 }} className="py-0 px-2">
           <div className="text-center">Genre</div>
           <div className="flex items-center gap-2">
             <Select
               multiple
               value={genres}
               onChange={(event) => handleChange(event, setGenres)}
-              className="w-full text-secondary"
+              className="w-full"
               MenuProps={getMenuProps()}
               displayEmpty
               renderValue={(selected) => {
@@ -170,8 +181,8 @@ export default function Filters({
               </IconButton>
             )}
           </div>
-        </Grid>
-        <Grid xs={12} md={6} item={true} className="py-0 px-2">
+        </Grid2>
+        <Grid2 size={{ xs: 12, md: 6 }} className="py-0 px-2">
           <div className="text-center">Universe</div>
           <div className="flex items-center gap-2">
             <Select
@@ -239,7 +250,7 @@ export default function Filters({
               </IconButton>
             )}
           </div>
-        </Grid>
+        </Grid2>
         <SelectWrapper
           selected={directors}
           setSelected={setDirectors}
@@ -276,7 +287,7 @@ export default function Filters({
           options={generateDecades(filterTypes.year)}
           title="Decade"
         />
-        <Grid xs={12} item={true} className="py-0 px-2">
+        <Grid2 size={{ xs: 12 }} className="py-0 px-2">
           <div className="text-center">Runtime</div>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <Slider
@@ -289,8 +300,8 @@ export default function Filters({
               onChange={handleRuntimeChange}
             />
           </div>
-        </Grid>{" "}
-      </Grid>
+        </Grid2>
+      </Grid2>
     </>
   );
 }

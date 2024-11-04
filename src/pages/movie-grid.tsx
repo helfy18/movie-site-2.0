@@ -4,21 +4,14 @@ import { useState, useEffect } from "react";
 import Layout from "@/components/layout";
 import MovieGrid from "@/components/movieGrid";
 import Filters from "@/components/filters";
-import {
-  Grid,
-  Stack,
-  Button,
-  TextField,
-  InputAdornment,
-  CircularProgress,
-  Box,
-} from "@mui/material";
+import { Stack, Button, TextField, InputAdornment, Grid2 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   useMoviesList,
   useTypesList,
   activeFilter,
 } from "@/contexts/apiContext";
+import Spinner from "@/components/spinner";
 
 const movieSearch = (text: string, movies: Movie[]) => {
   const lowerText = text.toLowerCase();
@@ -87,45 +80,56 @@ const MovieGridPage = () => {
 
   return (
     <Layout pageTitle="Movies">
-      <Stack direction="row" className="justify-center">
-        <Grid className="text-center mx-2 my-4">
+      <Grid2 container>
+        <Grid2
+          size={{ xs: 12, md: 6 }}
+          sx={{
+            textAlign: { xs: "center", md: "right" },
+            marginY: "0.5rem",
+          }}
+        >
           <TextField
             placeholder="Search for Title, Actor, Director..."
             onChange={(event) => {
               setDisplayMovies(movieSearch(event.target.value, allMovies));
             }}
             color="secondary"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon className="text-yellow-500" />
-                </InputAdornment>
-              ),
-              style: {
-                color: "#eab308",
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon className="text-yellow-500" />
+                  </InputAdornment>
+                ),
+                style: {
+                  color: "#eab308",
+                },
               },
             }}
+            className="mx-2"
           />
-        </Grid>
-        <Grid>
+        </Grid2>
+        <Grid2
+          size={{ xs: 12, md: 6 }}
+          sx={{
+            textAlign: { xs: "center", md: "left" },
+            marginY: "0.5rem",
+          }}
+        >
           <Button
-            onClick={() => {
-              setShowDropdown(!showDropdown);
-            }}
+            onClick={() => setShowDropdown(!showDropdown)}
             sx={{
               px: 10,
               py: 2,
               mx: 1,
-              my: 2,
               color: "#EAB308",
               outline: "1px solid",
-              textAlign: "center",
             }}
           >
             {showDropdown ? "Hide" : "Filters"} &#8597;
           </Button>
-        </Grid>
-      </Stack>
+        </Grid2>
+      </Grid2>
       {showDropdown && filterTypes && (
         <Filters
           filterTypes={filterTypes}
@@ -135,11 +139,7 @@ const MovieGridPage = () => {
         ></Filters>
       )}
       <Stack direction="row">
-        {listMovies.isLoading && (
-          <Box className="flex justify-center items-center h-[80vh] w-full">
-            <CircularProgress color="secondary" />
-          </Box>
-        )}
+        {listMovies.isLoading && <Spinner />}
         {displayMovies && <MovieGrid movies={displayMovies} />}
       </Stack>
     </Layout>
