@@ -90,7 +90,7 @@ const MoviePage = () => {
                 }}
               >
                 <Image
-                  src={movie.poster}
+                  src={movie.poster.replace("w500", "original")}
                   width="275"
                   height="400"
                   alt="Not Found"
