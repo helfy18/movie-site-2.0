@@ -90,11 +90,13 @@ const MoviePage = () => {
                 }}
               >
                 <Image
-                  src={movie.poster}
+                  src={movie.poster.replace("w500", "original")}
                   width="275"
                   height="400"
                   alt="Not Found"
                   layout="responsive"
+                  placeholder="blur"
+                  blurDataURL="/spin.svg"
                 />
               </Box>
               <Box className="w-100 flex items-center justify-center">
