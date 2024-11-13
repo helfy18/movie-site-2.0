@@ -9,12 +9,12 @@ import { Box, Grid2, Paper, styled } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { gradient, PosterItem } from "@/components/movieGrid";
-import Link from "next/link";
+import { gradient } from "@/components/movieGrid";
 import InfoTable from "@/components/infoTable";
 import ProviderTable from "@/components/providerTable";
 import Spinner from "@/components/spinner";
 import OtherSiteReviews from "@/components/otherSiteReviews";
+import PosterRow from "@/components/posterRow";
 
 const Item = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(1),
@@ -177,52 +177,7 @@ const MoviePage = () => {
             </Grid2>
           </Grid2>
           {recommended && (
-            <>
-              <header className="text-center w-full font-bold text-xl my-2">
-                More Like This
-              </header>
-              <Grid2
-                container
-                spacing={2}
-                wrap="nowrap"
-                style={{ overflowX: "scroll" }}
-              >
-                {recommended.map((recommendation) => {
-                  return (
-                    movie && (
-                      <Grid2
-                        size={{ xs: "auto" }}
-                        key={recommendation.tmdbid}
-                        mb={1}
-                      >
-                        <Link
-                          href={`/movie-page?id=${recommendation.tmdbid}`}
-                          style={{ textDecoration: "none" }}
-                        >
-                          <PosterItem>
-                            <Image
-                              src={recommendation.poster}
-                              height={163}
-                              width={110}
-                              alt="Not Found"
-                            />
-                            <Box
-                              style={{
-                                color: gradient[recommendation.jh_score],
-                                fontWeight: "bolder",
-                              }}
-                            >
-                              {recommendation.jh_score}/100
-                            </Box>
-                            <Box>{recommendation.movie}</Box>
-                          </PosterItem>
-                        </Link>
-                      </Grid2>
-                    )
-                  );
-                })}
-              </Grid2>
-            </>
+            <PosterRow title="More Like This" movies={recommended} />
           )}
         </>
       )}

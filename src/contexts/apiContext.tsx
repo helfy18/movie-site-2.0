@@ -8,6 +8,7 @@ import {
 import axios from "axios";
 
 const BASEURL = process.env.NEXT_PUBLIC_APIURL || "http://localhost:8080";
+const TMDBURL = "https://api.themoviedb.org";
 
 const queryClient = new QueryClient();
 
@@ -99,6 +100,55 @@ export const useMovieCount = (options?: any): UseQueryResult<number, Error> => {
     queryFn: async () => {
       const { data } = await axios.get(`${BASEURL}/movies/count`);
       return data as number;
+    },
+    retry: 0,
+    ...options,
+  });
+};
+
+export const useGetRecentMovies = (
+  params?: MostRecentMovieQuery,
+  options?: any
+): UseQueryResult<Movie[], Error> => {
+  return useQuery({
+    queryKey: ["useGetRecentMovies"],
+    queryFn: async () => {
+      const { data } = await axios.get(`${BASEURL}/movies/mostRecent`, {
+        params: params,
+      });
+      return data as Movie[];
+    },
+    retry: 0,
+    ...options,
+  });
+};
+
+export const useGetNowPlaying = (
+  options?: any
+): UseQueryResult<TMDBMovie[], Error> => {
+  return useQuery({
+    queryKey: ["useGetNowPlaying"],
+    queryFn: async () => {
+      const { data } = await axios.get(
+        `${TMDBURL}/3/movie/now_playing?api_key=${process.env.NEXT_PUBLIC_TMDBKEY}&region=US`
+      );
+      return data.results as TMDBMovie[];
+    },
+    retry: 0,
+    ...options,
+  });
+};
+
+export const useGetUpcoming = (
+  options?: any
+): UseQueryResult<TMDBMovie[], Error> => {
+  return useQuery({
+    queryKey: ["useGetUpcoming"],
+    queryFn: async () => {
+      const { data } = await axios.get(
+        `${TMDBURL}/3/movie/upcoming?api_key=${process.env.NEXT_PUBLIC_TMDBKEY}&region=US`
+      );
+      return data.results as TMDBMovie[];
     },
     retry: 0,
     ...options,

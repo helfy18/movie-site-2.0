@@ -1,6 +1,6 @@
 import { styled } from "@mui/material/styles";
 import { useState } from "react";
-import { Paper, Grid, Button, Grid2 } from "@mui/material";
+import { Paper, Button, Grid2 } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import Gradient from "javascript-color-gradient";

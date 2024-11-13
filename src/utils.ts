@@ -110,6 +110,32 @@ const providerLinks: { [key: number]: string } = {
   2056: "https://www.ifcfilms.com/apple-tv",
 };
 
+export const generateEmptyMovie = (movie: TMDBMovie): Movie => {
+  return {
+    movie: movie.title,
+    jh_score: -1,
+    genre: "",
+    year: 0,
+    ranking: "",
+    plot: "",
+    poster: `https://image.tmdb.org/t/p/w500/${movie.poster_path}`,
+    actors: "",
+    director: "",
+    ratings: [],
+    boxoffice: "",
+    rated: "",
+    runtime: 0,
+    provider: { link: "", rent: [], flatrate: [], buy: [] },
+    budget: "",
+    tmdbid: movie.id,
+    recommendations: [],
+    rottentomatoes: "",
+    imdb: "",
+    metacritic: "",
+    trailer: "",
+  };
+};
+
 export const getProviderLink = (providerId: number): string => {
   return providerLinks[providerId] || "#"; // Default to "#" if link not found
 };

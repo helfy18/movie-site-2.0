@@ -1,26 +1,154 @@
-import * as React from "react";
+import { useEffect, useState } from "react";
 import Layout from "../components/layout";
+import {
+  useGetNowPlaying,
+  useGetRecentMovies,
+  useGetUpcoming,
+  useMovieListById,
+  useMoviesList,
+} from "@/contexts/apiContext";
+import PosterRow from "@/components/posterRow";
+import { generateEmptyMovie } from "@/utils";
 
 const IndexPage = () => {
+  const [nowPlaying, setNowPlaying] = useState<Movie[]>([]);
+  const [upcoming, setUpcoming] = useState<Movie[]>([]);
+  const [params, setParams] = useState<MovieListQuery>({});
+
+  const getRecentMovies = useGetRecentMovies(
+    { count: 16 }, // GOCANES while there are only 16 with timestamps
+    { refetchOnWindowFocus: false }
+  );
+  const getNowPlaying = useGetNowPlaying({ refetchOnWindowFocus: false });
+  const getUpcoming = useGetUpcoming({ refetchOnWindowFocus: false });
+  const getMoviesById = useMovieListById(
+    {
+      tmdbid: [
+        ...(getNowPlaying.data?.map((movie) => movie.id) || []),
+        ...(getUpcoming.data?.map((movie) => movie.id) || []),
+      ],
+    },
+    {
+      enabled: !!getNowPlaying.isSuccess,
+      refetchOnWindowFocus: false,
+    }
+  );
+  const movieList = useMoviesList(params, {
+    enabled: !!getNowPlaying.isSuccess,
+    refetchOnWindowFocus: false,
+  });
+
+  useEffect(() => {
+    if (getMoviesById.isSuccess) {
+      if (getNowPlaying.data) {
+        setNowPlaying(
+          getNowPlaying.data.map((movie) => {
+            return getMoviesById.data.some((m) => m.tmdbid === movie.id)
+              ? getMoviesById.data.filter((m) => m.tmdbid === movie.id)[0]
+              : generateEmptyMovie(movie);
+          })
+        );
+      }
+      if (getUpcoming.data) {
+        setUpcoming(
+          getUpcoming.data.map((movie) => {
+            return getMoviesById.data.some((m) => m.tmdbid === movie.id)
+              ? getMoviesById.data.filter((m) => m.tmdbid === movie.id)[0]
+              : generateEmptyMovie(movie);
+          })
+        );
+      }
+    }
+  }, [getMoviesById.isFetching]);
+
   return (
     <Layout pageTitle="Home">
-      <p>
-        This will be the home page for my movie website.
-        <br />
-        <br />
-        All of the content is found above at Movie Ratings.
-        <br />
-        <br />
-        <b>NOTE:</b> While I have critiques about these movies, I would like to
-        acknowledge all of the work that goes into any of these films. People
-        work very hard on even the smallest and worst films, and these people
-        deserve credit for what they did. I would especially like to acknowledge
-        the work of animators and vfx artists. These people are exceptionally
-        overworked, and always do the best they can with the resources they are
-        given. Even if I say that I don&apost like the animation of a movie, I
-        do not blame this on the animators or VFX artists, and have an immense
-        amount of respect for what they do.
-      </p>
+      {getRecentMovies.data && (
+        <PosterRow
+          title="Recently Added"
+          movies={getRecentMovies.data.sort((a, b) => b.jh_score - a.jh_score)}
+        /> // GOCANES until more are added
+      )}
+      {nowPlaying && (
+        <PosterRow title="Now Playing in Theatres" movies={nowPlaying} />
+      )}
+      {upcoming && (
+        <PosterRow title="Coming Soon to Theatres" movies={upcoming} />
+      )}
+
+      {movieList.data && (
+        <>
+          <PosterRow
+            title="Best of This Year"
+            movies={movieList.data
+              .filter((movie) => {
+                return (
+                  movie.year ===
+                  Math.max(...movieList.data.map((movie) => movie.year))
+                );
+              })
+              .slice(0, 20)}
+            link={{
+              url: "/movie-grid",
+              callback: () => {
+                setParams({
+                  year: [
+                    Math.max(
+                      ...movieList.data.map((movie) => movie.year)
+                    ).toString(),
+                  ],
+                });
+              },
+            }}
+          />
+          <PosterRow
+            title="Best of the 80's"
+            movies={movieList.data
+              .filter((movie) => {
+                return movie.year >= 1980 && movie.year <= 1989;
+              })
+              .slice(0, 20)}
+            link={{
+              url: "/movie-grid",
+              callback: () => {
+                setParams({
+                  decade: ["1980-1989"],
+                });
+              },
+            }}
+          />
+          <PosterRow
+            title="Best of the 90's"
+            movies={movieList.data
+              .filter((movie) => {
+                return movie.year >= 1990 && movie.year <= 1999;
+              })
+              .slice(0, 20)}
+            link={{
+              url: "/movie-grid",
+              callback: () => {
+                setParams({
+                  decade: ["1990-1999"],
+                });
+              },
+            }}
+          />
+          <PosterRow
+            title="Marvel Cinematic Universe"
+            movies={movieList.data.filter(
+              (movie) => movie.sub_universe === "MCU"
+            )}
+            link={{
+              url: "/movie-grid",
+              callback: () => {
+                setParams({
+                  universe: ["MCU"],
+                });
+              },
+            }}
+          />
+        </>
+      )}
     </Layout>
   );
 };

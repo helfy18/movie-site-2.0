@@ -20,6 +20,10 @@ interface MovieListByIdQuery {
   tmdbid: number[];
 }
 
+interface MostRecentMovieQuery {
+  count?: number;
+}
+
 interface Movie {
   movie: string;
   jh_score: number;
@@ -49,6 +53,23 @@ interface Movie {
   imdb: string;
   metacritic: string;
   trailer: string;
+}
+
+interface TMDBMovie {
+  adult: boolean;
+  backdrop_path: string;
+  genre_ids: number[];
+  id: number;
+  original_language: string;
+  original_title: string;
+  overview: string;
+  popularity: number;
+  poster_path: string;
+  release_date: string;
+  title: string;
+  video: boolean;
+  vote_average: number;
+  vote_count: number;
 }
 
 interface Rating {
