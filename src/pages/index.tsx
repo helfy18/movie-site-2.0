@@ -16,7 +16,7 @@ const IndexPage = () => {
   const [params, setParams] = useState<MovieListQuery>({});
 
   const getRecentMovies = useGetRecentMovies(
-    { count: 16 }, // GOCANES while there are only 16 with timestamps
+    {},
     { refetchOnWindowFocus: false }
   );
   const getNowPlaying = useGetNowPlaying({ refetchOnWindowFocus: false });
@@ -64,10 +64,7 @@ const IndexPage = () => {
   return (
     <Layout pageTitle="Home">
       {getRecentMovies.data && (
-        <PosterRow
-          title="Recently Added"
-          movies={getRecentMovies.data.sort((a, b) => b.jh_score - a.jh_score)}
-        /> // GOCANES until more are added
+        <PosterRow title="Recently Added" movies={getRecentMovies.data} />
       )}
       {nowPlaying && (
         <PosterRow title="Now Playing in Theatres" movies={nowPlaying} />
