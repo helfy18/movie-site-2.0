@@ -9,6 +9,7 @@ import {
 } from "@/contexts/apiContext";
 import PosterRow from "@/components/posterRow";
 import { generateEmptyMovie } from "@/utils";
+import Spinner from "@/components/spinner";
 
 const IndexPage = () => {
   const [nowPlaying, setNowPlaying] = useState<Movie[]>([]);
@@ -72,9 +73,25 @@ const IndexPage = () => {
       {upcoming && (
         <PosterRow title="Coming Soon to Theatres" movies={upcoming} />
       )}
-
+      {movieList.isLoading && <Spinner />}
       {movieList.data && (
         <>
+          <PosterRow
+            title="Best Christmas Movies"
+            movies={movieList.data
+              .filter((movie) => {
+                return movie.holiday === "Christmas";
+              })
+              .slice(0, 20)}
+            link={{
+              url: "/movie-grid",
+              onClick: () => {
+                setParams({
+                  holiday: ["Christmas"],
+                });
+              },
+            }}
+          />
           <PosterRow
             title="Best of This Year"
             movies={movieList.data
@@ -87,7 +104,7 @@ const IndexPage = () => {
               .slice(0, 20)}
             link={{
               url: "/movie-grid",
-              callback: () => {
+              onClick: () => {
                 setParams({
                   year: [
                     Math.max(
@@ -107,7 +124,7 @@ const IndexPage = () => {
               .slice(0, 20)}
             link={{
               url: "/movie-grid",
-              callback: () => {
+              onClick: () => {
                 setParams({
                   decade: ["1980-1989"],
                 });
@@ -123,7 +140,7 @@ const IndexPage = () => {
               .slice(0, 20)}
             link={{
               url: "/movie-grid",
-              callback: () => {
+              onClick: () => {
                 setParams({
                   decade: ["1990-1999"],
                 });
@@ -137,7 +154,7 @@ const IndexPage = () => {
             )}
             link={{
               url: "/movie-grid",
-              callback: () => {
+              onClick: () => {
                 setParams({
                   universe: ["MCU"],
                 });

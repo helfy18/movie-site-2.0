@@ -7,7 +7,7 @@ import Link from "next/link";
 interface Props {
   movies: Movie[];
   title: string;
-  link?: { url: string; callback: () => void };
+  link?: { url: string; onClick: () => void };
 }
 
 const PosterRow = ({ movies, title, link }: Props) => {
@@ -18,7 +18,7 @@ const PosterRow = ({ movies, title, link }: Props) => {
         {link && (
           <Link
             href={link.url}
-            onClick={link.callback}
+            onClick={link.onClick}
             style={{ textDecoration: "none", color: "secondary.main" }}
           >
             VIEW ALL <ArrowForward fontSize="small" />

@@ -2,6 +2,7 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Stack } from "@mui/material";
+import { activeFilter } from "@/contexts/apiContext";
 
 interface layoutProps {
   pageTitle: string;
@@ -10,7 +11,15 @@ interface layoutProps {
 
 const Layout = (props: layoutProps) => {
   return (
-    <div className="my-[1%] mx-[5%] font-sans">
+    <div
+      className="py-[1%] px-[5%] font-sans"
+      style={{
+        backgroundImage: activeFilter.holiday?.includes("Christmas")
+          ? `url('/christmas.png')`
+          : undefined,
+        backgroundSize: "100%",
+      }}
+    >
       <title>{props.pageTitle}</title>
       <Link href="/">
         <header className="text-4xl flex items-center justify-center font-bold font-mono">
