@@ -11,6 +11,26 @@ import PosterRow from "@/components/posterRow";
 import { generateEmptyMovie } from "@/utils";
 import Spinner from "@/components/spinner";
 
+const isChristmas = () => {
+  const today = new Date();
+  const currentYear = today.getFullYear();
+
+  return (
+    today >= new Date(currentYear, 10, 1) &&
+    today <= new Date(currentYear, 11, 31)
+  );
+};
+
+const isHalloween = () => {
+  const today = new Date();
+  const currentYear = today.getFullYear();
+
+  return (
+    today >= new Date(currentYear, 9, 1) &&
+    today <= new Date(currentYear, 10, 5)
+  );
+};
+
 const IndexPage = () => {
   const [nowPlaying, setNowPlaying] = useState<Movie[]>([]);
   const [upcoming, setUpcoming] = useState<Movie[]>([]);
@@ -76,22 +96,42 @@ const IndexPage = () => {
       {movieList.isLoading && <Spinner />}
       {movieList.data && (
         <>
-          <PosterRow
-            title="Best Christmas Movies"
-            movies={movieList.data
-              .filter((movie) => {
-                return movie.holiday === "Christmas";
-              })
-              .slice(0, 20)}
-            link={{
-              url: "/movie-grid",
-              onClick: () => {
-                setParams({
-                  holiday: ["Christmas"],
-                });
-              },
-            }}
-          />
+          {isChristmas() && (
+            <PosterRow
+              title="Best Christmas Movies"
+              movies={movieList.data
+                .filter((movie) => {
+                  return movie.holiday === "Christmas";
+                })
+                .slice(0, 20)}
+              link={{
+                url: "/movie-grid",
+                onClick: () => {
+                  setParams({
+                    holiday: ["Christmas"],
+                  });
+                },
+              }}
+            />
+          )}
+          {isHalloween() && (
+            <PosterRow
+              title="Best Halloween Movies"
+              movies={movieList.data
+                .filter((movie) => {
+                  return movie.holiday === "Halloween";
+                })
+                .slice(0, 20)}
+              link={{
+                url: "/movie-grid",
+                onClick: () => {
+                  setParams({
+                    holiday: ["Halloween"],
+                  });
+                },
+              }}
+            />
+          )}
           <PosterRow
             title="Best of This Year"
             movies={movieList.data
