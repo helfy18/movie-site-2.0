@@ -80,7 +80,7 @@ const MovieGridPage = () => {
   };
 
   return (
-    <Layout pageTitle="Movies">
+    <Layout pageTitle="Movie Grid">
       <Grid2 container>
         <Grid2
           size={{ xs: 12, md: 6 }}

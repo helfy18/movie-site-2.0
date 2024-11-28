@@ -69,7 +69,7 @@ const MoviePage = () => {
   }, [useMovieList.isFetching]);
 
   return (
-    <Layout pageTitle="Movie">
+    <Layout pageTitle={movie?.movie || "Movie Page"}>
       {movieGet.isLoading && <Spinner />}
       {!movieGet.isLoading && !movie && (
         <Box className="flex justify-center items-center h-[80vh] w-full">
