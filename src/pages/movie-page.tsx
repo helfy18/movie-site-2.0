@@ -4,8 +4,9 @@ import {
   useMovieCount,
   useMovieGet,
   useMovieListById,
+  useMoviesList,
 } from "@/contexts/apiContext";
-import { Box, Grid2, Paper, styled } from "@mui/material";
+import { Box, Grid2, Paper, Stack, styled } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -15,8 +16,9 @@ import ProviderTable from "@/components/providerTable";
 import Spinner from "@/components/spinner";
 import OtherSiteReviews from "@/components/otherSiteReviews";
 import PosterRow from "@/components/posterRow";
+import { after } from "node:test";
 
-const Item = styled(Paper)(({ theme }) => ({
+export const Item = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(1),
   backgroundColor: "#44403c",
   fontSize: "16px",
@@ -24,19 +26,20 @@ const Item = styled(Paper)(({ theme }) => ({
 
 const MoviePage = () => {
   const [movie, setMovie] = useState<Movie>();
+  const [params, setParams] = useState<MovieListQuery>({});
 
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const title = searchParams.get("title");
   const year = searchParams.get("year");
-  const params: MovieGetQuery = {
+  const getParams: MovieGetQuery = {
     title: title ?? undefined,
     tmdbid: id ? parseInt(id) : undefined,
     year: year ?? undefined,
   };
   const [recommended, setRecommended] = useState<Movie[]>([]);
 
-  const movieGet = useMovieGet(params, {
+  const movieGet = useMovieGet(getParams, {
     enabled: !!id || (!!title && !!year),
     refetchOnWindowFocus: false,
   });
@@ -49,8 +52,12 @@ const MoviePage = () => {
     }
   );
 
+  const listMovies = useMoviesList(params, {
+    enabled: false,
+    refetchOnWindowFocus: false,
+  });
+
   const getTotalCount = useMovieCount({ refetchOnWindowFocus: false });
-  console.log(movie);
 
   useEffect(() => {
     if (movieGet.isSuccess) {
@@ -67,6 +74,14 @@ const MoviePage = () => {
       console.log(movieGet.error);
     }
   }, [useMovieList.isFetching]);
+
+  const infoTableClick = (value: string | number, queryType: string) => {
+    setParams({ [queryType]: [value] });
+  };
+
+  useEffect(() => {
+    if (Object.keys(params).length > 0) listMovies.refetch();
+  }, [params]);
 
   return (
     <Layout pageTitle={movie?.movie || "Movie Page"}>
@@ -137,43 +152,47 @@ const MoviePage = () => {
                 </Item>
               </Box>
             </Grid2>
-            <Grid2 size={{ sm: 12, md: 5 }} className="space-y-4">
-              <InfoTable movie={movie} />
-              <ProviderTable movie={movie} />
+            <Grid2 size={{ sm: 12, md: 5 }}>
+              <Stack spacing={2}>
+                <InfoTable movie={movie} onClick={infoTableClick} />
+                <ProviderTable movie={movie} />
+              </Stack>
             </Grid2>
-            <Grid2 size={{ sm: 12, md: 4.2 }} className="space-y-4">
-              {movie.trailer && (
-                <div className="w-full aspect-[16/9]">
-                  <iframe
-                    src={movie.trailer}
-                    allow="autoplay; encrypted-media"
-                    allowFullScreen
-                    title="video"
-                    className="w-full h-full"
-                  />
-                </div>
-              )}
-              <Item
-                sx={{
-                  color: "secondary.main",
-                }}
-              >
-                Plot:
-                <br />
-                {movie.plot}
-              </Item>
-              {movie.review && (
+            <Grid2 size={{ sm: 12, md: 4.2 }}>
+              <Stack spacing={2}>
+                {movie.trailer && (
+                  <div className="w-full aspect-[16/9]">
+                    <iframe
+                      src={movie.trailer}
+                      allow="autoplay; encrypted-media"
+                      allowFullScreen
+                      title="video"
+                      className="w-full h-full"
+                    />
+                  </div>
+                )}
                 <Item
                   sx={{
                     color: "secondary.main",
                   }}
                 >
-                  Review:
+                  Plot:
                   <br />
-                  {movie.review}
+                  {movie.plot}
                 </Item>
-              )}
-              <OtherSiteReviews movie={movie} />
+                {movie.review && (
+                  <Item
+                    sx={{
+                      color: "secondary.main",
+                    }}
+                  >
+                    Review:
+                    <br />
+                    {movie.review}
+                  </Item>
+                )}
+                <OtherSiteReviews movie={movie} />
+              </Stack>
             </Grid2>
           </Grid2>
           {recommended && (
