@@ -1,7 +1,7 @@
 import { Box, Grid2 } from "@mui/material";
 import { gradient, PosterItem } from "./movieGrid";
 import Image from "next/image";
-import { ArrowForward } from "@mui/icons-material";
+import { ArrowForward, Height } from "@mui/icons-material";
 import Link from "next/link";
 
 interface Props {
@@ -29,7 +29,7 @@ const PosterRow = ({ movies, title, link }: Props) => {
         container
         spacing={2}
         wrap="nowrap"
-        style={{ overflowX: "scroll" }}
+        style={{ overflowX: "scroll", overflowY: "clip" }}
       >
         {movies.map((movie) => {
           return (
