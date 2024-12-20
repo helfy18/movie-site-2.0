@@ -28,10 +28,11 @@ const buildGenreFilter = (genres: FilterType[]) => {
   let genreStrings = genres
     .sort((a, b) => b.totalCount - a.totalCount)
     .map((genre) => genre.fieldValue);
-  var popularGenres = genreStrings.slice(1, 11).sort((a, b) => {
+  console.log(genreStrings);
+  var popularGenres = genreStrings.slice(0, 10).sort((a, b) => {
     return a.localeCompare(b);
   });
-  var moreGenres = genreStrings.slice(11).sort((a, b) => {
+  var moreGenres = genreStrings.slice(10).sort((a, b) => {
     return a.localeCompare(b);
   });
   return { Popular: popularGenres, More: moreGenres };
