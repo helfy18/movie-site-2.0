@@ -4,6 +4,7 @@ interface AllType {
   genre: FilterType[];
   holiday: string[];
   runtime: Runtime[];
+  provider: ProviderInfo[];
   studio: string[];
   universes: Universe[];
   year: number[];
@@ -25,5 +26,4 @@ interface Universe {
 interface Runtime {
   min: number;
   max: number;
-  _id: null;
 }

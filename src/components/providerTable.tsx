@@ -23,6 +23,7 @@ const renderProviderRow = (label: string, providers: ProviderInfo[]) => (
             height={45}
             width={45}
             alt="provider"
+            className="rounded-full"
           />
         </Link>
       ))}

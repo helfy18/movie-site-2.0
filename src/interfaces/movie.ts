@@ -8,6 +8,7 @@ interface MovieListQuery {
   director?: string[];
   runtime?: number[];
   decade?: string[];
+  provider?: string[];
 }
 
 interface MovieGetQuery {

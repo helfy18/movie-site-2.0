@@ -16,6 +16,7 @@ import SelectWrapper, {
   handleChange,
   sxProp,
 } from "./selectWrapper";
+import Image from "next/image";
 
 interface fitersProps {
   filterTypes: AllType;
@@ -28,7 +29,6 @@ const buildGenreFilter = (genres: FilterType[]) => {
   let genreStrings = genres
     .sort((a, b) => b.totalCount - a.totalCount)
     .map((genre) => genre.fieldValue);
-  console.log(genreStrings);
   var popularGenres = genreStrings.slice(0, 10).sort((a, b) => {
     return a.localeCompare(b);
   });
@@ -68,6 +68,7 @@ export default function Filters({
   );
   const [studios, setStudios] = useState<string[]>(values.studio ?? []);
   const [years, setYears] = useState<string[]>(values.year ?? []);
+  const [providers, setProviders] = useState<string[]>(values.provider ?? []);
   const [holidays, setHolidays] = useState<string[]>(values.holiday ?? []);
   const [decades, setDecades] = useState<string[]>(values.decade ?? []);
   const [genres, setGenres] = useState<string[]>(values.genre ?? []);
@@ -91,6 +92,7 @@ export default function Filters({
       universe: universes,
       runtime: runtime,
       decade: decades,
+      provider: providers,
     });
   };
 
@@ -267,9 +269,68 @@ export default function Filters({
         <SelectWrapper
           selected={years}
           setSelected={setYears}
-          options={filterTypes.year.map(String)}
+          options={filterTypes.year.sort((a, b) => b - a).map(String)}
           title="Year"
         />
+        <Grid2 size={{ xs: 12, md: 6 }} className="py-0 px-2">
+          <div className="text-center">Streaming Provider</div>
+          <div className="flex items-center gap-2">
+            <Select
+              multiple
+              value={providers}
+              onChange={(event) => handleChange(event, setProviders)}
+              className="w-full text-secondary"
+              MenuProps={getMenuProps()}
+              displayEmpty
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return (
+                    <span className="text-secondary text-opacity-20">
+                      Ex: {filterTypes.provider[0].provider_name},{" "}
+                      {filterTypes.provider[1].provider_name}
+                    </span>
+                  );
+                } else {
+                  return selected
+                    .map(
+                      (p) =>
+                        filterTypes.provider.filter(
+                          (pro) => pro.provider_id === parseInt(p)
+                        )[0].provider_name
+                    )
+                    .join(", ");
+                }
+              }}
+              sx={sxProp}
+            >
+              {filterTypes.provider.map((provider: ProviderInfo) => (
+                <MenuItem
+                  key={provider.provider_id}
+                  value={provider.provider_id}
+                >
+                  <Grid2 container spacing={1}>
+                    <Image
+                      src={`https://image.tmdb.org/t/p/w154/${provider.logo_path}`}
+                      height={35}
+                      width={35}
+                      alt="provider"
+                      className="rounded-full"
+                    />
+                    <Grid2 my="auto">{provider.provider_name}</Grid2>
+                  </Grid2>
+                </MenuItem>
+              ))}
+            </Select>
+            {providers.length > 0 && (
+              <IconButton
+                onClick={() => setProviders([])}
+                aria-label="clear selection"
+              >
+                <ClearIcon color="secondary" />
+              </IconButton>
+            )}
+          </div>
+        </Grid2>
         <SelectWrapper
           selected={exclusives}
           setSelected={setExclusives}
