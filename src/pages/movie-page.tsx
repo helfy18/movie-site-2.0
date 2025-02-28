@@ -27,6 +27,7 @@ export const Item = styled(Paper)(({ theme }) => ({
 const MoviePage = () => {
   const [movie, setMovie] = useState<Movie>();
   const [params, setParams] = useState<MovieListQuery>({});
+  const [recommended, setRecommended] = useState<Movie[]>([]);
 
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -37,7 +38,6 @@ const MoviePage = () => {
     tmdbid: id ? parseInt(id) : undefined,
     year: year ?? undefined,
   };
-  const [recommended, setRecommended] = useState<Movie[]>([]);
 
   const movieGet = useMovieGet(getParams, {
     enabled: !!id || (!!title && !!year),
@@ -82,6 +82,11 @@ const MoviePage = () => {
   useEffect(() => {
     if (Object.keys(params).length > 0) listMovies.refetch();
   }, [params]);
+
+  useEffect(() => {
+    setMovie(undefined);
+    setRecommended([]);
+  }, [id]);
 
   return (
     <Layout pageTitle={movie?.movie || "Movie Page"}>
