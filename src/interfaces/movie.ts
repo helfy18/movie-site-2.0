@@ -38,6 +38,7 @@ interface Movie {
   year: number;
   review?: string;
   ranking: string;
+  dani_approved: boolean;
   plot: string;
   poster: string;
   actors: string;
