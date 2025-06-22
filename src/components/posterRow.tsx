@@ -1,7 +1,7 @@
-import { Box, Grid2 } from "@mui/material";
-import { gradient, PosterItem } from "./movieGrid";
+import { Box, Grid2, Paper, styled } from "@mui/material";
+import { gradient } from "./movieGrid";
 import Image from "next/image";
-import { ArrowForward, Height } from "@mui/icons-material";
+import { ArrowForward } from "@mui/icons-material";
 import Link from "next/link";
 
 interface Props {
@@ -9,6 +9,19 @@ interface Props {
   title: string;
   link?: { url: string; onClick: () => void };
 }
+
+const PosterItem = styled(Paper)(({ theme }) => ({
+  backgroundColor: "#44403c",
+  padding: theme.spacing(1),
+  textAlign: "center",
+  color: "#f5f5f5",
+  fontFamily: "Arial",
+  height: "250px",
+  width: "100px",
+  fontSize: "13px",
+  boxSizing: "content-box",
+  justifyContent: "center",
+}));
 
 const PosterRow = ({ movies, title, link }: Props) => {
   return (
@@ -54,7 +67,13 @@ const PosterRow = ({ movies, title, link }: Props) => {
   );
 };
 
-const Poster = ({ movie, isLink }: { movie: Movie; isLink?: boolean }) => (
+export const Poster = ({
+  movie,
+  isLink,
+}: {
+  movie: Movie;
+  isLink?: boolean;
+}) => (
   <PosterItem
     style={{
       cursor: movie.jh_score === -1 && !isLink ? "not-allowed" : "pointer",

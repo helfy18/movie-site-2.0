@@ -27,6 +27,9 @@ const renderProviderRow = (label: string, providers: ProviderInfo[]) => (
           />
         </Link>
       ))}
+      {(!providers || (providers && providers.length === 0)) && (
+        <span className="text-gray-500">{"Not Available"}</span>
+      )}
     </td>
   </tr>
 );

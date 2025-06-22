@@ -16,7 +16,6 @@ import ProviderTable from "@/components/providerTable";
 import Spinner from "@/components/spinner";
 import OtherSiteReviews from "@/components/otherSiteReviews";
 import PosterRow from "@/components/posterRow";
-import { after } from "node:test";
 
 export const Item = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(1),
