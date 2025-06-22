@@ -1,8 +1,11 @@
-import { Box, Grid2, Stack } from "@mui/material";
+import { Box, Stack, Grid2 } from "@mui/material";
 import { gradient } from "./movieGrid";
 import { Item } from "@/pages/movie-page";
 import SearchIcon from "@mui/icons-material/Search";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Link from "next/link";
+import { useState } from "react";
 
 interface MovieGridProps {
   movie: Movie;
@@ -10,6 +13,8 @@ interface MovieGridProps {
 }
 
 const InfoTable = ({ movie, onClick }: MovieGridProps) => {
+  const [expanded, setExpanded] = useState(false);
+
   const rows = [
     { label: "Title", value: movie.movie },
     {
@@ -34,37 +39,72 @@ const InfoTable = ({ movie, onClick }: MovieGridProps) => {
   ];
 
   return (
-    <Item
-      sx={{
-        color: "secondary.main",
-      }}
-    >
+    <Item sx={{ color: "secondary.main" }}>
       <Stack spacing={1.5}>
-        {rows.map(
-          ({ label, value, style, queryType }) =>
-            value && (
-              <Grid2 container key={label}>
-                <Grid2 size={4}>{label}</Grid2>
-                <Grid2 size={8} style={style}>
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    style={style}
-                  >
+        {rows.map(({ label, value, style, queryType }) =>
+          value ? (
+            <Grid2 container key={label}>
+              <Grid2 size={4}>{label}</Grid2>
+              <Grid2 size={8} style={style}>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  style={style}
+                >
+                  {label === "Actors" ? (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        flex: 1,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          overflow: "hidden",
+                          transition: "max-height 0.3s ease",
+                          maxHeight: expanded ? "1000px" : "48px",
+                        }}
+                      >
+                        <span
+                          style={{
+                            display: "inline-block",
+                            whiteSpace: "normal",
+                          }}
+                        >
+                          {value}
+                        </span>
+                      </Box>
+                      <Box
+                        onClick={() => setExpanded(!expanded)}
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          cursor: "pointer",
+                          gap: 1,
+                          mb: 0.5,
+                        }}
+                      >
+                        {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        <span>{expanded ? "Show less" : "Show more"}</span>
+                      </Box>
+                    </Box>
+                  ) : (
                     <span>{value}</span>
-                    {queryType && (
-                      <Link href={"/movie-grid"}>
-                        <SearchIcon
-                          sx={{ cursor: "pointer" }}
-                          onClick={() => onClick(value, queryType)}
-                        />
-                      </Link>
-                    )}
-                  </Box>
-                </Grid2>
+                  )}
+                  {queryType && (
+                    <Link href="/movie-grid">
+                      <SearchIcon
+                        sx={{ cursor: "pointer", ml: 1 }}
+                        onClick={() => onClick(value, queryType)}
+                      />
+                    </Link>
+                  )}
+                </Box>
               </Grid2>
-            )
+            </Grid2>
+          ) : null
         )}
       </Stack>
     </Item>

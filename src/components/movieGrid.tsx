@@ -1,22 +1,8 @@
-import { styled } from "@mui/material/styles";
 import { useState } from "react";
-import { Paper, Button, Grid2 } from "@mui/material";
-import Image from "next/image";
+import { Button, Grid2 } from "@mui/material";
 import Link from "next/link";
 import Gradient from "javascript-color-gradient";
-
-export const PosterItem = styled(Paper)(({ theme }) => ({
-  backgroundColor: "#44403c",
-  padding: theme.spacing(1),
-  textAlign: "center",
-  color: "#f5f5f5",
-  fontFamily: "Arial",
-  height: "250px",
-  width: "100px",
-  fontSize: "13px",
-  boxSizing: "content-box",
-  justifyContent: "center",
-}));
+import { Poster } from "./posterRow";
 
 export const gradient = new Gradient()
   .setColorGradient("#b91c1c", "#facc15", "#15803d")
@@ -78,24 +64,7 @@ export default function MovieGrid({ movies }: MovieGridProps) {
           return (
             <Grid2 size={{ xs: "auto" }} key={movie.tmdbid}>
               <Link href={`/movie-page?id=${movie.tmdbid}`}>
-                <PosterItem>
-                  <Image
-                    src={movie.poster}
-                    height={300}
-                    width={200}
-                    alt="No Poster"
-                    className="rounded-md overflow-hidden w-full h-auto"
-                  />
-                  <div
-                    style={{
-                      color: gradient[movie.jh_score],
-                      fontWeight: "bolder",
-                    }}
-                  >
-                    {movie.jh_score}/100
-                  </div>
-                  <div>{movie.movie}</div>
-                </PosterItem>
+                <Poster movie={movie} isLink={true} />
               </Link>
             </Grid2>
           );
