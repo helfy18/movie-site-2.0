@@ -133,6 +133,7 @@ export const generateEmptyMovie = (movie: TMDBMovie): Movie => {
     imdb: "",
     metacritic: "",
     trailer: "",
+    dani_approved: false,
   };
 };
 

@@ -1,5 +1,4 @@
-import { Box, Stack } from "@mui/material";
-import Grid2 from "@mui/material/Grid2";
+import { Box, Stack, Grid2 } from "@mui/material";
 import { gradient } from "./movieGrid";
 import { Item } from "@/pages/movie-page";
 import SearchIcon from "@mui/icons-material/Search";
