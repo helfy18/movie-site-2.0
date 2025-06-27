@@ -1,4 +1,4 @@
-import { Box, Stack, Grid2 } from "@mui/material";
+import { Box, Stack, Grid2, Collapse } from "@mui/material";
 import { gradient } from "./movieGrid";
 import { Item } from "@/pages/movie-page";
 import SearchIcon from "@mui/icons-material/Search";
@@ -60,22 +60,9 @@ const InfoTable = ({ movie, onClick }: MovieGridProps) => {
                         flex: 1,
                       }}
                     >
-                      <Box
-                        sx={{
-                          overflow: "hidden",
-                          transition: "max-height 0.3s ease",
-                          maxHeight: expanded ? "1000px" : "48px",
-                        }}
-                      >
-                        <span
-                          style={{
-                            display: "inline-block",
-                            whiteSpace: "normal",
-                          }}
-                        >
-                          {value}
-                        </span>
-                      </Box>
+                      <Collapse in={expanded} collapsedSize={50}>
+                        {value}
+                      </Collapse>
                       <Box
                         onClick={() => setExpanded(!expanded)}
                         sx={{
@@ -87,7 +74,7 @@ const InfoTable = ({ movie, onClick }: MovieGridProps) => {
                         }}
                       >
                         {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                        <span>{expanded ? "Show less" : "Show more"}</span>
+                        {expanded ? "Show less" : "Show more"}
                       </Box>
                     </Box>
                   ) : (
