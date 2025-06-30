@@ -11,7 +11,7 @@ import PosterRow from "@/components/posterRow";
 import { generateEmptyMovie } from "@/utils";
 import Spinner from "@/components/spinner";
 
-const isChristmas = () => {
+const isChristmas = (): Boolean => {
   const today = new Date();
   const currentYear = today.getFullYear();
 
@@ -21,7 +21,7 @@ const isChristmas = () => {
   );
 };
 
-const isHalloween = () => {
+const isHalloween = (): Boolean => {
   const today = new Date();
   const currentYear = today.getFullYear();
 

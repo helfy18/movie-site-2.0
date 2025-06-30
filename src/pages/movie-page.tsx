@@ -6,7 +6,7 @@ import {
   useMovieListById,
   useMoviesList,
 } from "@/contexts/apiContext";
-import { Box, Grid2, Paper, Stack, styled } from "@mui/material";
+import { Box, Grid2, Paper, Stack, styled, Tooltip } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -106,6 +106,9 @@ const MoviePage = () => {
               <Box
                 sx={{
                   px: { xs: "2rem", md: "0rem" },
+                  position: "relative",
+                  display: "inline-block",
+                  width: "100%",
                 }}
               >
                 <Image
@@ -116,7 +119,29 @@ const MoviePage = () => {
                   layout="responsive"
                   placeholder="blur"
                   blurDataURL="/spin.svg"
+                  className="rounded"
                 />
+                {movie.dani_approved && (
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      right: { xs: 32, md: 0 },
+                      width: 60,
+                      height: 60,
+                    }}
+                  >
+                    <Tooltip title="Dani Approved" arrow>
+                      <Image
+                        src="/greencheck.png"
+                        alt="Verified"
+                        width={60}
+                        height={60}
+                        style={{ cursor: "pointer" }}
+                      />
+                    </Tooltip>
+                  </Box>
+                )}
               </Box>
               <Box className="w-100 flex items-center justify-center">
                 <Item

@@ -1,4 +1,4 @@
-import { Box, Grid2, Paper, styled } from "@mui/material";
+import { Box, Grid2, Paper, styled, Tooltip } from "@mui/material";
 import { gradient } from "./movieGrid";
 import Image from "next/image";
 import { ArrowForward } from "@mui/icons-material";
@@ -79,7 +79,37 @@ export const Poster = ({
       cursor: movie.jh_score === -1 && !isLink ? "not-allowed" : "pointer",
     }}
   >
-    <Image src={movie.poster} height={163} width={110} alt="Not Found" />
+    <Box
+      sx={{
+        px: "0rem",
+        position: "relative",
+        display: "inline-block",
+        width: "100%",
+      }}
+    >
+      <Image src={movie.poster} height={163} width={110} alt="Not Found" />
+      {movie.dani_approved && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            width: 25,
+            height: 25,
+          }}
+        >
+          <Tooltip title="Dani Approved" arrow>
+            <Image
+              src="/greencheck.png"
+              alt="Verified"
+              width={25}
+              height={25}
+              style={{ cursor: "pointer" }}
+            />
+          </Tooltip>
+        </Box>
+      )}
+    </Box>
     <Box
       style={{
         color: gradient[movie.jh_score],

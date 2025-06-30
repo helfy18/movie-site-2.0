@@ -1,7 +1,7 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Stack } from "@mui/material";
+import { Grid2, Stack } from "@mui/material";
 import { activeFilter } from "@/contexts/apiContext";
 
 interface layoutProps {
@@ -46,13 +46,28 @@ const Layout = (props: layoutProps) => {
         <Link href="/movie-grid">Ratings</Link>
       </Stack>
       <main>{props.children}</main>
-      <Image
-        src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_2-d537fb228cf3ded904ef09b136fe3fec72548ebc1fea3fbbd1ad9e36364db38b.svg"
-        height={50}
-        width={50}
-        className="mt-4"
-        alt="TMDB API"
-      />
+      <Grid2 container spacing={2} sx={{ mt: 4 }}>
+        <Image
+          src="/tmdb.svg"
+          height={50}
+          width={50}
+          alt="TMDB API"
+          onClick={() => window.open("https://www.themoviedb.org/", "_blank")}
+          style={{ cursor: "pointer" }}
+          className="rounded"
+        />
+        <Image
+          src="/letterboxd.png"
+          height={50}
+          width={163}
+          alt="Letterboxd"
+          onClick={() =>
+            window.open("https://letterboxd.com/helfy18/", "_blank")
+          }
+          style={{ cursor: "pointer" }}
+          className="rounded"
+        />
+      </Grid2>
     </div>
   );
 };

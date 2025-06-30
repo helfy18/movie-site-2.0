@@ -76,6 +76,7 @@ export default function Filters({
   const [runtime, setRuntime] = useState<number[]>(
     values.runtime ?? [filterTypes.runtime[0].min, filterTypes.runtime[0].max]
   );
+  const [addedOther, setAddedOther] = useState<boolean>(false);
 
   const handleRuntimeChange = (_: Event, newValue: number | number[]) => {
     setRuntime(newValue as number[]);
@@ -110,6 +111,13 @@ export default function Filters({
       // Step 3: If both have empty `subUniverses`, sort by `fieldValue` ascending
       return a.fieldValue.localeCompare(b.fieldValue);
     });
+
+  const multipleSubUniverses = sortedUniverses.filter(
+    (u) => u.subUniverses.length > 1
+  );
+  const singleOrNoSubUniverses = sortedUniverses.filter(
+    (u) => u.subUniverses.length <= 1
+  );
 
   return (
     <>
@@ -208,40 +216,40 @@ export default function Filters({
               }}
               sx={sxProp}
             >
-              {sortedUniverses.flatMap((universe) =>
-                universe.subUniverses.length > 1
-                  ? [
-                      <ListSubheader key={`header-${universe.fieldValue}`}>
-                        {universe.fieldValue}
-                      </ListSubheader>,
-                      ...universe.subUniverses
-                        .sort((a, b) =>
-                          a.fieldValue.localeCompare(b.fieldValue)
-                        )
-                        .map((subUniverse) => (
-                          <MenuItem
-                            key={`${universe.fieldValue}-${subUniverse.fieldValue}`}
-                            value={subUniverse.fieldValue}
-                          >
-                            {subUniverse.fieldValue}
-                          </MenuItem>
-                        )),
-                      <MenuItem
-                        key={`all-${universe.fieldValue}`}
-                        value={universe.fieldValue}
-                      >
-                        All {universe.fieldValue}
-                      </MenuItem>,
-                      <Divider key={`divider-${universe.fieldValue}`} />,
-                    ]
-                  : [
-                      <MenuItem
-                        key={universe.fieldValue}
-                        value={universe.fieldValue}
-                      >
-                        {universe.fieldValue}
-                      </MenuItem>,
-                    ]
+              {multipleSubUniverses.flatMap((universe) => [
+                <ListSubheader key={`header-${universe.fieldValue}`}>
+                  {universe.fieldValue}
+                </ListSubheader>,
+                ...universe.subUniverses
+                  .sort((a, b) => a.fieldValue.localeCompare(b.fieldValue))
+                  .map((subUniverse) => (
+                    <MenuItem
+                      key={`${universe.fieldValue}-${subUniverse.fieldValue}`}
+                      value={subUniverse.fieldValue}
+                    >
+                      {subUniverse.fieldValue}
+                    </MenuItem>
+                  )),
+                <MenuItem
+                  key={`all-${universe.fieldValue}`}
+                  value={universe.fieldValue}
+                >
+                  All {universe.fieldValue}
+                </MenuItem>,
+                <Divider key={`divider-${universe.fieldValue}`} />,
+              ])}
+              {singleOrNoSubUniverses.length > 0 && (
+                <>
+                  <ListSubheader key="misc-header">Other</ListSubheader>
+                  {singleOrNoSubUniverses.map((universe) => (
+                    <MenuItem
+                      key={universe.fieldValue}
+                      value={universe.fieldValue}
+                    >
+                      {universe.fieldValue}
+                    </MenuItem>
+                  ))}
+                </>
               )}
             </Select>
             {universes.length > 0 && (

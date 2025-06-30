@@ -11,7 +11,14 @@ const OtherSiteReviews = ({ movie }: props) => {
         <tr key="imdb">
           <td>
             <div className="flex justify-center">
-              <Image src="/imdb.png" height={40} width={80} alt="IMDB" />
+              <Image
+                src="/imdb.png"
+                height={40}
+                width={80}
+                alt="IMDB"
+                onClick={() => window.open("https://www.imdb.com/", "_blank")}
+                style={{ cursor: "pointer" }}
+              />
             </div>
           </td>
           <td>{movie.imdb}</td>
@@ -24,6 +31,10 @@ const OtherSiteReviews = ({ movie }: props) => {
                 height={40}
                 width={140}
                 alt="Rotten Tomatoes"
+                onClick={() =>
+                  window.open("https://www.rottentomatoes.com/", "_blank")
+                }
+                style={{ cursor: "pointer" }}
               />
             </div>
           </td>
@@ -37,6 +48,10 @@ const OtherSiteReviews = ({ movie }: props) => {
                 height={40}
                 width={175}
                 alt="Metacritic"
+                onClick={() =>
+                  window.open("https://www.metacritic.com/", "_blank")
+                }
+                style={{ cursor: "pointer" }}
               />
             </div>
           </td>
