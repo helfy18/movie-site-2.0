@@ -6,7 +6,18 @@ import {
   useMovieListById,
   useMoviesList,
 } from "@/contexts/apiContext";
-import { Box, Grid2, Paper, Stack, styled, Tooltip } from "@mui/material";
+import {
+  Box,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid2,
+  Paper,
+  Stack,
+  styled,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -27,6 +38,7 @@ const MoviePage = () => {
   const [movie, setMovie] = useState<Movie>();
   const [params, setParams] = useState<MovieListQuery>({});
   const [recommended, setRecommended] = useState<Movie[]>([]);
+  const [showImage, setShowImage] = useState(false);
 
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -95,6 +107,29 @@ const MoviePage = () => {
           Not Found
         </Box>
       )}
+      {showImage && (
+        <Dialog
+          open={showImage}
+          onClose={() => setShowImage(false)}
+          PaperProps={{
+            style: {
+              backgroundColor: "#292524",
+            },
+          }}
+        >
+          <DialogTitle color="#eab308" align="center">
+            Dani Approved
+          </DialogTitle>
+          <DialogContent>
+            <Stack spacing={1} alignItems="center">
+              <Image src="/dani.png" alt="verified" width="300" height="300" />
+              <Typography variant="body2" color="secondary">
+                Drawing Credit: Phoebe Torres
+              </Typography>
+            </Stack>
+          </DialogContent>
+        </Dialog>
+      )}
       {movie && (
         <>
           <Grid2 container className="flex flex-wrap" spacing={2.5}>
@@ -127,16 +162,16 @@ const MoviePage = () => {
                       position: "absolute",
                       top: 0,
                       right: { xs: 32, md: 0 },
-                      width: 60,
-                      height: 60,
+                      width: 100,
+                      height: 100,
                     }}
+                    onClick={() => setShowImage(true)}
                   >
                     <Tooltip title="Dani Approved" arrow>
                       <Image
-                        src="/greencheck.png"
+                        src="/dani.png"
                         alt="Verified"
-                        width={60}
-                        height={60}
+                        fill
                         style={{ cursor: "pointer" }}
                       />
                     </Tooltip>

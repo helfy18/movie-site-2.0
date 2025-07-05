@@ -94,16 +94,15 @@ export const Poster = ({
             position: "absolute",
             top: 0,
             right: 0,
-            width: 25,
-            height: 25,
+            width: 40,
+            height: 40,
           }}
         >
           <Tooltip title="Dani Approved" arrow>
             <Image
-              src="/greencheck.png"
+              src="/dani.png"
               alt="Verified"
-              width={25}
-              height={25}
+              fill
               style={{ cursor: "pointer" }}
             />
           </Tooltip>
