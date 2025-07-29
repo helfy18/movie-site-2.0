@@ -156,6 +156,29 @@ const IndexPage = () => {
             }}
           />
           <PosterRow
+            title="Best of Last Year"
+            movies={movieList.data
+              .filter((movie) => {
+                return (
+                  movie.year ===
+                  Math.max(...movieList.data.map((movie) => movie.year)) - 1
+                );
+              })
+              .slice(0, 20)}
+            link={{
+              url: "/movie-grid",
+              onClick: () => {
+                setParams({
+                  year: [
+                    Math.max(
+                      ...movieList.data.map((movie) => movie.year)
+                    ).toString(),
+                  ],
+                });
+              },
+            }}
+          />
+          <PosterRow
             title="Best of the 80's"
             movies={movieList.data
               .filter((movie) => {
