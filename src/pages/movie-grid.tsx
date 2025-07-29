@@ -7,9 +7,9 @@ import Filters from "@/components/filters";
 import { Stack, Button, TextField, InputAdornment, Grid2 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import {
+  useApiContext,
   useMoviesList,
   useTypesList,
-  activeFilter,
 } from "@/contexts/apiContext";
 import Spinner from "@/components/spinner";
 
@@ -30,9 +30,10 @@ const movieSearch = (text: string, movies: Movie[]) => {
 };
 
 const MovieGridPage = () => {
+  const { filters } = useApiContext();
   const [allMovies, setAllMovies] = useState<Movie[]>([]);
   const [displayMovies, setDisplayMovies] = useState<Movie[]>([]);
-  const [params, setParams] = useState<MovieListQuery>(activeFilter);
+  const [params, setParams] = useState<MovieListQuery>(filters);
   const [showDropdown, setShowDropdown] = useState(false);
   const [filterTypes, setFilterTypes] = useState<AllType>();
 

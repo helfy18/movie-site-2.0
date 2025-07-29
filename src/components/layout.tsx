@@ -2,7 +2,8 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Grid2, Stack } from "@mui/material";
-import { activeFilter } from "@/contexts/apiContext";
+import { useApiContext } from "@/contexts/apiContext";
+import NewReleasesIcon from "@mui/icons-material/NewReleases";
 
 interface layoutProps {
   pageTitle: string;
@@ -10,13 +11,15 @@ interface layoutProps {
 }
 
 const Layout = (props: layoutProps) => {
+  const { filters } = useApiContext();
   return (
     <div
       className="py-[1%] px-[5%] font-sans"
       style={{
-        backgroundImage: activeFilter.holiday?.includes("Christmas")
-          ? `url('/christmas.png')`
-          : undefined,
+        backgroundImage:
+          filters && filters.holiday?.includes("Christmas")
+            ? `url('/christmas.png')`
+            : undefined,
         backgroundSize: "100%",
       }}
     >
@@ -44,6 +47,9 @@ const Layout = (props: layoutProps) => {
         <Link href="/">Home</Link>
         <Link href="/about">About</Link>
         <Link href="/movie-grid">Ratings</Link>
+        <Link href="/random-movie">
+          Random Movie {<NewReleasesIcon />} (NEW)
+        </Link>
       </Stack>
       <main>{props.children}</main>
       <Grid2 container spacing={2} sx={{ mt: 4 }}>

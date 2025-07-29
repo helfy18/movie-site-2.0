@@ -1,4 +1,11 @@
-import React, { createContext, useContext } from "react";
+import {
+  createContext,
+  FC,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -12,30 +19,39 @@ const TMDBURL = "https://api.themoviedb.org";
 
 const queryClient = new QueryClient();
 
-const ApiContext = createContext({});
+interface ApiContextType {
+  filters: MovieListQuery;
+  setFilters: (filters: MovieListQuery) => void;
+}
 
-export let activeFilter: MovieListQuery = {};
+const ApiContext = createContext<ApiContextType>({
+  filters: {},
+  setFilters: () => {},
+});
 
-export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const ApiProvider: FC<{ children: ReactNode }> = ({ children }) => {
+  const [filters, setFilters] = useState<MovieListQuery>({});
   return (
-    <ApiContext.Provider value={{}}>
+    <ApiContext.Provider value={{ filters, setFilters }}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </ApiContext.Provider>
   );
 };
 
-export const useApiContext = () => useContext(ApiContext);
+export const useApiContext = (): ApiContextType => useContext(ApiContext);
 
 export const useMoviesList = (
   params: MovieListQuery,
   options?: any
 ): UseQueryResult<Movie[], Error> => {
+  const { setFilters } = useApiContext();
+  useEffect(() => {
+    setFilters(params);
+  }, [JSON.stringify(params)]);
+
   return useQuery({
-    queryKey: [params],
+    queryKey: ["movie/list", params],
     queryFn: async () => {
-      activeFilter = params;
       const { data } = await axios.get(`${BASEURL}/movies/list`, {
         params: params,
         paramsSerializer: { indexes: null },
@@ -47,12 +63,30 @@ export const useMoviesList = (
   });
 };
 
+export const useGetRandomMovie = (
+  params: MovieListQuery,
+  options?: any
+): UseQueryResult<Movie, Error> => {
+  return useQuery({
+    queryKey: ["movie/random", params],
+    queryFn: async () => {
+      const { data } = await axios.get(`${BASEURL}/movies/random`, {
+        params: params,
+        paramsSerializer: { indexes: null },
+      });
+      return data as Movie;
+    },
+    retry: 0,
+    ...options,
+  });
+};
+
 export const useMovieGet = (
   params: MovieGetQuery,
   options?: any
 ): UseQueryResult<Movie, Error> => {
   return useQuery({
-    queryKey: [params],
+    queryKey: ["movie/get", params],
     queryFn: async () => {
       const { data } = await axios.get(`${BASEURL}/movies/get`, {
         params: params,
@@ -69,7 +103,7 @@ export const useMovieListById = (
   options?: any
 ): UseQueryResult<Movie[], Error> => {
   return useQuery({
-    queryKey: [params],
+    queryKey: ["movie/list/id", params],
     queryFn: async () => {
       const { data } = await axios.get(`${BASEURL}/movies/list/id`, {
         params: params,

@@ -8,6 +8,7 @@ interface AllType {
   studio: string[];
   universes: Universe[];
   year: number[];
+  score?: number[];
 }
 
 interface FilterType {

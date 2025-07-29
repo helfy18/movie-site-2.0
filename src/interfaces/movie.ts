@@ -9,6 +9,7 @@ interface MovieListQuery {
   runtime?: number[];
   decade?: string[];
   provider?: string[];
+  rating?: number[];
 }
 
 interface MovieGetQuery {

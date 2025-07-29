@@ -1,7 +1,6 @@
 import {
   Button,
   Divider,
-  Grid,
   Grid2,
   IconButton,
   ListSubheader,
@@ -76,10 +75,29 @@ export default function Filters({
   const [runtime, setRuntime] = useState<number[]>(
     values.runtime ?? [filterTypes.runtime[0].min, filterTypes.runtime[0].max]
   );
-  const [addedOther, setAddedOther] = useState<boolean>(false);
+  const [score, setScore] = useState<number[]>(values.rating ?? [0, 100]);
 
   const handleRuntimeChange = (_: Event, newValue: number | number[]) => {
     setRuntime(newValue as number[]);
+  };
+
+  const handleScoreChange = (_: Event, newValue: number | number[]) => {
+    setScore(newValue as number[]);
+  };
+
+  const handleClear = () => {
+    setDirectors([]);
+    setExclusives([]);
+    setStudios([]);
+    setYears([]);
+    setProviders([]);
+    setHolidays([]);
+    setDecades([]);
+    setGenres([]);
+    setUniverses([]);
+    setRuntime([filterTypes.runtime[0].min, filterTypes.runtime[0].max]);
+    setScore([0, 100]);
+    onClear();
   };
 
   const onSubmit = () => {
@@ -94,6 +112,7 @@ export default function Filters({
       runtime: runtime,
       decade: decades,
       provider: providers,
+      rating: score,
     });
   };
 
@@ -143,11 +162,26 @@ export default function Filters({
               color: "secondary.main",
               outline: "1px solid",
             }}
-            onClick={onClear}
+            onClick={handleClear}
           >
             Reset
           </Button>
         </Grid2>
+        {filterTypes.score && (
+          <Grid2 size={{ xs: 12 }} sx={{ p: 2 }}>
+            <div className="text-center">Score</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Slider
+                min={0}
+                max={100}
+                valueLabelDisplay="auto"
+                color="secondary"
+                value={score}
+                onChange={handleScoreChange}
+              />
+            </div>
+          </Grid2>
+        )}
         <Grid2 size={{ xs: 12, md: 6 }} className="py-0 px-2">
           <div className="text-center">Genre</div>
           <div className="flex items-center gap-2">
@@ -216,41 +250,49 @@ export default function Filters({
               }}
               sx={sxProp}
             >
-              {multipleSubUniverses.flatMap((universe) => [
-                <ListSubheader key={`header-${universe.fieldValue}`}>
-                  {universe.fieldValue}
-                </ListSubheader>,
-                ...universe.subUniverses
-                  .sort((a, b) => a.fieldValue.localeCompare(b.fieldValue))
-                  .map((subUniverse) => (
-                    <MenuItem
-                      key={`${universe.fieldValue}-${subUniverse.fieldValue}`}
-                      value={subUniverse.fieldValue}
-                    >
-                      {subUniverse.fieldValue}
-                    </MenuItem>
-                  )),
-                <MenuItem
-                  key={`all-${universe.fieldValue}`}
-                  value={universe.fieldValue}
-                >
-                  All {universe.fieldValue}
-                </MenuItem>,
-                <Divider key={`divider-${universe.fieldValue}`} />,
-              ])}
-              {singleOrNoSubUniverses.length > 0 && (
-                <>
-                  <ListSubheader key="misc-header">Other</ListSubheader>
-                  {singleOrNoSubUniverses.map((universe) => (
-                    <MenuItem
-                      key={universe.fieldValue}
-                      value={universe.fieldValue}
-                    >
-                      {universe.fieldValue}
-                    </MenuItem>
-                  ))}
-                </>
-              )}
+              {[
+                ...multipleSubUniverses
+                  .map((universe) => {
+                    const subItems = universe.subUniverses
+                      .sort((a, b) => a.fieldValue.localeCompare(b.fieldValue))
+                      .map((subUniverse) => (
+                        <MenuItem
+                          key={`${universe.fieldValue}-${subUniverse.fieldValue}`}
+                          value={subUniverse.fieldValue}
+                        >
+                          {subUniverse.fieldValue}
+                        </MenuItem>
+                      ));
+
+                    return [
+                      <ListSubheader key={`header-${universe.fieldValue}`}>
+                        {universe.fieldValue}
+                      </ListSubheader>,
+                      ...subItems,
+                      <MenuItem
+                        key={`all-${universe.fieldValue}`}
+                        value={universe.fieldValue}
+                      >
+                        All {universe.fieldValue}
+                      </MenuItem>,
+                      <Divider key={`divider-${universe.fieldValue}`} />,
+                    ];
+                  })
+                  .flat(),
+                ...(singleOrNoSubUniverses.length > 0
+                  ? [
+                      <ListSubheader key="misc-header">Other</ListSubheader>,
+                      ...singleOrNoSubUniverses.map((universe) => (
+                        <MenuItem
+                          key={universe.fieldValue}
+                          value={universe.fieldValue}
+                        >
+                          {universe.fieldValue}
+                        </MenuItem>
+                      )),
+                    ]
+                  : []),
+              ]}
             </Select>
             {universes.length > 0 && (
               <IconButton
@@ -340,12 +382,6 @@ export default function Filters({
           </div>
         </Grid2>
         <SelectWrapper
-          selected={exclusives}
-          setSelected={setExclusives}
-          options={filterTypes.exclusive}
-          title="Exclusive"
-        />
-        <SelectWrapper
           selected={holidays}
           setSelected={setHolidays}
           options={filterTypes.holiday}
@@ -357,7 +393,7 @@ export default function Filters({
           options={generateDecades(filterTypes.year)}
           title="Decade"
         />
-        <Grid2 size={{ xs: 12 }} className="py-0 px-2">
+        <Grid2 size={{ xs: 12 }} sx={{ p: 2 }}>
           <div className="text-center">Runtime</div>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <Slider
