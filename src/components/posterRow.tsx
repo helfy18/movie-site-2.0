@@ -1,4 +1,4 @@
-import { Box, Grid2, Paper, styled, Tooltip } from "@mui/material";
+import { Box, Grid2, Paper, styled, Tooltip, Typography } from "@mui/material";
 import { gradient } from "./movieGrid";
 import Image from "next/image";
 import { ArrowForward } from "@mui/icons-material";
@@ -109,15 +109,27 @@ export const Poster = ({
         </Box>
       )}
     </Box>
-    <Box
+    <Typography
       style={{
         color: gradient[movie.jh_score],
         fontWeight: "bolder",
       }}
+      variant="body2"
     >
       {movie.jh_score !== -1 ? `${movie.jh_score}/100` : "N/A"}
-    </Box>
-    <Box>{movie.movie}</Box>
+    </Typography>
+    <Typography
+      variant="body2"
+      sx={{
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        display: "-webkit-box",
+        WebkitBoxOrient: "vertical",
+        WebkitLineClamp: 4,
+      }}
+    >
+      {movie.movie}
+    </Typography>
   </PosterItem>
 );
 
