@@ -38,7 +38,7 @@ const IndexPage = () => {
 
   const getRecentMovies = useGetRecentMovies(
     {},
-    { refetchOnWindowFocus: false }
+    { refetchOnWindowFocus: false },
   );
   const getNowPlaying = useGetNowPlaying({ refetchOnWindowFocus: false });
   const getUpcoming = useGetUpcoming({ refetchOnWindowFocus: false });
@@ -52,7 +52,7 @@ const IndexPage = () => {
     {
       enabled: !!getNowPlaying.isSuccess,
       refetchOnWindowFocus: false,
-    }
+    },
   );
   const movieList = useMoviesList(params, {
     enabled: !!getNowPlaying.isSuccess,
@@ -61,13 +61,14 @@ const IndexPage = () => {
 
   useEffect(() => {
     if (getMoviesById.isSuccess) {
+      console.log(getNowPlaying.data);
       if (getNowPlaying.data) {
         setNowPlaying(
           getNowPlaying.data.map((movie) => {
             return getMoviesById.data.some((m) => m.tmdbid === movie.id)
               ? getMoviesById.data.filter((m) => m.tmdbid === movie.id)[0]
               : generateEmptyMovie(movie);
-          })
+          }),
         );
       }
       if (getUpcoming.data) {
@@ -76,7 +77,7 @@ const IndexPage = () => {
             return getMoviesById.data.some((m) => m.tmdbid === movie.id)
               ? getMoviesById.data.filter((m) => m.tmdbid === movie.id)[0]
               : generateEmptyMovie(movie);
-          })
+          }),
         );
       }
     }
@@ -148,7 +149,7 @@ const IndexPage = () => {
                 setParams({
                   year: [
                     Math.max(
-                      ...movieList.data.map((movie) => movie.year)
+                      ...movieList.data.map((movie) => movie.year),
                     ).toString(),
                   ],
                 });
@@ -171,7 +172,7 @@ const IndexPage = () => {
                 setParams({
                   year: [
                     Math.max(
-                      ...movieList.data.map((movie) => movie.year)
+                      ...movieList.data.map((movie) => movie.year),
                     ).toString(),
                   ],
                 });
@@ -213,7 +214,7 @@ const IndexPage = () => {
           <PosterRow
             title="Marvel Cinematic Universe"
             movies={movieList.data.filter(
-              (movie) => movie.sub_universe === "MCU"
+              (movie) => movie.sub_universe === "MCU",
             )}
             link={{
               url: "/movie-grid",

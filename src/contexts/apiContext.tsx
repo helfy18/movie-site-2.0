@@ -42,7 +42,7 @@ export const useApiContext = (): ApiContextType => useContext(ApiContext);
 
 export const useMoviesList = (
   params: MovieListQuery,
-  options?: any
+  options?: any,
 ): UseQueryResult<Movie[], Error> => {
   const { setFilters } = useApiContext();
   useEffect(() => {
@@ -65,7 +65,7 @@ export const useMoviesList = (
 
 export const useGetRandomMovie = (
   params: MovieListQuery,
-  options?: any
+  options?: any,
 ): UseQueryResult<Movie, Error> => {
   return useQuery({
     queryKey: ["movie/random", params],
@@ -83,7 +83,7 @@ export const useGetRandomMovie = (
 
 export const useMovieGet = (
   params: MovieGetQuery,
-  options?: any
+  options?: any,
 ): UseQueryResult<Movie, Error> => {
   return useQuery({
     queryKey: ["movie/get", params],
@@ -100,7 +100,7 @@ export const useMovieGet = (
 
 export const useMovieListById = (
   params: MovieListByIdQuery,
-  options?: any
+  options?: any,
 ): UseQueryResult<Movie[], Error> => {
   return useQuery({
     queryKey: ["movie/list/id", params],
@@ -142,7 +142,7 @@ export const useMovieCount = (options?: any): UseQueryResult<number, Error> => {
 
 export const useGetRecentMovies = (
   params?: MostRecentMovieQuery,
-  options?: any
+  options?: any,
 ): UseQueryResult<Movie[], Error> => {
   return useQuery({
     queryKey: ["useGetRecentMovies"],
@@ -158,13 +158,13 @@ export const useGetRecentMovies = (
 };
 
 export const useGetNowPlaying = (
-  options?: any
+  options?: any,
 ): UseQueryResult<TMDBMovie[], Error> => {
   return useQuery({
     queryKey: ["useGetNowPlaying"],
     queryFn: async () => {
       const { data } = await axios.get(
-        `${TMDBURL}/3/movie/now_playing?api_key=${process.env.NEXT_PUBLIC_TMDBKEY}&region=US`
+        `${TMDBURL}/3/movie/now_playing?api_key=${process.env.NEXT_PUBLIC_TMDBKEY}&region=US`,
       );
       return data.results as TMDBMovie[];
     },
@@ -174,13 +174,13 @@ export const useGetNowPlaying = (
 };
 
 export const useGetUpcoming = (
-  options?: any
+  options?: any,
 ): UseQueryResult<TMDBMovie[], Error> => {
   return useQuery({
     queryKey: ["useGetUpcoming"],
     queryFn: async () => {
       const { data } = await axios.get(
-        `${TMDBURL}/3/movie/upcoming?api_key=${process.env.NEXT_PUBLIC_TMDBKEY}&region=US`
+        `${TMDBURL}/3/movie/upcoming?api_key=${process.env.NEXT_PUBLIC_TMDBKEY}&region=US`,
       );
       return data.results as TMDBMovie[];
     },
