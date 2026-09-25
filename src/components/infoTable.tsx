@@ -34,7 +34,7 @@ const InfoTable = ({ movie, onClick }: MovieGridProps) => {
     { label: "Budget", value: `$${movie.budget}` },
     { label: "Box Office", value: `$${movie.boxoffice}` },
     { label: "Actors", value: movie.actors },
-    { label: "Director", value: movie.director },
+    { label: "Director", value: movie.director, queryType: "director" },
     { label: "Studio", value: movie.studio, queryType: "studio" },
   ];
 
@@ -91,7 +91,7 @@ const InfoTable = ({ movie, onClick }: MovieGridProps) => {
                 </Box>
               </Grid2>
             </Grid2>
-          ) : null
+          ) : null,
         )}
       </Stack>
     </Item>

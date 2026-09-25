@@ -60,7 +60,7 @@ const MoviePage = () => {
     {
       enabled: !!movie,
       refetchOnWindowFocus: false,
-    }
+    },
   );
 
   const listMovies = useMoviesList(params, {
