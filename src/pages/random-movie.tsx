@@ -10,7 +10,7 @@ import { Box, Button, Grid2, Link, Stack, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Item } from "./movie-page";
 import Image from "next/image";
-import { gradient } from "@/components/movieGrid";
+import { scoreColor } from "@/styles/gradient";
 
 export const RandomMovie = () => {
   const [randomMovie, setRandomMovie] = useState<Movie | undefined>();
@@ -172,7 +172,7 @@ export const RandomMovie = () => {
               Ranking:
               <Box
                 style={{
-                  color: gradient[randomMovie.jh_score],
+                  color: scoreColor(randomMovie.jh_score),
                 }}
               >
                 {randomMovie.ranking}
@@ -181,13 +181,13 @@ export const RandomMovie = () => {
                 <hr
                   className="absolute top-1/2 w-full"
                   style={{
-                    borderColor: gradient[randomMovie.jh_score],
+                    borderColor: scoreColor(randomMovie.jh_score),
                   }}
                 />
               </Box>
               <Box
                 style={{
-                  color: gradient[randomMovie.jh_score],
+                  color: scoreColor(randomMovie.jh_score),
                 }}
               >
                 {getTotalCount.data}
@@ -208,7 +208,7 @@ export const RandomMovie = () => {
               Score:
               <Box
                 style={{
-                  color: gradient[randomMovie.jh_score],
+                  color: scoreColor(randomMovie.jh_score),
                 }}
               >
                 {randomMovie.jh_score}
@@ -217,13 +217,13 @@ export const RandomMovie = () => {
                 <hr
                   className="absolute top-1/2 w-full"
                   style={{
-                    borderColor: gradient[randomMovie.jh_score],
+                    borderColor: scoreColor(randomMovie.jh_score),
                   }}
                 />
               </Box>
               <Box
                 style={{
-                  color: gradient[randomMovie.jh_score],
+                  color: scoreColor(randomMovie.jh_score),
                 }}
               >
                 100

@@ -1,5 +1,5 @@
 import { Box, Stack, Grid2, Collapse } from "@mui/material";
-import { gradient } from "./movieGrid";
+import { scoreColor } from "@/styles/gradient";
 import { Item } from "@/pages/movie-page";
 import SearchIcon from "@mui/icons-material/Search";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -20,7 +20,7 @@ const InfoTable = ({ movie, onClick }: MovieGridProps) => {
     {
       label: "Score",
       value: `${movie.jh_score}/100`,
-      style: { color: gradient[movie.jh_score], fontWeight: "bolder" },
+      style: { color: scoreColor(movie.jh_score), fontWeight: "bolder" },
     },
     { label: "Universe", value: movie.universe, queryType: "universe" },
     { label: "Sub Universe", value: movie.sub_universe, queryType: "universe" },

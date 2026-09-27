@@ -1,13 +1,7 @@
 import { useState } from "react";
 import { Button, Grid2 } from "@mui/material";
 import Link from "next/link";
-import Gradient from "javascript-color-gradient";
 import { Poster } from "./posterRow";
-
-export const gradient = new Gradient()
-  .setColorGradient("#b91c1c", "#facc15", "#15803d")
-  .setMidpoint(101)
-  .getColors();
 
 interface MovieGridProps {
   movies: Movie[];

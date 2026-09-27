@@ -21,7 +21,7 @@ import {
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { gradient } from "@/components/movieGrid";
+import { scoreColor } from "@/styles/gradient";
 import InfoTable from "@/components/infoTable";
 import ProviderTable from "@/components/providerTable";
 import Spinner from "@/components/spinner";
@@ -82,7 +82,7 @@ const MoviePage = () => {
     if (useMovieList.isSuccess) {
       setRecommended(useMovieList.data);
     } else if (useMovieList.isError) {
-      console.log(movieGet.error);
+      console.log(useMovieList.error);
     }
   }, [useMovieList.isFetching]);
 
@@ -193,7 +193,7 @@ const MoviePage = () => {
                   Ranking:
                   <Box
                     style={{
-                      color: gradient[movie.jh_score],
+                      color: scoreColor(movie.jh_score),
                     }}
                   >
                     {movie.ranking}
@@ -202,13 +202,13 @@ const MoviePage = () => {
                     <hr
                       className="absolute top-1/2 w-full"
                       style={{
-                        borderColor: gradient[movie.jh_score],
+                        borderColor: scoreColor(movie.jh_score),
                       }}
                     />
                   </Box>
                   <Box
                     style={{
-                      color: gradient[movie.jh_score],
+                      color: scoreColor(movie.jh_score),
                     }}
                   >
                     {getTotalCount.data}

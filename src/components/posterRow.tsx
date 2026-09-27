@@ -1,5 +1,5 @@
 import { Box, Grid2, Paper, styled, Tooltip, Typography } from "@mui/material";
-import { gradient } from "./movieGrid";
+import { scoreColor } from "@/styles/gradient";
 import Image from "next/image";
 import { ArrowForward } from "@mui/icons-material";
 import Link from "next/link";
@@ -111,7 +111,7 @@ export const Poster = ({
     </Box>
     <Typography
       style={{
-        color: gradient[movie.jh_score],
+        color: scoreColor(movie.jh_score),
         fontWeight: "bolder",
       }}
       variant="body2"

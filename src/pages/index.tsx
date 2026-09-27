@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Layout from "../components/layout";
 import {
   useGetNowPlaying,
@@ -58,6 +58,14 @@ const IndexPage = () => {
     enabled: !!getNowPlaying.isSuccess,
     refetchOnWindowFocus: false,
   });
+
+  const latestYear = useMemo(
+    () =>
+      movieList.data && movieList.data.length > 0
+        ? Math.max(...movieList.data.map((movie) => movie.year))
+        : undefined,
+    [movieList.data],
+  );
 
   useEffect(() => {
     if (getMoviesById.isSuccess) {
@@ -136,22 +144,13 @@ const IndexPage = () => {
           <PosterRow
             title="Best of This Year"
             movies={movieList.data
-              .filter((movie) => {
-                return (
-                  movie.year ===
-                  Math.max(...movieList.data.map((movie) => movie.year))
-                );
-              })
+              .filter((movie) => movie.year === latestYear)
               .slice(0, 20)}
             link={{
               url: "/movie-grid",
               onClick: () => {
                 setParams({
-                  year: [
-                    Math.max(
-                      ...movieList.data.map((movie) => movie.year),
-                    ).toString(),
-                  ],
+                  year: [String(latestYear)],
                 });
               },
             }}
@@ -159,22 +158,13 @@ const IndexPage = () => {
           <PosterRow
             title="Best of Last Year"
             movies={movieList.data
-              .filter((movie) => {
-                return (
-                  movie.year ===
-                  Math.max(...movieList.data.map((movie) => movie.year)) - 1
-                );
-              })
+              .filter((movie) => movie.year === (latestYear ?? 0) - 1)
               .slice(0, 20)}
             link={{
               url: "/movie-grid",
               onClick: () => {
                 setParams({
-                  year: [
-                    Math.max(
-                      ...movieList.data.map((movie) => movie.year),
-                    ).toString(),
-                  ],
+                  year: [String((latestYear ?? 0) - 1)],
                 });
               },
             }}
