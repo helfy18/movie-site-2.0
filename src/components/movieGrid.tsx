@@ -1,17 +1,20 @@
-import { useState } from "react";
 import { Button, Grid2 } from "@mui/material";
 import Link from "next/link";
 import { Poster } from "./posterRow";
 
 interface MovieGridProps {
   movies: Movie[];
+  page: number;
+  onPageChange: (page: number) => void;
 }
 
 const moviesPerPage: number = 48;
 
-export default function MovieGrid({ movies }: MovieGridProps) {
-  const [currentPage, setCurrentPage] = useState<number>(1);
-
+export default function MovieGrid({
+  movies,
+  page: currentPage,
+  onPageChange,
+}: MovieGridProps) {
   movies.sort((a, b) => b.jh_score - a.jh_score);
 
   const lastMovie = currentPage * moviesPerPage;
@@ -22,7 +25,7 @@ export default function MovieGrid({ movies }: MovieGridProps) {
 
   const handlePageChange = (page: number) => {
     if (page > 0 && page <= totalPages) {
-      setCurrentPage(page);
+      onPageChange(page);
       window.scrollTo(0, 0);
     }
   };

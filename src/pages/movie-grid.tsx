@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Layout from "@/components/layout";
 import MovieGrid from "@/components/movieGrid";
 import Filters from "@/components/filters";
@@ -32,7 +32,8 @@ const movieSearch = (text: string, movies: Movie[]) => {
 const MovieGridPage = () => {
   const { filters } = useApiContext();
   const [allMovies, setAllMovies] = useState<Movie[]>([]);
-  const [displayMovies, setDisplayMovies] = useState<Movie[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [params, setParams] = useState<MovieListQuery>(filters);
   const [showDropdown, setShowDropdown] = useState(false);
   const [filterTypes, setFilterTypes] = useState<AllType>();
@@ -48,7 +49,6 @@ const MovieGridPage = () => {
         (a, b) => b.jh_score - a.jh_score
       );
       setAllMovies(sortedMovies);
-      setDisplayMovies(sortedMovies);
     } else if (listMovies.isError) {
       console.log(listMovies.error);
     }
@@ -67,16 +67,26 @@ const MovieGridPage = () => {
     }
   }, [typesList.isFetching]);
 
+  const displayMovies = useMemo(
+    () => movieSearch(searchTerm, allMovies),
+    [searchTerm, allMovies],
+  );
+
+  const onSearch = (text: string) => {
+    setSearchTerm(text);
+    setCurrentPage(1);
+  };
+
   const onFilterApply = (filterValues: MovieListQuery) => {
-    if (params !== filterValues) setDisplayMovies([]);
     setParams(filterValues);
+    setCurrentPage(1);
     setShowDropdown(!showDropdown);
   };
 
   const onFilterClear = () => {
-    setDisplayMovies([]);
     listMovies.refetch();
     setParams({});
+    setCurrentPage(1);
     setShowDropdown(!showDropdown);
   };
 
@@ -92,9 +102,8 @@ const MovieGridPage = () => {
         >
           <TextField
             placeholder="Search for Title, Actor, Director..."
-            onChange={(event) => {
-              setDisplayMovies(movieSearch(event.target.value, allMovies));
-            }}
+            value={searchTerm}
+            onChange={(event) => onSearch(event.target.value)}
             color="secondary"
             slotProps={{
               input: {
@@ -142,7 +151,11 @@ const MovieGridPage = () => {
       )}
       <Stack direction="row">
         {listMovies.isLoading && <Spinner />}
-        {displayMovies && <MovieGrid movies={displayMovies} />}
+        <MovieGrid
+          movies={displayMovies}
+          page={currentPage}
+          onPageChange={setCurrentPage}
+        />
       </Stack>
     </Layout>
   );
