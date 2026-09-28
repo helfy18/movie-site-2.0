@@ -13,7 +13,7 @@ import Image from "next/image";
 import { scoreColor } from "@/styles/gradient";
 
 export const RandomMovie = () => {
-  const [randomMovie, setRandomMovie] = useState<Movie | undefined>();
+  const [showFilters, setShowFilters] = useState(false);
   const [params, setParams] = useState<MovieListQuery>({});
 
   const getRandomMovie = useGetRandomMovie(params, {
@@ -28,14 +28,7 @@ export const RandomMovie = () => {
 
   const getTotalCount = useMovieCount({ refetchOnWindowFocus: false });
 
-  useEffect(() => {
-    if (getRandomMovie.isSuccess) {
-      console.log(getRandomMovie.data);
-      setRandomMovie(getRandomMovie.data);
-    } else if (getRandomMovie.isError) {
-      console.log(getRandomMovie.error);
-    }
-  }, [getRandomMovie.isFetching]);
+  const randomMovie = showFilters ? undefined : getRandomMovie.data;
 
   const filterTypes = useMemo<AllType | undefined>(
     () => typesList.data && { ...typesList.data, score: [0, 100] },
@@ -50,14 +43,15 @@ export const RandomMovie = () => {
 
   const onFilterApply = (filterValues: MovieListQuery) => {
     setParams(filterValues);
+    setShowFilters(false);
   };
 
   const onNext = () => {
     getRandomMovie.refetch();
   };
 
-  const OnReturnToFilters = () => {
-    setRandomMovie(undefined);
+  const onReturnToFilters = () => {
+    setShowFilters(true);
   };
 
   return (
@@ -89,7 +83,7 @@ export const RandomMovie = () => {
                   color: "secondary.main",
                   outline: "1px solid",
                 }}
-                onClick={OnReturnToFilters}
+                onClick={onReturnToFilters}
               >
                 Return to Filters
               </Button>
