@@ -99,7 +99,9 @@ const InfoTable = ({ movie }: InfoTableProps) => {
                     <span>{value}</span>
                   )}
                   {queryType && (
-                    <Link href={gridLink(singleFilter(queryType, String(value)))}>
+                    <Link
+                      href={gridLink(singleFilter(queryType, String(value)))}
+                    >
                       <SearchIcon sx={{ cursor: "pointer", ml: 1 }} />
                     </Link>
                   )}

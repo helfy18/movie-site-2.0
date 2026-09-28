@@ -23,7 +23,9 @@ const movieSearch = (text: string, movies: Movie[]) => {
   ];
 
   return movies.filter((movie) =>
-    keys.some((key) => movie[key]?.toString().toLowerCase().includes(lowerText))
+    keys.some((key) =>
+      movie[key]?.toString().toLowerCase().includes(lowerText),
+    ),
   );
 };
 

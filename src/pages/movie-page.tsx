@@ -79,22 +79,20 @@ const MoviePage = () => {
         </Box>
       )}
       <Dialog
-          open={showImage}
-          onClose={() => setShowImage(false)}
-          PaperProps={{ sx: { bgcolor: "background.default" } }}
-        >
-          <DialogTitle align="center">
-            Dani Approved
-          </DialogTitle>
-          <DialogContent>
-            <Stack spacing={1} alignItems="center">
-              <Image src="/dani.png" alt="verified" width="300" height="300" />
-              <Typography variant="body2" color="secondary">
-                Drawing Credit: Phoebe Torres
-              </Typography>
-            </Stack>
-          </DialogContent>
-        </Dialog>
+        open={showImage}
+        onClose={() => setShowImage(false)}
+        PaperProps={{ sx: { bgcolor: "background.default" } }}
+      >
+        <DialogTitle align="center">Dani Approved</DialogTitle>
+        <DialogContent>
+          <Stack spacing={1} alignItems="center">
+            <Image src="/dani.png" alt="verified" width="300" height="300" />
+            <Typography variant="body2" color="secondary">
+              Drawing Credit: Phoebe Torres
+            </Typography>
+          </Stack>
+        </DialogContent>
+      </Dialog>
       {movie && (
         <>
           <Grid2 container className="flex flex-wrap" spacing={2.5}>

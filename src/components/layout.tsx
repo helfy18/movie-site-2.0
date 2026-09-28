@@ -17,10 +17,9 @@ const Layout = (props: layoutProps) => {
     <div
       className="py-[1%] px-[5%] font-sans"
       style={{
-        backgroundImage:
-          holidays.includes("Christmas")
-            ? `url('/christmas.png')`
-            : undefined,
+        backgroundImage: holidays.includes("Christmas")
+          ? `url('/christmas.png')`
+          : undefined,
         backgroundSize: "100%",
       }}
     >

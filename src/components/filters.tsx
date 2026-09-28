@@ -1,4 +1,11 @@
-import { Button, Divider, Grid2, ListSubheader, MenuItem, Slider } from "@mui/material";
+import {
+  Button,
+  Divider,
+  Grid2,
+  ListSubheader,
+  MenuItem,
+  Slider,
+} from "@mui/material";
 import { useMemo, useState } from "react";
 import SelectWrapper from "./selectWrapper";
 import Image from "next/image";
@@ -147,7 +154,10 @@ export default function Filters({
               {sub.fieldValue}
             </MenuItem>
           )),
-        <MenuItem key={`all-${universe.fieldValue}`} value={universe.fieldValue}>
+        <MenuItem
+          key={`all-${universe.fieldValue}`}
+          value={universe.fieldValue}
+        >
           All {universe.fieldValue}
         </MenuItem>,
         <Divider key={`divider-${universe.fieldValue}`} />,

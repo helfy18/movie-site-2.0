@@ -73,8 +73,7 @@ export const useMoviesList = (
 ): UseQueryResult<Movie[], Error> =>
   useQuery({
     queryKey: ["movies/list", params],
-    queryFn: async () =>
-      api<Movie[]>("/movies/list", params),
+    queryFn: async () => api<Movie[]>("/movies/list", params),
     ...options,
   });
 
@@ -84,8 +83,7 @@ export const useGetRandomMovie = (
 ): UseQueryResult<Movie, Error> =>
   useQuery({
     queryKey: ["movies/random", params],
-    queryFn: async () =>
-      api<Movie>("/movies/random", params),
+    queryFn: async () => api<Movie>("/movies/random", params),
     ...options,
   });
 
@@ -105,8 +103,7 @@ export const useMovieListById = (
 ): UseQueryResult<Movie[], Error> =>
   useQuery({
     queryKey: ["movies/list/id", params],
-    queryFn: async () =>
-      api<Movie[]>("/movies/list/id", params),
+    queryFn: async () => api<Movie[]>("/movies/list/id", params),
     ...options,
   });
 
@@ -134,8 +131,7 @@ export const useGetRecentMovies = (
 ): UseQueryResult<Movie[], Error> =>
   useQuery({
     queryKey: ["movies/mostRecent", params],
-    queryFn: async () =>
-      api<Movie[]>("/movies/mostRecent", params),
+    queryFn: async () => api<Movie[]>("/movies/mostRecent", params),
     ...options,
   });
 

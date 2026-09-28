@@ -28,7 +28,10 @@ const ScoreCard = ({ label, value, total, score }: Props) => {
       {label}
       <Box style={{ color }}>{value}</Box>
       <Box className="relative">
-        <hr className="absolute top-1/2 w-full" style={{ borderColor: color }} />
+        <hr
+          className="absolute top-1/2 w-full"
+          style={{ borderColor: color }}
+        />
       </Box>
       <Box style={{ color }}>{total}</Box>
     </Item>
