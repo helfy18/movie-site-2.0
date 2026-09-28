@@ -10,27 +10,20 @@ import {
   DialogContent,
   DialogTitle,
   Grid2,
-  Paper,
   Stack,
-  styled,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Image from "next/image";
-import { scoreColor } from "@/styles/gradient";
 import InfoTable from "@/components/infoTable";
+import { Item } from "@/components/item";
+import DaniBadge from "@/components/daniBadge";
+import ScoreCard from "@/components/scoreCard";
 import ProviderTable from "@/components/providerTable";
 import Spinner from "@/components/spinner";
 import OtherSiteReviews from "@/components/otherSiteReviews";
 import PosterRow from "@/components/posterRow";
-
-export const Item = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(1),
-  backgroundColor: "#44403c",
-  fontSize: "16px",
-}));
 
 const queryValue = (value: string | string[] | undefined) =>
   Array.isArray(value) ? value[0] : value;
@@ -128,63 +121,20 @@ const MoviePage = () => {
                   className="rounded"
                 />
                 {movie.dani_approved && (
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      top: 0,
-                      right: { xs: 32, md: 0 },
-                      width: 100,
-                      height: 100,
-                    }}
+                  <DaniBadge
+                    size={100}
+                    right={{ xs: 32, md: 0 }}
                     onClick={() => setShowImage(true)}
-                  >
-                    <Tooltip title="Dani Approved" arrow>
-                      <Image
-                        src="/dani.png"
-                        alt="Verified"
-                        fill
-                        style={{ cursor: "pointer" }}
-                      />
-                    </Tooltip>
-                  </Box>
+                  />
                 )}
               </Box>
               <Box className="w-full flex items-center justify-center">
-                <Item
-                  sx={{
-                    textAlign: "center",
-                    color: "secondary.main",
-                    display: "flex",
-                    flexDirection: "column",
-                    fontSize: "1.3em",
-                    width: "fit-content",
-                    fontWeight: "bold",
-                  }}
-                >
-                  Ranking:
-                  <Box
-                    style={{
-                      color: scoreColor(movie.jh_score),
-                    }}
-                  >
-                    {movie.ranking}
-                  </Box>
-                  <Box className="relative">
-                    <hr
-                      className="absolute top-1/2 w-full"
-                      style={{
-                        borderColor: scoreColor(movie.jh_score),
-                      }}
-                    />
-                  </Box>
-                  <Box
-                    style={{
-                      color: scoreColor(movie.jh_score),
-                    }}
-                  >
-                    {getTotalCount.data}
-                  </Box>
-                </Item>
+                <ScoreCard
+                  label="Ranking:"
+                  value={movie.ranking}
+                  total={getTotalCount.data}
+                  score={movie.jh_score}
+                />
               </Box>
             </Grid2>
             <Grid2 size={{ sm: 12, md: 5 }}>

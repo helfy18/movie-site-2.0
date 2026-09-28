@@ -1,6 +1,6 @@
 import { Box, Stack, Grid2, Collapse } from "@mui/material";
 import { scoreColor } from "@/styles/gradient";
-import { Item } from "@/pages/movie-page";
+import { Item } from "./item";
 import SearchIcon from "@mui/icons-material/Search";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";

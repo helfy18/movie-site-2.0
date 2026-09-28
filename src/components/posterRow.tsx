@@ -1,4 +1,5 @@
-import { Box, Grid2, Paper, styled, Tooltip, Typography } from "@mui/material";
+import { Box, Grid2, Paper, styled, Typography } from "@mui/material";
+import DaniBadge from "./daniBadge";
 import { scoreColor } from "@/styles/gradient";
 import Image from "next/image";
 import { ArrowForward } from "@mui/icons-material";
@@ -84,26 +85,7 @@ export const Poster = ({
       }}
     >
       <Image src={movie.poster} height={163} width={110} alt="Not Found" />
-      {movie.dani_approved && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            width: 40,
-            height: 40,
-          }}
-        >
-          <Tooltip title="Dani Approved" arrow>
-            <Image
-              src="/dani.png"
-              alt="Verified"
-              fill
-              style={{ cursor: "pointer" }}
-            />
-          </Tooltip>
-        </Box>
-      )}
+      {movie.dani_approved && <DaniBadge size={40} />}
     </Box>
     <Typography
       style={{

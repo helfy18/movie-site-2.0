@@ -6,11 +6,11 @@ import {
   useMovieCount,
   useTypesList,
 } from "@/contexts/apiContext";
-import { Box, Button, Grid2, Link, Stack, Tooltip } from "@mui/material";
+import { Box, Button, Grid2, Link, Stack } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import { Item } from "./movie-page";
 import Image from "next/image";
-import { scoreColor } from "@/styles/gradient";
+import DaniBadge from "@/components/daniBadge";
+import ScoreCard from "@/components/scoreCard";
 
 export const RandomMovie = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -122,103 +122,23 @@ export const RandomMovie = () => {
                   }}
                   className="rounded"
                 />
-                {randomMovie.dani_approved && (
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      top: 0,
-                      right: 0,
-                      width: 64,
-                      height: 64,
-                    }}
-                  >
-                    <Tooltip title="Dani Approved" arrow>
-                      <Image
-                        src="/dani.png"
-                        alt="Verified"
-                        width={64}
-                        height={64}
-                        style={{ cursor: "pointer", objectFit: "contain" }}
-                      />
-                    </Tooltip>
-                  </Box>
-                )}
+                {randomMovie.dani_approved && <DaniBadge size={64} />}
               </Box>
             </Box>
           </Link>
           <Grid2 container spacing={2} sx={{ justifyContent: "center" }}>
-            <Item
-              sx={{
-                textAlign: "center",
-                color: "secondary.main",
-                display: "flex",
-                flexDirection: "column",
-                fontSize: "1.3em",
-                width: "fit-content",
-                fontWeight: "bold",
-                height: "fit-content",
-              }}
-            >
-              Ranking:
-              <Box
-                style={{
-                  color: scoreColor(randomMovie.jh_score),
-                }}
-              >
-                {randomMovie.ranking}
-              </Box>
-              <Box className="relative">
-                <hr
-                  className="absolute top-1/2 w-full"
-                  style={{
-                    borderColor: scoreColor(randomMovie.jh_score),
-                  }}
-                />
-              </Box>
-              <Box
-                style={{
-                  color: scoreColor(randomMovie.jh_score),
-                }}
-              >
-                {getTotalCount.data}
-              </Box>
-            </Item>
-            <Item
-              sx={{
-                textAlign: "center",
-                color: "secondary.main",
-                display: "flex",
-                flexDirection: "column",
-                fontSize: "1.3em",
-                width: "fit-content",
-                fontWeight: "bold",
-                height: "fit-content",
-              }}
-            >
-              Score:
-              <Box
-                style={{
-                  color: scoreColor(randomMovie.jh_score),
-                }}
-              >
-                {randomMovie.jh_score}
-              </Box>
-              <Box className="relative">
-                <hr
-                  className="absolute top-1/2 w-full"
-                  style={{
-                    borderColor: scoreColor(randomMovie.jh_score),
-                  }}
-                />
-              </Box>
-              <Box
-                style={{
-                  color: scoreColor(randomMovie.jh_score),
-                }}
-              >
-                100
-              </Box>
-            </Item>
+            <ScoreCard
+              label="Ranking:"
+              value={randomMovie.ranking}
+              total={getTotalCount.data}
+              score={randomMovie.jh_score}
+            />
+            <ScoreCard
+              label="Score:"
+              value={randomMovie.jh_score}
+              total={100}
+              score={randomMovie.jh_score}
+            />
           </Grid2>
         </Stack>
       ) : (

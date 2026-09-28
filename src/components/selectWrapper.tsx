@@ -1,12 +1,7 @@
-import {
-  Grid2,
-  IconButton,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-} from "@mui/material";
+import { Grid2, IconButton, MenuItem, Select } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
+import { handleSelectChange, menuProps, selectSx } from "./selectShared";
 
 interface selectWrapperProps {
   selected: string[];
@@ -14,37 +9,6 @@ interface selectWrapperProps {
   options: string[];
   title: string;
 }
-
-export const sxProp = {
-  ".MuiOutlinedInput-notchedOutline": {
-    borderColor: "secondary.main", // Sets border color to secondary color
-  },
-  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-    borderColor: "secondary.main", // Ensures border remains secondary color when focused
-  },
-  "&:hover .MuiOutlinedInput-notchedOutline": {
-    borderColor: "secondary.light",
-  },
-  color: "secondary.main",
-};
-
-export const getMenuProps = () => {
-  return {
-    sx: {
-      "&& .Mui-selected": {
-        fontWeight: "bold",
-      },
-    },
-  };
-};
-
-export const handleChange = (
-  event: SelectChangeEvent<string[]>,
-  setter: Dispatch<SetStateAction<string[]>>
-) => {
-  const value = event.target.value;
-  setter(typeof value === "string" ? value.split(",") : value);
-};
 
 export default function SelectWrapper({
   selected,
@@ -59,9 +23,9 @@ export default function SelectWrapper({
         <Select
           multiple
           value={selected}
-          onChange={(event) => handleChange(event, setSelected)}
+          onChange={(event) => handleSelectChange(event, setSelected)}
           className="w-full text-secondary"
-          MenuProps={getMenuProps()}
+          MenuProps={menuProps}
           displayEmpty
           renderValue={(selected) => {
             if (selected.length === 0) {
@@ -73,7 +37,7 @@ export default function SelectWrapper({
             }
             return selected.join(", ");
           }}
-          sx={sxProp}
+          sx={selectSx}
         >
           {options.map((option) => (
             <MenuItem key={option} value={option}>

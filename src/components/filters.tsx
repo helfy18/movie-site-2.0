@@ -10,11 +10,8 @@ import {
 } from "@mui/material";
 import { useMemo, useState } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
-import SelectWrapper, {
-  getMenuProps,
-  handleChange,
-  sxProp,
-} from "./selectWrapper";
+import SelectWrapper from "./selectWrapper";
+import { handleSelectChange, menuProps, selectSx } from "./selectShared";
 import Image from "next/image";
 
 interface fitersProps {
@@ -207,9 +204,9 @@ export default function Filters({
             <Select
               multiple
               value={genres}
-              onChange={(event) => handleChange(event, setGenres)}
+              onChange={(event) => handleSelectChange(event, setGenres)}
               className="w-full"
-              MenuProps={getMenuProps()}
+              MenuProps={menuProps}
               displayEmpty
               renderValue={(selected) => {
                 if (selected.length === 0) {
@@ -221,7 +218,7 @@ export default function Filters({
                 }
                 return selected.join(", ");
               }}
-              sx={sxProp}
+              sx={selectSx}
             >
               <ListSubheader>Popular Genres</ListSubheader>
               {genreOptions.Popular.map((option) => (
@@ -252,9 +249,9 @@ export default function Filters({
             <Select
               multiple
               value={universes}
-              onChange={(event) => handleChange(event, setUniverses)}
+              onChange={(event) => handleSelectChange(event, setUniverses)}
               className="w-full text-secondary"
-              MenuProps={getMenuProps()}
+              MenuProps={menuProps}
               displayEmpty
               renderValue={(selected) => {
                 if (selected.length === 0) {
@@ -267,7 +264,7 @@ export default function Filters({
                 }
                 return selected.join(", ");
               }}
-              sx={sxProp}
+              sx={selectSx}
             >
               {[
                 ...multipleSubUniverses
@@ -347,9 +344,9 @@ export default function Filters({
             <Select
               multiple
               value={providers}
-              onChange={(event) => handleChange(event, setProviders)}
+              onChange={(event) => handleSelectChange(event, setProviders)}
               className="w-full text-secondary"
-              MenuProps={getMenuProps()}
+              MenuProps={menuProps}
               displayEmpty
               renderValue={(selected) => {
                 if (selected.length === 0) {
@@ -370,7 +367,7 @@ export default function Filters({
                     .join(", ");
                 }
               }}
-              sx={sxProp}
+              sx={selectSx}
             >
               {filterTypes.provider.map((provider: ProviderInfo) => (
                 <MenuItem
