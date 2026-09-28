@@ -82,7 +82,7 @@ export const Poster = ({
         width: "100%",
       }}
     >
-      <Image src={movie.poster} height={163} width={110} alt="Not Found" />
+      <Image src={movie.poster} height={163} width={110} alt={movie.movie} />
       {movie.dani_approved && <DaniBadge size={40} />}
     </Box>
     <Typography

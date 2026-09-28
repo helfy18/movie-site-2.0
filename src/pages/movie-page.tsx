@@ -78,8 +78,7 @@ const MoviePage = () => {
           Not Found
         </Box>
       )}
-      {showImage && (
-        <Dialog
+      <Dialog
           open={showImage}
           onClose={() => setShowImage(false)}
           PaperProps={{ sx: { bgcolor: "background.default" } }}
@@ -96,7 +95,6 @@ const MoviePage = () => {
             </Stack>
           </DialogContent>
         </Dialog>
-      )}
       {movie && (
         <>
           <Grid2 container className="flex flex-wrap" spacing={2.5}>
@@ -114,12 +112,12 @@ const MoviePage = () => {
                 }}
               >
                 <Image
-                  src={movie.poster.replace("w500", "original")}
+                  src={movie.poster.replace("w500", "w780")}
                   width={275}
                   height={400}
                   sizes="(max-width: 900px) 100vw, 275px"
                   style={{ width: "100%", height: "auto" }}
-                  alt="Not Found"
+                  alt={movie.movie}
                   placeholder="blur"
                   blurDataURL="/spin.svg"
                   className="rounded"

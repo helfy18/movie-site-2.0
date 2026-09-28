@@ -1,6 +1,7 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Head from "next/head";
 import { Grid2, Stack } from "@mui/material";
 import { useRouter } from "next/router";
 import NewReleasesIcon from "@mui/icons-material/NewReleases";
@@ -24,7 +25,9 @@ const Layout = (props: layoutProps) => {
         backgroundSize: "100%",
       }}
     >
-      <title>{props.pageTitle}</title>
+      <Head>
+        <title>{props.pageTitle}</title>
+      </Head>
       <Link href="/">
         <header className="text-4xl flex items-center justify-center font-bold font-mono">
           <Image
@@ -54,26 +57,32 @@ const Layout = (props: layoutProps) => {
       </Stack>
       <main>{props.children}</main>
       <Grid2 container spacing={2} sx={{ mt: 4 }}>
-        <Image
-          src="/tmdb.svg"
-          height={50}
-          width={50}
-          alt="TMDB API"
-          onClick={() => window.open("https://www.themoviedb.org/", "_blank")}
-          style={{ cursor: "pointer" }}
-          className="rounded"
-        />
-        <Image
-          src="/letterboxd.png"
-          height={50}
-          width={163}
-          alt="Letterboxd"
-          onClick={() =>
-            window.open("https://letterboxd.com/helfy18/", "_blank")
-          }
-          style={{ cursor: "pointer" }}
-          className="rounded"
-        />
+        <a
+          href="https://www.themoviedb.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Image
+            src="/tmdb.svg"
+            height={50}
+            width={50}
+            alt="TMDB"
+            className="rounded"
+          />
+        </a>
+        <a
+          href="https://letterboxd.com/helfy18/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Image
+            src="/letterboxd.png"
+            height={50}
+            width={163}
+            alt="Letterboxd"
+            className="rounded"
+          />
+        </a>
       </Grid2>
     </div>
   );

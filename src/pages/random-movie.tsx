@@ -62,7 +62,7 @@ export const RandomMovie = () => {
       ) : randomMovie ? (
         <Stack spacing={2} sx={{ width: "100%", justifyContent: "center" }}>
           <Grid2 container spacing={2}>
-            <Grid2 size={{ xs: 6 }} key={1} className="mb-2 px-2 text-right">
+            <Grid2 size={{ xs: 6 }} className="mb-2 px-2 text-right">
               <Button
                 sx={{
                   width: "50%",
@@ -76,7 +76,7 @@ export const RandomMovie = () => {
                 Next
               </Button>
             </Grid2>
-            <Grid2 size={{ xs: 6 }} key={2} className="mb-2 px-2">
+            <Grid2 size={{ xs: 6 }} className="mb-2 px-2">
               <Button
                 sx={{
                   width: "50%",
@@ -109,8 +109,8 @@ export const RandomMovie = () => {
                 }}
               >
                 <Image
-                  src={randomMovie.poster.replace("w500", "original")}
-                  alt="Not Found"
+                  src={randomMovie.poster.replace("w500", "w780")}
+                  alt={randomMovie.movie}
                   placeholder="blur"
                   blurDataURL="/spin.svg"
                   width={300}
