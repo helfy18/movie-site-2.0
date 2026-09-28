@@ -1,5 +1,6 @@
 import Layout from "@/components/layout";
 import {
+  hasServerResponse,
   useMovieCount,
   useMovieGet,
   useMovieListById,
@@ -22,6 +23,7 @@ import DaniBadge from "@/components/daniBadge";
 import ScoreCard from "@/components/scoreCard";
 import ProviderTable from "@/components/providerTable";
 import Spinner from "@/components/spinner";
+import ErrorMessage from "@/components/errorMessage";
 import OtherSiteReviews from "@/components/otherSiteReviews";
 import PosterRow from "@/components/posterRow";
 
@@ -58,11 +60,19 @@ const MoviePage = () => {
   const getTotalCount = useMovieCount();
 
   const loading = !router.isReady || (hasParams && movieGet.isPending);
-  const notFound = router.isReady && (!hasParams || movieGet.isError);
+  const unreachable = movieGet.isError && !hasServerResponse(movieGet.error);
+  const notFound =
+    router.isReady && (!hasParams || (movieGet.isError && !unreachable));
 
   return (
     <Layout pageTitle={movie?.movie || "Movie Page"} holiday={movie?.holiday}>
       {loading && <Spinner />}
+      {unreachable && (
+        <ErrorMessage
+          message="Couldn't reach the movie database."
+          onRetry={() => movieGet.refetch()}
+        />
+      )}
       {notFound && (
         <Box className="flex justify-center items-center h-[80vh] w-full">
           Not Found

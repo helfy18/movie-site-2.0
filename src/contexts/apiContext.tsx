@@ -20,12 +20,15 @@ const tmdb = axios.create({
 
 type QueryOptions<T> = Omit<UseQueryOptions<T, Error>, "queryKey" | "queryFn">;
 
+export const hasServerResponse = (error: unknown): boolean =>
+  axios.isAxiosError(error) && error.response !== undefined;
+
 export const ApiProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [queryClient] = useState(
     () =>
       new QueryClient({
         defaultOptions: {
-          queries: { retry: 0, refetchOnWindowFocus: false },
+          queries: { retry: 1, refetchOnWindowFocus: false },
         },
       }),
   );

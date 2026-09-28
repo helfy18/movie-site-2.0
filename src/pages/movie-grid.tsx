@@ -7,6 +7,7 @@ import { Stack, Button, TextField, InputAdornment, Grid2 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useMoviesList, useTypesList } from "@/contexts/apiContext";
 import Spinner from "@/components/spinner";
+import ErrorMessage from "@/components/errorMessage";
 import { useRouter } from "next/router";
 import { gridLink, parseGridQuery } from "@/utils";
 
@@ -104,6 +105,7 @@ const MovieGridPage = () => {
         >
           <Button
             onClick={() => setShowDropdown(!showDropdown)}
+            disabled={!filterTypes}
             sx={{
               px: 10,
               py: 2,
@@ -114,6 +116,9 @@ const MovieGridPage = () => {
           >
             {showDropdown ? "Hide" : "Filters"} &#8597;
           </Button>
+          {typesList.isError && (
+            <span className="text-muted">Filters unavailable</span>
+          )}
         </Grid2>
       </Grid2>
       {showDropdown && filterTypes && (
@@ -126,11 +131,18 @@ const MovieGridPage = () => {
       )}
       <Stack direction="row">
         {listMovies.isPending && <Spinner />}
-        <MovieGrid
-          movies={displayMovies}
-          page={currentPage}
-          onPageChange={setCurrentPage}
-        />
+        {listMovies.isError ? (
+          <ErrorMessage
+            message="Couldn't load the movie list."
+            onRetry={() => listMovies.refetch()}
+          />
+        ) : (
+          <MovieGrid
+            movies={displayMovies}
+            page={currentPage}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </Stack>
     </Layout>
   );

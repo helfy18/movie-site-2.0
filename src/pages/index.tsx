@@ -10,6 +10,7 @@ import {
 import PosterRow from "@/components/posterRow";
 import { generateEmptyMovie, gridLink } from "@/utils";
 import Spinner from "@/components/spinner";
+import ErrorMessage from "@/components/errorMessage";
 
 const isChristmas = (): boolean => {
   const today = new Date();
@@ -57,11 +58,7 @@ const IndexPage = () => {
       enabled: getNowPlaying.isSuccess,
     },
   );
-  const movieList = useMoviesList(
-    {},
-    {
-    enabled: getNowPlaying.isSuccess,
-  });
+  const movieList = useMoviesList({});
 
   const latestYear = useMemo(
     () =>
@@ -97,7 +94,13 @@ const IndexPage = () => {
       {upcoming.length > 0 && (
         <PosterRow title="Coming Soon to Theatres" movies={upcoming} />
       )}
-      {movieList.isLoading && <Spinner />}
+      {movieList.isPending && <Spinner />}
+      {movieList.isError && (
+        <ErrorMessage
+          message="Couldn't load the movie list."
+          onRetry={() => movieList.refetch()}
+        />
+      )}
       {movieList.data && (
         <>
           {isChristmas() && (

@@ -1,6 +1,7 @@
 import Filters from "@/components/filters";
 import Layout from "@/components/layout";
 import Spinner from "@/components/spinner";
+import ErrorMessage from "@/components/errorMessage";
 import {
   useGetRandomMovie,
   useMovieCount,
@@ -52,8 +53,15 @@ export const RandomMovie = () => {
 
   return (
     <Layout pageTitle="Random Movie" holiday={randomMovie?.holiday}>
-      {getRandomMovie.isFetching || !filterTypes ? (
+      {typesList.isError ? (
+        <ErrorMessage
+          message="Couldn't load the filters."
+          onRetry={() => typesList.refetch()}
+        />
+      ) : getRandomMovie.isFetching || !filterTypes ? (
         <Spinner />
+      ) : getRandomMovie.isError && !showFilters ? (
+        <ErrorMessage message="Couldn't load a movie." onRetry={onNext} />
       ) : randomMovie ? (
         <Stack spacing={2} sx={{ width: "100%", justifyContent: "center" }}>
           <Grid2 container spacing={2}>
