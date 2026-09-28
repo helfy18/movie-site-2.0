@@ -18,15 +18,11 @@ export const RandomMovie = () => {
 
   const getRandomMovie = useGetRandomMovie(params, {
     enabled: false,
-    refetchOnWindowFocus: false,
   });
 
-  const typesList = useTypesList({
-    enabled: true,
-    refetchOnWindowFocus: false,
-  });
+  const typesList = useTypesList();
 
-  const getTotalCount = useMovieCount({ refetchOnWindowFocus: false });
+  const getTotalCount = useMovieCount();
 
   const randomMovie = showFilters ? undefined : getRandomMovie.data;
 

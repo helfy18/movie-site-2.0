@@ -44,7 +44,6 @@ const MoviePage = () => {
 
   const movieGet = useMovieGet(getParams, {
     enabled: router.isReady && hasParams,
-    refetchOnWindowFocus: false,
   });
   const movie = movieGet.data;
 
@@ -52,12 +51,11 @@ const MoviePage = () => {
     { tmdbid: movie?.recommendations || [] },
     {
       enabled: !!movie,
-      refetchOnWindowFocus: false,
     },
   );
   const recommended = recommendedMovies.data ?? [];
 
-  const getTotalCount = useMovieCount({ refetchOnWindowFocus: false });
+  const getTotalCount = useMovieCount();
 
   const loading = !router.isReady || (hasParams && movieGet.isPending);
   const notFound = router.isReady && (!hasParams || movieGet.isError);

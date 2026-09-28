@@ -36,7 +36,6 @@ const MovieGridPage = () => {
 
   const listMovies = useMoviesList(params, {
     enabled: router.isReady,
-    refetchOnWindowFocus: false,
   });
 
   const allMovies = useMemo(
@@ -44,10 +43,7 @@ const MovieGridPage = () => {
     [listMovies.data],
   );
 
-  const typesList = useTypesList({
-    enabled: true,
-    refetchOnWindowFocus: false,
-  });
+  const typesList = useTypesList();
   const filterTypes = typesList.data;
 
   const displayMovies = useMemo(

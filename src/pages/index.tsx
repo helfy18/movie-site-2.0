@@ -43,12 +43,9 @@ const withRatings = (
     : [];
 
 const IndexPage = () => {
-  const getRecentMovies = useGetRecentMovies(
-    {},
-    { refetchOnWindowFocus: false },
-  );
-  const getNowPlaying = useGetNowPlaying({ refetchOnWindowFocus: false });
-  const getUpcoming = useGetUpcoming({ refetchOnWindowFocus: false });
+  const getRecentMovies = useGetRecentMovies();
+  const getNowPlaying = useGetNowPlaying();
+  const getUpcoming = useGetUpcoming();
   const getMoviesById = useMovieListById(
     {
       tmdbid: [
@@ -57,15 +54,13 @@ const IndexPage = () => {
       ],
     },
     {
-      enabled: !!getNowPlaying.isSuccess,
-      refetchOnWindowFocus: false,
+      enabled: getNowPlaying.isSuccess,
     },
   );
   const movieList = useMoviesList(
     {},
     {
-    enabled: !!getNowPlaying.isSuccess,
-    refetchOnWindowFocus: false,
+    enabled: getNowPlaying.isSuccess,
   });
 
   const latestYear = useMemo(
