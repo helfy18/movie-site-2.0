@@ -2,12 +2,12 @@ import { Box, Grid2, Paper, styled, Tooltip, Typography } from "@mui/material";
 import { scoreColor } from "@/styles/gradient";
 import Image from "next/image";
 import { ArrowForward } from "@mui/icons-material";
-import Link from "next/link";
+import Link, { LinkProps } from "next/link";
 
 interface Props {
   movies: Movie[];
   title: string;
-  link?: { url: string; onClick: () => void };
+  link?: LinkProps["href"];
 }
 
 const PosterItem = styled(Paper)(({ theme }) => ({
@@ -29,11 +29,7 @@ const PosterRow = ({ movies, title, link }: Props) => {
       <header className="w-full font-bold text-xl my-2 flex justify-between items-center">
         <span>{title}</span>
         {link && (
-          <Link
-            href={link.url}
-            onClick={link.onClick}
-            className="no-underline text-secondary"
-          >
+          <Link href={link} className="no-underline text-secondary">
             VIEW ALL <ArrowForward fontSize="small" />
           </Link>
         )}

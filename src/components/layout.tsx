@@ -2,22 +2,23 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Grid2, Stack } from "@mui/material";
-import { useApiContext } from "@/contexts/apiContext";
+import { useRouter } from "next/router";
 import NewReleasesIcon from "@mui/icons-material/NewReleases";
 
 interface layoutProps {
   pageTitle: string;
+  holiday?: string;
   children: React.ReactNode;
 }
 
 const Layout = (props: layoutProps) => {
-  const { filters } = useApiContext();
+  const holidays = [useRouter().query.holiday, props.holiday].flat();
   return (
     <div
       className="py-[1%] px-[5%] font-sans"
       style={{
         backgroundImage:
-          filters && filters.holiday?.includes("Christmas")
+          holidays.includes("Christmas")
             ? `url('/christmas.png')`
             : undefined,
         backgroundSize: "100%",

@@ -1,3 +1,5 @@
+import type { ParsedUrlQuery } from "querystring";
+
 const providerLinks: { [key: number]: string } = {
   8: "https://www.netflix.com/",
   337: "https://www.disneyplus.com/",
@@ -140,3 +142,37 @@ export const generateEmptyMovie = (movie: TMDBMovie): Movie => {
 export const getProviderLink = (providerId: number): string => {
   return providerLinks[providerId] || "#"; // Default to "#" if link not found
 };
+
+const stringListKeys = [
+  "genre",
+  "universe",
+  "exclusive",
+  "studio",
+  "holiday",
+  "year",
+  "director",
+  "decade",
+  "provider",
+] as const;
+const numberListKeys = ["runtime", "rating"] as const;
+
+const toList = (value: string | string[] | undefined) =>
+  value === undefined ? undefined : Array.isArray(value) ? value : [value];
+
+export const parseGridQuery = (query: ParsedUrlQuery): MovieListQuery => {
+  const result: MovieListQuery = {};
+  for (const key of stringListKeys) {
+    const list = toList(query[key]);
+    if (list) result[key] = list;
+  }
+  for (const key of numberListKeys) {
+    const list = toList(query[key]);
+    if (list) result[key] = list.map(Number);
+  }
+  return result;
+};
+
+export const gridLink = (query: MovieListQuery) => ({
+  pathname: "/movie-grid",
+  query: { ...query },
+});

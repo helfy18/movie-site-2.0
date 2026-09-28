@@ -3,7 +3,6 @@ import {
   useMovieCount,
   useMovieGet,
   useMovieListById,
-  useMoviesList,
 } from "@/contexts/apiContext";
 import {
   Box,
@@ -18,7 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { scoreColor } from "@/styles/gradient";
 import InfoTable from "@/components/infoTable";
@@ -37,7 +36,6 @@ const queryValue = (value: string | string[] | undefined) =>
   Array.isArray(value) ? value[0] : value;
 
 const MoviePage = () => {
-  const [params, setParams] = useState<MovieListQuery>({});
   const [showImage, setShowImage] = useState(false);
 
   const router = useRouter();
@@ -66,27 +64,13 @@ const MoviePage = () => {
   );
   const recommended = recommendedMovies.data ?? [];
 
-  const listMovies = useMoviesList(params, {
-    enabled: false,
-    refetchOnWindowFocus: false,
-  });
-  const { refetch: refetchList } = listMovies;
-
   const getTotalCount = useMovieCount({ refetchOnWindowFocus: false });
-
-  const infoTableClick = (value: string | number, queryType: string) => {
-    setParams({ [queryType]: [value] });
-  };
-
-  useEffect(() => {
-    if (Object.keys(params).length > 0) refetchList();
-  }, [params, refetchList]);
 
   const loading = !router.isReady || (hasParams && movieGet.isPending);
   const notFound = router.isReady && (!hasParams || movieGet.isError);
 
   return (
-    <Layout pageTitle={movie?.movie || "Movie Page"}>
+    <Layout pageTitle={movie?.movie || "Movie Page"} holiday={movie?.holiday}>
       {loading && <Spinner />}
       {notFound && (
         <Box className="flex justify-center items-center h-[80vh] w-full">
@@ -204,7 +188,7 @@ const MoviePage = () => {
             </Grid2>
             <Grid2 size={{ sm: 12, md: 5 }}>
               <Stack spacing={2}>
-                <InfoTable movie={movie} onClick={infoTableClick} />
+                <InfoTable movie={movie} />
                 <ProviderTable movie={movie} />
               </Stack>
             </Grid2>

@@ -1,11 +1,4 @@
-import {
-  createContext,
-  FC,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { FC, ReactNode } from "react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -19,36 +12,14 @@ const TMDBURL = "https://api.themoviedb.org";
 
 const queryClient = new QueryClient();
 
-interface ApiContextType {
-  filters: MovieListQuery;
-  setFilters: (filters: MovieListQuery) => void;
-}
-
-const ApiContext = createContext<ApiContextType>({
-  filters: {},
-  setFilters: () => {},
-});
-
-export const ApiProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [filters, setFilters] = useState<MovieListQuery>({});
-  return (
-    <ApiContext.Provider value={{ filters, setFilters }}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </ApiContext.Provider>
-  );
-};
-
-export const useApiContext = (): ApiContextType => useContext(ApiContext);
+export const ApiProvider: FC<{ children: ReactNode }> = ({ children }) => (
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+);
 
 export const useMoviesList = (
   params: MovieListQuery,
   options?: any,
 ): UseQueryResult<Movie[], Error> => {
-  const { setFilters } = useApiContext();
-  useEffect(() => {
-    setFilters(params);
-  }, [JSON.stringify(params)]);
-
   return useQuery({
     queryKey: ["movie/list", params],
     queryFn: async () => {

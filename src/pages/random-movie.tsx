@@ -61,7 +61,7 @@ export const RandomMovie = () => {
   };
 
   return (
-    <Layout pageTitle={`Random Movie`}>
+    <Layout pageTitle="Random Movie" holiday={randomMovie?.holiday}>
       {getRandomMovie.isFetching || !filterTypes ? (
         <Spinner />
       ) : randomMovie ? (

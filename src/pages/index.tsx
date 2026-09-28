@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import Layout from "../components/layout";
 import {
   useGetNowPlaying,
@@ -8,7 +8,7 @@ import {
   useMoviesList,
 } from "@/contexts/apiContext";
 import PosterRow from "@/components/posterRow";
-import { generateEmptyMovie } from "@/utils";
+import { generateEmptyMovie, gridLink } from "@/utils";
 import Spinner from "@/components/spinner";
 
 const isChristmas = (): Boolean => {
@@ -42,8 +42,6 @@ const withRatings = (
     : [];
 
 const IndexPage = () => {
-  const [params, setParams] = useState<MovieListQuery>({});
-
   const getRecentMovies = useGetRecentMovies(
     {},
     { refetchOnWindowFocus: false },
@@ -62,7 +60,9 @@ const IndexPage = () => {
       refetchOnWindowFocus: false,
     },
   );
-  const movieList = useMoviesList(params, {
+  const movieList = useMoviesList(
+    {},
+    {
     enabled: !!getNowPlaying.isSuccess,
     refetchOnWindowFocus: false,
   });
@@ -112,14 +112,7 @@ const IndexPage = () => {
                   return movie.holiday === "Christmas";
                 })
                 .slice(0, 20)}
-              link={{
-                url: "/movie-grid",
-                onClick: () => {
-                  setParams({
-                    holiday: ["Christmas"],
-                  });
-                },
-              }}
+              link={gridLink({ holiday: ["Christmas"] })}
             />
           )}
           {isHalloween() && (
@@ -130,14 +123,7 @@ const IndexPage = () => {
                   return movie.holiday === "Halloween";
                 })
                 .slice(0, 20)}
-              link={{
-                url: "/movie-grid",
-                onClick: () => {
-                  setParams({
-                    holiday: ["Halloween"],
-                  });
-                },
-              }}
+              link={gridLink({ holiday: ["Halloween"] })}
             />
           )}
           <PosterRow
@@ -145,28 +131,14 @@ const IndexPage = () => {
             movies={movieList.data
               .filter((movie) => movie.year === latestYear)
               .slice(0, 20)}
-            link={{
-              url: "/movie-grid",
-              onClick: () => {
-                setParams({
-                  year: [String(latestYear)],
-                });
-              },
-            }}
+            link={gridLink({ year: [String(latestYear)] })}
           />
           <PosterRow
             title="Best of Last Year"
             movies={movieList.data
               .filter((movie) => movie.year === (latestYear ?? 0) - 1)
               .slice(0, 20)}
-            link={{
-              url: "/movie-grid",
-              onClick: () => {
-                setParams({
-                  year: [String((latestYear ?? 0) - 1)],
-                });
-              },
-            }}
+            link={gridLink({ year: [String((latestYear ?? 0) - 1)] })}
           />
           <PosterRow
             title="Best of the 80's"
@@ -175,14 +147,7 @@ const IndexPage = () => {
                 return movie.year >= 1980 && movie.year <= 1989;
               })
               .slice(0, 20)}
-            link={{
-              url: "/movie-grid",
-              onClick: () => {
-                setParams({
-                  decade: ["1980-1989"],
-                });
-              },
-            }}
+            link={gridLink({ decade: ["1980-1989"] })}
           />
           <PosterRow
             title="Best of the 90's"
@@ -191,28 +156,14 @@ const IndexPage = () => {
                 return movie.year >= 1990 && movie.year <= 1999;
               })
               .slice(0, 20)}
-            link={{
-              url: "/movie-grid",
-              onClick: () => {
-                setParams({
-                  decade: ["1990-1999"],
-                });
-              },
-            }}
+            link={gridLink({ decade: ["1990-1999"] })}
           />
           <PosterRow
             title="Marvel Cinematic Universe"
             movies={movieList.data.filter(
               (movie) => movie.sub_universe === "MCU",
             )}
-            link={{
-              url: "/movie-grid",
-              onClick: () => {
-                setParams({
-                  universe: ["MCU"],
-                });
-              },
-            }}
+            link={gridLink({ universe: ["MCU"] })}
           />
         </>
       )}

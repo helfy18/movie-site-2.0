@@ -5,17 +5,32 @@ import SearchIcon from "@mui/icons-material/Search";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Link from "next/link";
-import { useState } from "react";
+import { CSSProperties, useState } from "react";
+import { gridLink } from "@/utils";
 
-interface MovieGridProps {
-  movie: Movie;
-  onClick: (value: string | number, queryType: string) => void;
+type GridQueryKey = "universe" | "genre" | "director" | "studio";
+
+interface Row {
+  label: string;
+  value?: string | number;
+  style?: CSSProperties;
+  queryType?: GridQueryKey;
 }
 
-const InfoTable = ({ movie, onClick }: MovieGridProps) => {
+interface InfoTableProps {
+  movie: Movie;
+}
+
+const singleFilter = (key: GridQueryKey, value: string): MovieListQuery => {
+  const query: MovieListQuery = {};
+  query[key] = [value];
+  return query;
+};
+
+const InfoTable = ({ movie }: InfoTableProps) => {
   const [expanded, setExpanded] = useState(false);
 
-  const rows = [
+  const rows: Row[] = [
     { label: "Title", value: movie.movie },
     {
       label: "Score",
@@ -81,11 +96,8 @@ const InfoTable = ({ movie, onClick }: MovieGridProps) => {
                     <span>{value}</span>
                   )}
                   {queryType && (
-                    <Link href="/movie-grid">
-                      <SearchIcon
-                        sx={{ cursor: "pointer", ml: 1 }}
-                        onClick={() => onClick(value, queryType)}
-                      />
+                    <Link href={gridLink(singleFilter(queryType, String(value)))}>
+                      <SearchIcon sx={{ cursor: "pointer", ml: 1 }} />
                     </Link>
                   )}
                 </Box>

@@ -5,12 +5,10 @@ import MovieGrid from "@/components/movieGrid";
 import Filters from "@/components/filters";
 import { Stack, Button, TextField, InputAdornment, Grid2 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import {
-  useApiContext,
-  useMoviesList,
-  useTypesList,
-} from "@/contexts/apiContext";
+import { useMoviesList, useTypesList } from "@/contexts/apiContext";
 import Spinner from "@/components/spinner";
+import { useRouter } from "next/router";
+import { gridLink, parseGridQuery } from "@/utils";
 
 const movieSearch = (text: string, movies: Movie[]) => {
   const lowerText = text.toLowerCase();
@@ -29,14 +27,15 @@ const movieSearch = (text: string, movies: Movie[]) => {
 };
 
 const MovieGridPage = () => {
-  const { filters } = useApiContext();
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [params, setParams] = useState<MovieListQuery>(filters);
   const [showDropdown, setShowDropdown] = useState(false);
 
+  const params = useMemo(() => parseGridQuery(router.query), [router.query]);
+
   const listMovies = useMoviesList(params, {
-    enabled: true,
+    enabled: router.isReady,
     refetchOnWindowFocus: false,
   });
 
@@ -62,16 +61,15 @@ const MovieGridPage = () => {
   };
 
   const onFilterApply = (filterValues: MovieListQuery) => {
-    setParams(filterValues);
+    router.push(gridLink(filterValues), undefined, { shallow: true });
     setCurrentPage(1);
-    setShowDropdown(!showDropdown);
+    setShowDropdown(false);
   };
 
   const onFilterClear = () => {
-    listMovies.refetch();
-    setParams({});
+    router.push(gridLink({}), undefined, { shallow: true });
     setCurrentPage(1);
-    setShowDropdown(!showDropdown);
+    setShowDropdown(false);
   };
 
   return (
@@ -134,7 +132,7 @@ const MovieGridPage = () => {
         ></Filters>
       )}
       <Stack direction="row">
-        {listMovies.isLoading && <Spinner />}
+        {listMovies.isPending && <Spinner />}
         <MovieGrid
           movies={displayMovies}
           page={currentPage}
