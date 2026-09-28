@@ -38,7 +38,7 @@ const renderProviderRow = (
 );
 
 const ProviderTable = ({ movie }: Props) => {
-  const { link, flatrate, rent } = movie.provider;
+  const { link, flatrate, rent, buy } = movie.provider;
   return (
     <table>
       <thead>
@@ -49,6 +49,7 @@ const ProviderTable = ({ movie }: Props) => {
       <tbody>
         {renderProviderRow("With Account", flatrate, movie.movie, link)}
         {renderProviderRow("For Rent", rent, movie.movie, link)}
+        {renderProviderRow("To Buy", buy, movie.movie, link)}
       </tbody>
     </table>
   );

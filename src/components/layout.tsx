@@ -4,7 +4,6 @@ import Link from "next/link";
 import Head from "next/head";
 import { Grid2, Stack } from "@mui/material";
 import { useRouter } from "next/router";
-import NewReleasesIcon from "@mui/icons-material/NewReleases";
 
 interface layoutProps {
   pageTitle: string;
@@ -51,9 +50,7 @@ const Layout = (props: layoutProps) => {
         <Link href="/">Home</Link>
         <Link href="/about">About</Link>
         <Link href="/movie-grid">Ratings</Link>
-        <Link href="/random-movie">
-          Random Movie {<NewReleasesIcon />} (NEW)
-        </Link>
+        <Link href="/random-movie">Random Movie</Link>
       </Stack>
       <main>{props.children}</main>
       <Grid2 container spacing={2} sx={{ mt: 4 }}>
