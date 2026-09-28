@@ -48,9 +48,11 @@ export const RandomMovie = () => {
     }
   }, [typesList.isFetching]);
 
+  const { refetch: fetchRandomMovie } = getRandomMovie;
+
   useEffect(() => {
-    getRandomMovie.refetch();
-  }, [JSON.stringify(params)]);
+    fetchRandomMovie();
+  }, [params, fetchRandomMovie]);
 
   const onFilterApply = (filterValues: MovieListQuery) => {
     setParams(filterValues);
