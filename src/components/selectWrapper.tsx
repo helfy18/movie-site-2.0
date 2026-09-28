@@ -1,21 +1,27 @@
 import { Grid2, IconButton, MenuItem, Select } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, ReactNode, SetStateAction } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import { handleSelectChange, menuProps, selectSx } from "./selectShared";
 
-interface selectWrapperProps {
+interface Props {
+  title: string;
   selected: string[];
   setSelected: Dispatch<SetStateAction<string[]>>;
-  options: string[];
-  title: string;
+  options?: string[];
+  placeholder?: string;
+  renderValue?: (selected: string[]) => ReactNode;
+  children?: ReactNode;
 }
 
 export default function SelectWrapper({
+  title,
   selected,
   setSelected,
-  options,
-  title,
-}: selectWrapperProps) {
+  options = [],
+  placeholder = `Ex: ${options[0]}, ${options[1]}`,
+  renderValue = (value) => value.join(", "),
+  children,
+}: Props) {
   return (
     <Grid2 size={{ xs: 12, md: 6 }} className="py-0 px-2">
       <div className="text-center">{title}</div>
@@ -27,23 +33,23 @@ export default function SelectWrapper({
           className="w-full text-secondary"
           MenuProps={menuProps}
           displayEmpty
-          renderValue={(selected) => {
-            if (selected.length === 0) {
-              return (
-                <span className="text-secondary text-opacity-20">
-                  Ex: {options[0]}, {options[1]}
-                </span>
-              );
-            }
-            return selected.join(", ");
-          }}
+          renderValue={(value) =>
+            value.length === 0 ? (
+              <span className="text-secondary text-opacity-20">
+                {placeholder}
+              </span>
+            ) : (
+              renderValue(value)
+            )
+          }
           sx={selectSx}
         >
-          {options.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
-            </MenuItem>
-          ))}
+          {children ??
+            options.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
         </Select>
         {selected.length > 0 && (
           <IconButton

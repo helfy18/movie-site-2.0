@@ -1,55 +1,55 @@
-import {
-  Button,
-  Divider,
-  Grid2,
-  IconButton,
-  ListSubheader,
-  MenuItem,
-  Select,
-  Slider,
-} from "@mui/material";
+import { Button, Divider, Grid2, ListSubheader, MenuItem, Slider } from "@mui/material";
 import { useMemo, useState } from "react";
-import ClearIcon from "@mui/icons-material/Clear";
 import SelectWrapper from "./selectWrapper";
-import { handleSelectChange, menuProps, selectSx } from "./selectShared";
 import Image from "next/image";
 
-interface fitersProps {
+interface FiltersProps {
   filterTypes: AllType;
   onClear: () => void;
   onApply: (params: MovieListQuery) => void;
   values: MovieListQuery;
+  showScore?: boolean;
 }
+
+const byName = (a: string, b: string) => a.localeCompare(b);
 
 const buildGenreFilter = (genres: FilterType[]) => {
   const genreStrings = [...genres]
     .sort((a, b) => b.totalCount - a.totalCount)
     .map((genre) => genre.fieldValue);
-  const popularGenres = genreStrings.slice(0, 10).sort((a, b) => {
-    return a.localeCompare(b);
-  });
-  const moreGenres = genreStrings.slice(10).sort((a, b) => {
-    return a.localeCompare(b);
-  });
-  return { Popular: popularGenres, More: moreGenres };
+  return {
+    Popular: genreStrings.slice(0, 10).sort(byName),
+    More: genreStrings.slice(10).sort(byName),
+  };
 };
 
-const generateDecades = (years: number[]) => {
-  return Array.from(
+const generateDecades = (years: number[]) =>
+  Array.from(
     new Set(
       years.map((year) => {
         const start = Math.floor(year / 10) * 10;
-        const end = start + 9;
-        return `${start}-${end}`;
-      })
-    )
+        return `${start}-${start + 9}`;
+      }),
+    ),
   );
-};
 
-const getDirectors = (directors: FilterType[]) => {
-  return directors
-    .map((director) => director.fieldValue)
-    .sort((a, b) => a.localeCompare(b));
+const sortUniverses = (universes: Universe[]) =>
+  universes
+    .filter((val) => val.fieldValue)
+    .sort((a, b) => {
+      const aGrouped = a.subUniverses.length > 1;
+      const bGrouped = b.subUniverses.length > 1;
+      if (aGrouped && !bGrouped) return -1;
+      if (!aGrouped && bGrouped) return 1;
+      if (aGrouped && bGrouped) return b.totalCount - a.totalCount;
+      return byName(a.fieldValue, b.fieldValue);
+    });
+
+const buttonSx = {
+  width: "50%",
+  borderRadius: "0.5rem",
+  color: "secondary.main",
+  outline: "1px solid",
 };
 
 export default function Filters({
@@ -57,10 +57,13 @@ export default function Filters({
   onApply,
   onClear,
   values,
-}: fitersProps) {
+  showScore = false,
+}: FiltersProps) {
+  const runtimeRange = [filterTypes.runtime[0].min, filterTypes.runtime[0].max];
+
   const [directors, setDirectors] = useState<string[]>(values.director ?? []);
   const [exclusives, setExclusives] = useState<string[]>(
-    values.exclusive ?? []
+    values.exclusive ?? [],
   );
   const [studios, setStudios] = useState<string[]>(values.studio ?? []);
   const [years, setYears] = useState<string[]>(values.year ?? []);
@@ -70,17 +73,9 @@ export default function Filters({
   const [genres, setGenres] = useState<string[]>(values.genre ?? []);
   const [universes, setUniverses] = useState<string[]>(values.universe ?? []);
   const [runtime, setRuntime] = useState<number[]>(
-    values.runtime ?? [filterTypes.runtime[0].min, filterTypes.runtime[0].max]
+    values.runtime ?? runtimeRange,
   );
   const [score, setScore] = useState<number[]>(values.rating ?? [0, 100]);
-
-  const handleRuntimeChange = (_: Event, newValue: number | number[]) => {
-    setRuntime(newValue as number[]);
-  };
-
-  const handleScoreChange = (_: Event, newValue: number | number[]) => {
-    setScore(newValue as number[]);
-  };
 
   const handleClear = () => {
     setDirectors([]);
@@ -92,7 +87,7 @@ export default function Filters({
     setDecades([]);
     setGenres([]);
     setUniverses([]);
-    setRuntime([filterTypes.runtime[0].min, filterTypes.runtime[0].max]);
+    setRuntime(runtimeRange);
     setScore([0, 100]);
     onClear();
   };
@@ -106,7 +101,7 @@ export default function Filters({
       year: years,
       holiday: holidays,
       universe: universes,
-      runtime: runtime,
+      runtime,
       decade: decades,
       provider: providers,
       rating: score,
@@ -118,24 +113,11 @@ export default function Filters({
     [filterTypes.genre],
   );
   const sortedUniverses = useMemo(
-    () =>
-      filterTypes.universes
-        .filter((val) => val.fieldValue)
-        .sort((a, b) => {
-          // Step 1: Sort by whether `subUniverses` array has items
-          if (a.subUniverses.length > 1 && b.subUniverses.length <= 1) return -1;
-          if (a.subUniverses.length <= 1 && b.subUniverses.length > 1) return 1;
-          // Step 2: If both have `subUniverses`, sort by `totalCount` descending
-          if (a.subUniverses.length > 1 && b.subUniverses.length > 1) {
-            return b.totalCount - a.totalCount;
-          }
-          // Step 3: If both have empty `subUniverses`, sort by `fieldValue` ascending
-          return a.fieldValue.localeCompare(b.fieldValue);
-        }),
+    () => sortUniverses(filterTypes.universes),
     [filterTypes.universes],
   );
   const directorOptions = useMemo(
-    () => getDirectors(filterTypes.director),
+    () => filterTypes.director.map((d) => d.fieldValue).sort(byName),
     [filterTypes.director],
   );
   const yearOptions = useMemo(
@@ -147,283 +129,165 @@ export default function Filters({
     [filterTypes.year],
   );
 
-  const multipleSubUniverses = sortedUniverses.filter(
-    (u) => u.subUniverses.length > 1
-  );
-  const singleOrNoSubUniverses = sortedUniverses.filter(
-    (u) => u.subUniverses.length <= 1
-  );
+  const universeItems = useMemo(() => {
+    const grouped = sortedUniverses.filter((u) => u.subUniverses.length > 1);
+    const other = sortedUniverses.filter((u) => u.subUniverses.length <= 1);
+    return [
+      ...grouped.flatMap((universe) => [
+        <ListSubheader key={`header-${universe.fieldValue}`}>
+          {universe.fieldValue}
+        </ListSubheader>,
+        ...[...universe.subUniverses]
+          .sort((a, b) => byName(a.fieldValue, b.fieldValue))
+          .map((sub) => (
+            <MenuItem
+              key={`${universe.fieldValue}-${sub.fieldValue}`}
+              value={sub.fieldValue}
+            >
+              {sub.fieldValue}
+            </MenuItem>
+          )),
+        <MenuItem key={`all-${universe.fieldValue}`} value={universe.fieldValue}>
+          All {universe.fieldValue}
+        </MenuItem>,
+        <Divider key={`divider-${universe.fieldValue}`} />,
+      ]),
+      ...(other.length > 0
+        ? [
+            <ListSubheader key="misc-header">Other</ListSubheader>,
+            ...other.map((universe) => (
+              <MenuItem key={universe.fieldValue} value={universe.fieldValue}>
+                {universe.fieldValue}
+              </MenuItem>
+            )),
+          ]
+        : []),
+    ];
+  }, [sortedUniverses]);
+
+  const providerName = (id: string) =>
+    filterTypes.provider.find((p) => String(p.provider_id) === id)
+      ?.provider_name ?? id;
 
   return (
-    <>
-      <Grid2 container className="mb-4 pt-2 bg-card">
-        <Grid2 size={{ xs: 6 }} key={1} className="mb-2 px-2 text-right">
-          <Button
-            sx={{
-              width: "50%",
-              borderRadius: "0.5rem",
-              color: "secondary.main",
-              outline: "1px solid",
-            }}
-            onClick={onSubmit}
-          >
-            Apply
-          </Button>
-        </Grid2>
-        <Grid2 size={{ xs: 6 }} key={2} className="mb-2 px-2">
-          <Button
-            sx={{
-              width: "50%",
-              borderRadius: "0.5rem",
-              color: "secondary.main",
-              outline: "1px solid",
-            }}
-            onClick={handleClear}
-          >
-            Reset
-          </Button>
-        </Grid2>
-        {filterTypes.score && (
-          <Grid2 size={{ xs: 12 }} sx={{ p: 2 }}>
-            <div className="text-center">Score</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <Slider
-                min={0}
-                max={100}
-                valueLabelDisplay="auto"
-                color="secondary"
-                value={score}
-                onChange={handleScoreChange}
-              />
-            </div>
-          </Grid2>
-        )}
-        <Grid2 size={{ xs: 12, md: 6 }} className="py-0 px-2">
-          <div className="text-center">Genre</div>
-          <div className="flex items-center gap-2">
-            <Select
-              multiple
-              value={genres}
-              onChange={(event) => handleSelectChange(event, setGenres)}
-              className="w-full"
-              MenuProps={menuProps}
-              displayEmpty
-              renderValue={(selected) => {
-                if (selected.length === 0) {
-                  return (
-                    <span className="text-secondary text-opacity-20">
-                      Ex: {genreOptions.Popular[0]}, {genreOptions.Popular[1]}
-                    </span>
-                  );
-                }
-                return selected.join(", ");
-              }}
-              sx={selectSx}
-            >
-              <ListSubheader>Popular Genres</ListSubheader>
-              {genreOptions.Popular.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-              <ListSubheader>More Genres</ListSubheader>
-              {genreOptions.More.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-            {genres.length > 0 && (
-              <IconButton
-                onClick={() => setGenres([])}
-                aria-label="clear selection"
-              >
-                <ClearIcon color="secondary" />
-              </IconButton>
-            )}
-          </div>
-        </Grid2>
-        <Grid2 size={{ xs: 12, md: 6 }} className="py-0 px-2">
-          <div className="text-center">Universe</div>
-          <div className="flex items-center gap-2">
-            <Select
-              multiple
-              value={universes}
-              onChange={(event) => handleSelectChange(event, setUniverses)}
-              className="w-full text-secondary"
-              MenuProps={menuProps}
-              displayEmpty
-              renderValue={(selected) => {
-                if (selected.length === 0) {
-                  return (
-                    <span className="text-secondary text-opacity-20">
-                      Ex: {sortedUniverses[0].fieldValue},{" "}
-                      {sortedUniverses[1].fieldValue}
-                    </span>
-                  );
-                }
-                return selected.join(", ");
-              }}
-              sx={selectSx}
-            >
-              {[
-                ...multipleSubUniverses
-                  .map((universe) => {
-                    const subItems = [...universe.subUniverses]
-                      .sort((a, b) => a.fieldValue.localeCompare(b.fieldValue))
-                      .map((subUniverse) => (
-                        <MenuItem
-                          key={`${universe.fieldValue}-${subUniverse.fieldValue}`}
-                          value={subUniverse.fieldValue}
-                        >
-                          {subUniverse.fieldValue}
-                        </MenuItem>
-                      ));
-
-                    return [
-                      <ListSubheader key={`header-${universe.fieldValue}`}>
-                        {universe.fieldValue}
-                      </ListSubheader>,
-                      ...subItems,
-                      <MenuItem
-                        key={`all-${universe.fieldValue}`}
-                        value={universe.fieldValue}
-                      >
-                        All {universe.fieldValue}
-                      </MenuItem>,
-                      <Divider key={`divider-${universe.fieldValue}`} />,
-                    ];
-                  })
-                  .flat(),
-                ...(singleOrNoSubUniverses.length > 0
-                  ? [
-                      <ListSubheader key="misc-header">Other</ListSubheader>,
-                      ...singleOrNoSubUniverses.map((universe) => (
-                        <MenuItem
-                          key={universe.fieldValue}
-                          value={universe.fieldValue}
-                        >
-                          {universe.fieldValue}
-                        </MenuItem>
-                      )),
-                    ]
-                  : []),
-              ]}
-            </Select>
-            {universes.length > 0 && (
-              <IconButton
-                onClick={() => setUniverses([])}
-                aria-label="clear selection"
-              >
-                <ClearIcon color="secondary" />
-              </IconButton>
-            )}
-          </div>
-        </Grid2>
-        <SelectWrapper
-          selected={directors}
-          setSelected={setDirectors}
-          options={directorOptions}
-          title="Director"
-        />
-        <SelectWrapper
-          selected={studios}
-          setSelected={setStudios}
-          options={filterTypes.studio}
-          title="Studio"
-        />
-        <SelectWrapper
-          selected={years}
-          setSelected={setYears}
-          options={yearOptions}
-          title="Year"
-        />
-        <Grid2 size={{ xs: 12, md: 6 }} className="py-0 px-2">
-          <div className="text-center">Streaming Provider</div>
-          <div className="flex items-center gap-2">
-            <Select
-              multiple
-              value={providers}
-              onChange={(event) => handleSelectChange(event, setProviders)}
-              className="w-full text-secondary"
-              MenuProps={menuProps}
-              displayEmpty
-              renderValue={(selected) => {
-                if (selected.length === 0) {
-                  return (
-                    <span className="text-secondary text-opacity-20">
-                      Ex: {filterTypes.provider[0].provider_name},{" "}
-                      {filterTypes.provider[1].provider_name}
-                    </span>
-                  );
-                } else {
-                  return selected
-                    .map(
-                      (id) =>
-                        filterTypes.provider.find(
-                          (pro) => String(pro.provider_id) === id
-                        )?.provider_name ?? id
-                    )
-                    .join(", ");
-                }
-              }}
-              sx={selectSx}
-            >
-              {filterTypes.provider.map((provider: ProviderInfo) => (
-                <MenuItem
-                  key={provider.provider_id}
-                  value={String(provider.provider_id)}
-                >
-                  <Grid2 container spacing={1}>
-                    <Image
-                      src={`https://image.tmdb.org/t/p/w154/${provider.logo_path}`}
-                      height={35}
-                      width={35}
-                      alt="provider"
-                      className="rounded-full"
-                    />
-                    <Grid2 my="auto">{provider.provider_name}</Grid2>
-                  </Grid2>
-                </MenuItem>
-              ))}
-            </Select>
-            {providers.length > 0 && (
-              <IconButton
-                onClick={() => setProviders([])}
-                aria-label="clear selection"
-              >
-                <ClearIcon color="secondary" />
-              </IconButton>
-            )}
-          </div>
-        </Grid2>
-        <SelectWrapper
-          selected={holidays}
-          setSelected={setHolidays}
-          options={filterTypes.holiday}
-          title="Holiday"
-        />
-        <SelectWrapper
-          selected={decades}
-          setSelected={setDecades}
-          options={decadeOptions}
-          title="Decade"
-        />
-        <Grid2 size={{ xs: 12 }} sx={{ p: 2 }}>
-          <div className="text-center">Runtime</div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <Slider
-              min={filterTypes.runtime[0].min}
-              max={filterTypes.runtime[0].max}
-              valueLabelDisplay="auto"
-              color="secondary"
-              value={runtime}
-              valueLabelFormat={(val: number) => `${val} min`}
-              onChange={handleRuntimeChange}
-            />
-          </div>
-        </Grid2>
+    <Grid2 container className="mb-4 pt-2 bg-card">
+      <Grid2 size={{ xs: 6 }} className="mb-2 px-2 text-right">
+        <Button sx={buttonSx} onClick={onSubmit}>
+          Apply
+        </Button>
       </Grid2>
-    </>
+      <Grid2 size={{ xs: 6 }} className="mb-2 px-2">
+        <Button sx={buttonSx} onClick={handleClear}>
+          Reset
+        </Button>
+      </Grid2>
+      {showScore && (
+        <Grid2 size={{ xs: 12 }} sx={{ p: 2 }}>
+          <div className="text-center">Score</div>
+          <Slider
+            min={0}
+            max={100}
+            valueLabelDisplay="auto"
+            color="secondary"
+            value={score}
+            onChange={(_, value) => setScore(value as number[])}
+          />
+        </Grid2>
+      )}
+      <SelectWrapper
+        title="Genre"
+        selected={genres}
+        setSelected={setGenres}
+        placeholder={`Ex: ${genreOptions.Popular[0]}, ${genreOptions.Popular[1]}`}
+      >
+        <ListSubheader>Popular Genres</ListSubheader>
+        {genreOptions.Popular.map((option) => (
+          <MenuItem key={option} value={option}>
+            {option}
+          </MenuItem>
+        ))}
+        <ListSubheader>More Genres</ListSubheader>
+        {genreOptions.More.map((option) => (
+          <MenuItem key={option} value={option}>
+            {option}
+          </MenuItem>
+        ))}
+      </SelectWrapper>
+      <SelectWrapper
+        title="Universe"
+        selected={universes}
+        setSelected={setUniverses}
+        placeholder={`Ex: ${sortedUniverses[0]?.fieldValue}, ${sortedUniverses[1]?.fieldValue}`}
+      >
+        {universeItems}
+      </SelectWrapper>
+      <SelectWrapper
+        title="Director"
+        selected={directors}
+        setSelected={setDirectors}
+        options={directorOptions}
+      />
+      <SelectWrapper
+        title="Studio"
+        selected={studios}
+        setSelected={setStudios}
+        options={filterTypes.studio}
+      />
+      <SelectWrapper
+        title="Year"
+        selected={years}
+        setSelected={setYears}
+        options={yearOptions}
+      />
+      <SelectWrapper
+        title="Streaming Provider"
+        selected={providers}
+        setSelected={setProviders}
+        placeholder={`Ex: ${filterTypes.provider[0]?.provider_name}, ${filterTypes.provider[1]?.provider_name}`}
+        renderValue={(ids) => ids.map(providerName).join(", ")}
+      >
+        {filterTypes.provider.map((provider) => (
+          <MenuItem
+            key={provider.provider_id}
+            value={String(provider.provider_id)}
+          >
+            <Grid2 container spacing={1}>
+              <Image
+                src={`https://image.tmdb.org/t/p/w154/${provider.logo_path}`}
+                height={35}
+                width={35}
+                alt={provider.provider_name}
+                className="rounded-full"
+              />
+              <Grid2 my="auto">{provider.provider_name}</Grid2>
+            </Grid2>
+          </MenuItem>
+        ))}
+      </SelectWrapper>
+      <SelectWrapper
+        title="Holiday"
+        selected={holidays}
+        setSelected={setHolidays}
+        options={filterTypes.holiday}
+      />
+      <SelectWrapper
+        title="Decade"
+        selected={decades}
+        setSelected={setDecades}
+        options={decadeOptions}
+      />
+      <Grid2 size={{ xs: 12 }} sx={{ p: 2 }}>
+        <div className="text-center">Runtime</div>
+        <Slider
+          min={runtimeRange[0]}
+          max={runtimeRange[1]}
+          valueLabelDisplay="auto"
+          color="secondary"
+          value={runtime}
+          valueLabelFormat={(val: number) => `${val} min`}
+          onChange={(_, value) => setRuntime(value as number[])}
+        />
+      </Grid2>
+    </Grid2>
   );
 }

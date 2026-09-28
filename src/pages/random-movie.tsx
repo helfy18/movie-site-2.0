@@ -8,7 +8,7 @@ import {
   useTypesList,
 } from "@/contexts/apiContext";
 import { Box, Button, Grid2, Link, Stack } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import DaniBadge from "@/components/daniBadge";
 import ScoreCard from "@/components/scoreCard";
@@ -27,10 +27,7 @@ export const RandomMovie = () => {
 
   const randomMovie = showFilters ? undefined : getRandomMovie.data;
 
-  const filterTypes = useMemo<AllType | undefined>(
-    () => typesList.data && { ...typesList.data, score: [0, 100] },
-    [typesList.data],
-  );
+  const filterTypes = typesList.data;
 
   const { refetch: fetchRandomMovie } = getRandomMovie;
 
@@ -152,7 +149,8 @@ export const RandomMovie = () => {
             onApply={onFilterApply}
             onClear={() => {}}
             values={params}
-          ></Filters>
+            showScore
+          />
         )
       )}
     </Layout>
