@@ -12,11 +12,9 @@ interface Props {
 }
 
 const PosterItem = styled(Paper)(({ theme }) => ({
-  backgroundColor: "#44403c",
   padding: theme.spacing(1),
   textAlign: "center",
-  color: "#f5f5f5",
-  fontFamily: "Arial",
+  color: theme.palette.text.secondary,
   height: "250px",
   width: "100px",
   fontSize: "13px",

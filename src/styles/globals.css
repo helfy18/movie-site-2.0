@@ -2,10 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Apply colors */
 body {
-  color: #eab308; /* Set text color */
-  background-color: #292524; /* Set background color */
+  color: theme(colors.secondary);
+  background-color: theme(colors.primary);
 }
 
 @layer utilities {
@@ -18,7 +17,7 @@ th,
 td {
   padding: 0.5rem;
   border-right: 1px solid;
-  border-color: #eab308;
+  border-color: theme(colors.secondary);
 }
 
 tr {
@@ -32,5 +31,5 @@ table {
 }
 
 tr:nth-child(odd) {
-  background-color: #44403c;
+  background-color: theme(colors.card);
 }

@@ -156,7 +156,7 @@ export default function Filters({
 
   return (
     <>
-      <Grid2 container className="mb-4 pt-2 bg-stone-700">
+      <Grid2 container className="mb-4 pt-2 bg-card">
         <Grid2 size={{ xs: 6 }} key={1} className="mb-2 px-2 text-right">
           <Button
             sx={{

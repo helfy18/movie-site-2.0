@@ -72,13 +72,9 @@ const MoviePage = () => {
         <Dialog
           open={showImage}
           onClose={() => setShowImage(false)}
-          PaperProps={{
-            style: {
-              backgroundColor: "#292524",
-            },
-          }}
+          PaperProps={{ sx: { bgcolor: "background.default" } }}
         >
-          <DialogTitle color="#eab308" align="center">
+          <DialogTitle align="center">
             Dani Approved
           </DialogTitle>
           <DialogContent>

@@ -77,10 +77,7 @@ export default function MovieGrid({
                 key={index}
                 onClick={() => handlePageChange(Number(page))}
                 disabled={page === currentPage}
-                sx={{
-                  color: "secondary.main",
-                  "&.Mui-disabled": { color: "#78716c" },
-                }}
+                sx={{ color: "secondary.main" }}
               >
                 {page}
               </Button>

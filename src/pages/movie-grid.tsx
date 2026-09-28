@@ -87,12 +87,9 @@ const MovieGridPage = () => {
               input: {
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon className="text-yellow-500" />
+                    <SearchIcon color="secondary" />
                   </InputAdornment>
                 ),
-                style: {
-                  color: "#eab308",
-                },
               },
             }}
             className="mx-2"
@@ -111,7 +108,7 @@ const MovieGridPage = () => {
               px: 10,
               py: 2,
               mx: 1,
-              color: "#EAB308",
+              color: "secondary.main",
               outline: "1px solid",
             }}
           >
