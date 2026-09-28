@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Layout from "../components/layout";
 import {
   useGetNowPlaying,
@@ -31,9 +31,17 @@ const isHalloween = (): Boolean => {
   );
 };
 
+const withRatings = (
+  tmdbMovies: TMDBMovie[] | undefined,
+  ratedById: Map<number, Movie> | undefined,
+): Movie[] =>
+  tmdbMovies && ratedById
+    ? tmdbMovies.map(
+        (movie) => ratedById.get(movie.id) ?? generateEmptyMovie(movie),
+      )
+    : [];
+
 const IndexPage = () => {
-  const [nowPlaying, setNowPlaying] = useState<Movie[]>([]);
-  const [upcoming, setUpcoming] = useState<Movie[]>([]);
   const [params, setParams] = useState<MovieListQuery>({});
 
   const getRecentMovies = useGetRecentMovies(
@@ -67,39 +75,30 @@ const IndexPage = () => {
     [movieList.data],
   );
 
-  useEffect(() => {
-    if (getMoviesById.isSuccess) {
-      console.log(getNowPlaying.data);
-      if (getNowPlaying.data) {
-        setNowPlaying(
-          getNowPlaying.data.map((movie) => {
-            return getMoviesById.data.some((m) => m.tmdbid === movie.id)
-              ? getMoviesById.data.filter((m) => m.tmdbid === movie.id)[0]
-              : generateEmptyMovie(movie);
-          }),
-        );
-      }
-      if (getUpcoming.data) {
-        setUpcoming(
-          getUpcoming.data.map((movie) => {
-            return getMoviesById.data.some((m) => m.tmdbid === movie.id)
-              ? getMoviesById.data.filter((m) => m.tmdbid === movie.id)[0]
-              : generateEmptyMovie(movie);
-          }),
-        );
-      }
-    }
-  }, [getMoviesById.isFetching]);
+  const ratedById = useMemo(
+    () =>
+      getMoviesById.data &&
+      new Map(getMoviesById.data.map((movie) => [movie.tmdbid, movie])),
+    [getMoviesById.data],
+  );
+  const nowPlaying = useMemo(
+    () => withRatings(getNowPlaying.data, ratedById),
+    [getNowPlaying.data, ratedById],
+  );
+  const upcoming = useMemo(
+    () => withRatings(getUpcoming.data, ratedById),
+    [getUpcoming.data, ratedById],
+  );
 
   return (
     <Layout pageTitle="Home">
       {getRecentMovies.data && (
         <PosterRow title="Recently Added" movies={getRecentMovies.data} />
       )}
-      {nowPlaying && (
+      {nowPlaying.length > 0 && (
         <PosterRow title="Now Playing in Theatres" movies={nowPlaying} />
       )}
-      {upcoming && (
+      {upcoming.length > 0 && (
         <PosterRow title="Coming Soon to Theatres" movies={upcoming} />
       )}
       {movieList.isLoading && <Spinner />}

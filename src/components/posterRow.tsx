@@ -32,7 +32,7 @@ const PosterRow = ({ movies, title, link }: Props) => {
           <Link
             href={link.url}
             onClick={link.onClick}
-            style={{ textDecoration: "none", color: "secondary.main" }}
+            className="no-underline text-secondary"
           >
             VIEW ALL <ArrowForward fontSize="small" />
           </Link>

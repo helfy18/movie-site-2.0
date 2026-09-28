@@ -164,7 +164,7 @@ const MoviePage = () => {
                   </Box>
                 )}
               </Box>
-              <Box className="w-100 flex items-center justify-center">
+              <Box className="w-full flex items-center justify-center">
                 <Item
                   sx={{
                     textAlign: "center",
