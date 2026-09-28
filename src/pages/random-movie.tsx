@@ -7,7 +7,7 @@ import {
   useTypesList,
 } from "@/contexts/apiContext";
 import { Box, Button, Grid2, Link, Stack, Tooltip } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Item } from "./movie-page";
 import Image from "next/image";
 import { scoreColor } from "@/styles/gradient";
@@ -15,7 +15,6 @@ import { scoreColor } from "@/styles/gradient";
 export const RandomMovie = () => {
   const [randomMovie, setRandomMovie] = useState<Movie | undefined>();
   const [params, setParams] = useState<MovieListQuery>({});
-  const [filterTypes, setFilterTypes] = useState<AllType>();
 
   const getRandomMovie = useGetRandomMovie(params, {
     enabled: false,
@@ -38,15 +37,10 @@ export const RandomMovie = () => {
     }
   }, [getRandomMovie.isFetching]);
 
-  useEffect(() => {
-    if (typesList.isSuccess) {
-      let filterType = typesList.data;
-      filterType.score = [0, 100];
-      setFilterTypes(filterType);
-    } else if (typesList.isError) {
-      console.log(typesList.error);
-    }
-  }, [typesList.isFetching]);
+  const filterTypes = useMemo<AllType | undefined>(
+    () => typesList.data && { ...typesList.data, score: [0, 100] },
+    [typesList.data],
+  );
 
   const { refetch: fetchRandomMovie } = getRandomMovie;
 

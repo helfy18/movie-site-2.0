@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import Layout from "@/components/layout";
 import {
   useMovieCount,
@@ -18,7 +17,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { scoreColor } from "@/styles/gradient";
@@ -34,75 +33,62 @@ export const Item = styled(Paper)(({ theme }) => ({
   fontSize: "16px",
 }));
 
+const queryValue = (value: string | string[] | undefined) =>
+  Array.isArray(value) ? value[0] : value;
+
 const MoviePage = () => {
-  const [movie, setMovie] = useState<Movie>();
   const [params, setParams] = useState<MovieListQuery>({});
-  const [recommended, setRecommended] = useState<Movie[]>([]);
   const [showImage, setShowImage] = useState(false);
 
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id");
-  const title = searchParams.get("title");
-  const year = searchParams.get("year");
+  const router = useRouter();
+  const id = queryValue(router.query.id);
+  const title = queryValue(router.query.title);
+  const year = queryValue(router.query.year);
+  const hasParams = !!id || (!!title && !!year);
   const getParams: MovieGetQuery = {
-    title: title ?? undefined,
+    title,
     tmdbid: id ? parseInt(id) : undefined,
-    year: year ?? undefined,
+    year,
   };
 
   const movieGet = useMovieGet(getParams, {
-    enabled: !!id || (!!title && !!year),
+    enabled: router.isReady && hasParams,
     refetchOnWindowFocus: false,
   });
+  const movie = movieGet.data;
 
-  const useMovieList = useMovieListById(
+  const recommendedMovies = useMovieListById(
     { tmdbid: movie?.recommendations || [] },
     {
       enabled: !!movie,
       refetchOnWindowFocus: false,
     },
   );
+  const recommended = recommendedMovies.data ?? [];
 
   const listMovies = useMoviesList(params, {
     enabled: false,
     refetchOnWindowFocus: false,
   });
+  const { refetch: refetchList } = listMovies;
 
   const getTotalCount = useMovieCount({ refetchOnWindowFocus: false });
-
-  useEffect(() => {
-    if (movieGet.isSuccess) {
-      setMovie(movieGet.data);
-    } else if (movieGet.isError) {
-      console.log(movieGet.error);
-    }
-  }, [movieGet.isFetching]);
-
-  useEffect(() => {
-    if (useMovieList.isSuccess) {
-      setRecommended(useMovieList.data);
-    } else if (useMovieList.isError) {
-      console.log(useMovieList.error);
-    }
-  }, [useMovieList.isFetching]);
 
   const infoTableClick = (value: string | number, queryType: string) => {
     setParams({ [queryType]: [value] });
   };
 
   useEffect(() => {
-    if (Object.keys(params).length > 0) listMovies.refetch();
-  }, [params]);
+    if (Object.keys(params).length > 0) refetchList();
+  }, [params, refetchList]);
 
-  useEffect(() => {
-    setMovie(undefined);
-    setRecommended([]);
-  }, [id]);
+  const loading = !router.isReady || (hasParams && movieGet.isPending);
+  const notFound = router.isReady && (!hasParams || movieGet.isError);
 
   return (
     <Layout pageTitle={movie?.movie || "Movie Page"}>
-      {movieGet.isLoading && <Spinner />}
-      {!movieGet.isLoading && !movie && (
+      {loading && <Spinner />}
+      {notFound && (
         <Box className="flex justify-center items-center h-[80vh] w-full">
           Not Found
         </Box>
@@ -259,7 +245,7 @@ const MoviePage = () => {
               </Stack>
             </Grid2>
           </Grid2>
-          {recommended && (
+          {recommended.length > 0 && (
             <PosterRow title="More Like This" movies={recommended} />
           )}
         </>

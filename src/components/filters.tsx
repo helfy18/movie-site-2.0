@@ -8,7 +8,7 @@ import {
   Select,
   Slider,
 } from "@mui/material";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import SelectWrapper, {
   getMenuProps,
@@ -25,13 +25,13 @@ interface fitersProps {
 }
 
 const buildGenreFilter = (genres: FilterType[]) => {
-  let genreStrings = genres
+  const genreStrings = [...genres]
     .sort((a, b) => b.totalCount - a.totalCount)
     .map((genre) => genre.fieldValue);
-  var popularGenres = genreStrings.slice(0, 10).sort((a, b) => {
+  const popularGenres = genreStrings.slice(0, 10).sort((a, b) => {
     return a.localeCompare(b);
   });
-  var moreGenres = genreStrings.slice(10).sort((a, b) => {
+  const moreGenres = genreStrings.slice(10).sort((a, b) => {
     return a.localeCompare(b);
   });
   return { Popular: popularGenres, More: moreGenres };
@@ -116,20 +116,39 @@ export default function Filters({
     });
   };
 
-  const genreOptions = buildGenreFilter(filterTypes.genre);
-  const sortedUniverses = filterTypes.universes
-    .filter((val) => val.fieldValue)
-    .sort((a, b) => {
-      // Step 1: Sort by whether `subUniverses` array has items
-      if (a.subUniverses.length > 1 && b.subUniverses.length <= 1) return -1;
-      if (a.subUniverses.length <= 1 && b.subUniverses.length > 1) return 1;
-      // Step 2: If both have `subUniverses`, sort by `totalCount` descending
-      if (a.subUniverses.length > 1 && b.subUniverses.length > 1) {
-        return b.totalCount - a.totalCount;
-      }
-      // Step 3: If both have empty `subUniverses`, sort by `fieldValue` ascending
-      return a.fieldValue.localeCompare(b.fieldValue);
-    });
+  const genreOptions = useMemo(
+    () => buildGenreFilter(filterTypes.genre),
+    [filterTypes.genre],
+  );
+  const sortedUniverses = useMemo(
+    () =>
+      filterTypes.universes
+        .filter((val) => val.fieldValue)
+        .sort((a, b) => {
+          // Step 1: Sort by whether `subUniverses` array has items
+          if (a.subUniverses.length > 1 && b.subUniverses.length <= 1) return -1;
+          if (a.subUniverses.length <= 1 && b.subUniverses.length > 1) return 1;
+          // Step 2: If both have `subUniverses`, sort by `totalCount` descending
+          if (a.subUniverses.length > 1 && b.subUniverses.length > 1) {
+            return b.totalCount - a.totalCount;
+          }
+          // Step 3: If both have empty `subUniverses`, sort by `fieldValue` ascending
+          return a.fieldValue.localeCompare(b.fieldValue);
+        }),
+    [filterTypes.universes],
+  );
+  const directorOptions = useMemo(
+    () => getDirectors(filterTypes.director),
+    [filterTypes.director],
+  );
+  const yearOptions = useMemo(
+    () => [...filterTypes.year].sort((a, b) => b - a).map(String),
+    [filterTypes.year],
+  );
+  const decadeOptions = useMemo(
+    () => generateDecades(filterTypes.year),
+    [filterTypes.year],
+  );
 
   const multipleSubUniverses = sortedUniverses.filter(
     (u) => u.subUniverses.length > 1
@@ -253,7 +272,7 @@ export default function Filters({
               {[
                 ...multipleSubUniverses
                   .map((universe) => {
-                    const subItems = universe.subUniverses
+                    const subItems = [...universe.subUniverses]
                       .sort((a, b) => a.fieldValue.localeCompare(b.fieldValue))
                       .map((subUniverse) => (
                         <MenuItem
@@ -307,7 +326,7 @@ export default function Filters({
         <SelectWrapper
           selected={directors}
           setSelected={setDirectors}
-          options={getDirectors(filterTypes.director)}
+          options={directorOptions}
           title="Director"
         />
         <SelectWrapper
@@ -319,7 +338,7 @@ export default function Filters({
         <SelectWrapper
           selected={years}
           setSelected={setYears}
-          options={filterTypes.year.sort((a, b) => b - a).map(String)}
+          options={yearOptions}
           title="Year"
         />
         <Grid2 size={{ xs: 12, md: 6 }} className="py-0 px-2">
@@ -390,7 +409,7 @@ export default function Filters({
         <SelectWrapper
           selected={decades}
           setSelected={setDecades}
-          options={generateDecades(filterTypes.year)}
+          options={decadeOptions}
           title="Decade"
         />
         <Grid2 size={{ xs: 12 }} sx={{ p: 2 }}>

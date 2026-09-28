@@ -15,8 +15,6 @@ export default function MovieGrid({
   page: currentPage,
   onPageChange,
 }: MovieGridProps) {
-  movies.sort((a, b) => b.jh_score - a.jh_score);
-
   const lastMovie = currentPage * moviesPerPage;
   const firstMovie = lastMovie - moviesPerPage;
   const currentMovies = movies.slice(firstMovie, lastMovie);
@@ -86,7 +84,7 @@ export default function MovieGrid({
               >
                 {page}
               </Button>
-            )
+            ),
           )}
         </div>
       </Grid2>

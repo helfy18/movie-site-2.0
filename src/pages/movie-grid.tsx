@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import * as React from "react";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import Layout from "@/components/layout";
 import MovieGrid from "@/components/movieGrid";
 import Filters from "@/components/filters";
@@ -31,41 +30,26 @@ const movieSearch = (text: string, movies: Movie[]) => {
 
 const MovieGridPage = () => {
   const { filters } = useApiContext();
-  const [allMovies, setAllMovies] = useState<Movie[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [params, setParams] = useState<MovieListQuery>(filters);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [filterTypes, setFilterTypes] = useState<AllType>();
 
   const listMovies = useMoviesList(params, {
     enabled: true,
     refetchOnWindowFocus: false,
   });
 
-  useEffect(() => {
-    if (listMovies.isSuccess) {
-      const sortedMovies: Movie[] = listMovies.data.sort(
-        (a, b) => b.jh_score - a.jh_score
-      );
-      setAllMovies(sortedMovies);
-    } else if (listMovies.isError) {
-      console.log(listMovies.error);
-    }
-  }, [listMovies.isFetching]);
+  const allMovies = useMemo(
+    () => [...(listMovies.data ?? [])].sort((a, b) => b.jh_score - a.jh_score),
+    [listMovies.data],
+  );
 
   const typesList = useTypesList({
     enabled: true,
     refetchOnWindowFocus: false,
   });
-
-  useEffect(() => {
-    if (typesList.isSuccess) {
-      setFilterTypes(typesList.data);
-    } else if (typesList.isError) {
-      console.log(typesList.error);
-    }
-  }, [typesList.isFetching]);
+  const filterTypes = typesList.data;
 
   const displayMovies = useMemo(
     () => movieSearch(searchTerm, allMovies),
