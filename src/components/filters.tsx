@@ -362,10 +362,10 @@ export default function Filters({
                 } else {
                   return selected
                     .map(
-                      (p) =>
-                        filterTypes.provider.filter(
-                          (pro) => pro.provider_id === parseInt(p)
-                        )[0].provider_name
+                      (id) =>
+                        filterTypes.provider.find(
+                          (pro) => String(pro.provider_id) === id
+                        )?.provider_name ?? id
                     )
                     .join(", ");
                 }
@@ -375,7 +375,7 @@ export default function Filters({
               {filterTypes.provider.map((provider: ProviderInfo) => (
                 <MenuItem
                   key={provider.provider_id}
-                  value={provider.provider_id}
+                  value={String(provider.provider_id)}
                 >
                   <Grid2 container spacing={1}>
                     <Image

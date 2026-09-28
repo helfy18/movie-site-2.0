@@ -118,10 +118,11 @@ const MoviePage = () => {
               >
                 <Image
                   src={movie.poster.replace("w500", "original")}
-                  width="275"
-                  height="400"
+                  width={275}
+                  height={400}
+                  sizes="(max-width: 900px) 100vw, 275px"
+                  style={{ width: "100%", height: "auto" }}
                   alt="Not Found"
-                  layout="responsive"
                   placeholder="blur"
                   blurDataURL="/spin.svg"
                   className="rounded"

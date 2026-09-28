@@ -120,7 +120,9 @@ export const generateEmptyMovie = (movie: TMDBMovie): Movie => {
     year: 0,
     ranking: "",
     plot: "",
-    poster: `https://image.tmdb.org/t/p/w500/${movie.poster_path}`,
+    poster: movie.poster_path
+      ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+      : "",
     actors: "",
     director: "",
     ratings: [],

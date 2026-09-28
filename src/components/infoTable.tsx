@@ -21,6 +21,9 @@ interface InfoTableProps {
   movie: Movie;
 }
 
+const money = (value: string) =>
+  value && value !== "0" ? `$${value}` : undefined;
+
 const singleFilter = (key: GridQueryKey, value: string): MovieListQuery => {
   const query: MovieListQuery = {};
   query[key] = [value];
@@ -46,8 +49,8 @@ const InfoTable = ({ movie }: InfoTableProps) => {
     { label: "Year", value: movie.year },
     { label: "MPA Rating", value: movie.rated },
     { label: "Runtime", value: `${movie.runtime} min` },
-    { label: "Budget", value: `$${movie.budget}` },
-    { label: "Box Office", value: `$${movie.boxoffice}` },
+    { label: "Budget", value: money(movie.budget) },
+    { label: "Box Office", value: money(movie.boxoffice) },
     { label: "Actors", value: movie.actors },
     { label: "Director", value: movie.director, queryType: "director" },
     { label: "Studio", value: movie.studio, queryType: "studio" },

@@ -11,23 +11,22 @@ import PosterRow from "@/components/posterRow";
 import { generateEmptyMovie, gridLink } from "@/utils";
 import Spinner from "@/components/spinner";
 
-const isChristmas = (): Boolean => {
+const isChristmas = (): boolean => {
   const today = new Date();
   const currentYear = today.getFullYear();
 
   return (
     today >= new Date(currentYear, 10, 1) &&
-    today <= new Date(currentYear, 11, 31)
+    today < new Date(currentYear + 1, 0, 1)
   );
 };
 
-const isHalloween = (): Boolean => {
+const isHalloween = (): boolean => {
   const today = new Date();
   const currentYear = today.getFullYear();
 
   return (
-    today >= new Date(currentYear, 9, 1) &&
-    today <= new Date(currentYear, 10, 5)
+    today >= new Date(currentYear, 9, 1) && today < new Date(currentYear, 10, 1)
   );
 };
 
@@ -36,9 +35,11 @@ const withRatings = (
   ratedById: Map<number, Movie> | undefined,
 ): Movie[] =>
   tmdbMovies && ratedById
-    ? tmdbMovies.map(
-        (movie) => ratedById.get(movie.id) ?? generateEmptyMovie(movie),
-      )
+    ? tmdbMovies.flatMap((movie) => {
+        const rated = ratedById.get(movie.id);
+        if (rated) return [rated];
+        return movie.poster_path ? [generateEmptyMovie(movie)] : [];
+      })
     : [];
 
 const IndexPage = () => {
