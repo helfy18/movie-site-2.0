@@ -58,7 +58,7 @@ export default function MovieGrid({
         {currentMovies.map((movie) => {
           return (
             <Grid2 size={{ xs: "auto" }} key={movie.tmdbid}>
-              <Link href={`/movie-page?id=${movie.tmdbid}`}>
+              <Link href={`/movie/${movie.tmdbid}`}>
                 <Poster movie={movie} isLink={true} />
               </Link>
             </Grid2>

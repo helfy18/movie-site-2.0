@@ -53,6 +53,12 @@ type QueryOptions<T> = Omit<UseQueryOptions<T, Error>, "queryKey" | "queryFn">;
 export const hasServerResponse = (error: unknown): boolean =>
   error instanceof HttpError;
 
+export const fetchMovie = (params: MovieGetQuery) =>
+  api<Movie>("/movies/get", params);
+export const fetchMoviesById = (params: MovieListByIdQuery) =>
+  api<Movie[]>("/movies/list/id", params);
+export const fetchMovieCount = () => api<number>("/movies/count");
+
 export const ApiProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [queryClient] = useState(
     () =>
@@ -93,7 +99,7 @@ export const useMovieGet = (
 ): UseQueryResult<Movie, Error> =>
   useQuery({
     queryKey: ["movies/get", params],
-    queryFn: async () => api<Movie>("/movies/get", params),
+    queryFn: async () => fetchMovie(params),
     ...options,
   });
 
@@ -103,7 +109,7 @@ export const useMovieListById = (
 ): UseQueryResult<Movie[], Error> =>
   useQuery({
     queryKey: ["movies/list/id", params],
-    queryFn: async () => api<Movie[]>("/movies/list/id", params),
+    queryFn: async () => fetchMoviesById(params),
     ...options,
   });
 
@@ -121,7 +127,7 @@ export const useMovieCount = (
 ): UseQueryResult<number, Error> =>
   useQuery({
     queryKey: ["movies/count"],
-    queryFn: async () => api<number>("/movies/count"),
+    queryFn: async () => fetchMovieCount(),
     ...options,
   });
 
