@@ -90,7 +90,7 @@ export const RandomMovie = () => {
               </Button>
             </Grid2>
           </Grid2>
-          <Link href={`/movie-page?id=${randomMovie.tmdbid}`}>
+          <Link href={`/movie/${randomMovie.tmdbid}`}>
             <Box
               sx={{
                 px: { xs: "2rem", md: "0rem" },

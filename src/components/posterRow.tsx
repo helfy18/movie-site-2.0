@@ -45,7 +45,7 @@ const PosterRow = ({ movies, title, link }: Props) => {
               <Grid2 size={{ xs: "auto" }} key={movie.tmdbid} mb={1}>
                 {movie.jh_score !== -1 ? (
                   <Link
-                    href={`/movie-page?id=${movie.tmdbid}`}
+                    href={`/movie/${movie.tmdbid}`}
                     style={{ textDecoration: "none" }}
                   >
                     <Poster movie={movie} isLink />

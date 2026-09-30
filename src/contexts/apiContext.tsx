@@ -8,7 +8,6 @@ import {
 } from "@tanstack/react-query";
 
 const BASEURL = process.env.NEXT_PUBLIC_APIURL || "http://localhost:8080";
-const TMDBURL = "https://api.themoviedb.org/3";
 
 class HttpError extends Error {
   status: number;
@@ -19,7 +18,7 @@ class HttpError extends Error {
   }
 }
 
-const buildUrl = (base: string, path: string, params?: object) => {
+export const buildUrl = (base: string, path: string, params?: object) => {
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(params ?? {})) {
     if (value === undefined) continue;
@@ -31,7 +30,7 @@ const buildUrl = (base: string, path: string, params?: object) => {
   return query ? `${base}${path}?${query}` : `${base}${path}`;
 };
 
-const getJson = async <T,>(url: string): Promise<T> => {
+export const getJson = async <T,>(url: string): Promise<T> => {
   const res = await fetch(url);
   if (!res.ok) throw new HttpError(res.status, res.statusText);
   return res.json();
@@ -40,18 +39,20 @@ const getJson = async <T,>(url: string): Promise<T> => {
 const api = <T,>(path: string, params?: object) =>
   getJson<T>(buildUrl(BASEURL, path, params));
 
-const tmdb = <T,>(path: string) =>
-  getJson<T>(
-    buildUrl(TMDBURL, path, {
-      api_key: process.env.NEXT_PUBLIC_TMDBKEY,
-      region: "US",
-    }),
-  );
-
 type QueryOptions<T> = Omit<UseQueryOptions<T, Error>, "queryKey" | "queryFn">;
 
 export const hasServerResponse = (error: unknown): boolean =>
   error instanceof HttpError;
+
+export const fetchMovie = (params: MovieGetQuery) =>
+  api<Movie>("/movies/get", params);
+export const fetchMoviesById = (params: MovieListByIdQuery) =>
+  api<Movie[]>("/movies/list/id", params);
+export const fetchMovieCount = () => api<number>("/movies/count");
+export const fetchMoviesList = (params: MovieListQuery) =>
+  api<Movie[]>("/movies/list", params);
+export const fetchRecentMovies = (params?: MostRecentMovieQuery) =>
+  api<Movie[]>("/movies/mostRecent", params);
 
 export const ApiProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [queryClient] = useState(
@@ -73,7 +74,7 @@ export const useMoviesList = (
 ): UseQueryResult<Movie[], Error> =>
   useQuery({
     queryKey: ["movies/list", params],
-    queryFn: async () => api<Movie[]>("/movies/list", params),
+    queryFn: async () => fetchMoviesList(params),
     ...options,
   });
 
@@ -93,7 +94,7 @@ export const useMovieGet = (
 ): UseQueryResult<Movie, Error> =>
   useQuery({
     queryKey: ["movies/get", params],
-    queryFn: async () => api<Movie>("/movies/get", params),
+    queryFn: async () => fetchMovie(params),
     ...options,
   });
 
@@ -103,7 +104,7 @@ export const useMovieListById = (
 ): UseQueryResult<Movie[], Error> =>
   useQuery({
     queryKey: ["movies/list/id", params],
-    queryFn: async () => api<Movie[]>("/movies/list/id", params),
+    queryFn: async () => fetchMoviesById(params),
     ...options,
   });
 
@@ -121,36 +122,6 @@ export const useMovieCount = (
 ): UseQueryResult<number, Error> =>
   useQuery({
     queryKey: ["movies/count"],
-    queryFn: async () => api<number>("/movies/count"),
-    ...options,
-  });
-
-export const useGetRecentMovies = (
-  params?: MostRecentMovieQuery,
-  options?: QueryOptions<Movie[]>,
-): UseQueryResult<Movie[], Error> =>
-  useQuery({
-    queryKey: ["movies/mostRecent", params],
-    queryFn: async () => api<Movie[]>("/movies/mostRecent", params),
-    ...options,
-  });
-
-export const useGetNowPlaying = (
-  options?: QueryOptions<TMDBMovie[]>,
-): UseQueryResult<TMDBMovie[], Error> =>
-  useQuery({
-    queryKey: ["tmdb/now_playing"],
-    queryFn: async () =>
-      (await tmdb<{ results: TMDBMovie[] }>("/movie/now_playing")).results,
-    ...options,
-  });
-
-export const useGetUpcoming = (
-  options?: QueryOptions<TMDBMovie[]>,
-): UseQueryResult<TMDBMovie[], Error> =>
-  useQuery({
-    queryKey: ["tmdb/upcoming"],
-    queryFn: async () =>
-      (await tmdb<{ results: TMDBMovie[] }>("/movie/upcoming")).results,
+    queryFn: async () => fetchMovieCount(),
     ...options,
   });
