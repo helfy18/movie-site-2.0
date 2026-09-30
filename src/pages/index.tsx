@@ -1,173 +1,145 @@
-import { useMemo } from "react";
+import type { GetStaticProps } from "next";
 import Layout from "../components/layout";
 import {
-  useGetNowPlaying,
-  useGetRecentMovies,
-  useGetUpcoming,
-  useMovieListById,
-  useMoviesList,
+  fetchMoviesById,
+  fetchMoviesList,
+  fetchRecentMovies,
 } from "@/contexts/apiContext";
+import { fetchNowPlaying, fetchUpcoming } from "@/server/tmdb";
 import PosterRow from "@/components/posterRow";
 import { generateEmptyMovie, gridLink } from "@/utils";
-import Spinner from "@/components/spinner";
-import ErrorMessage from "@/components/errorMessage";
 
-const isChristmas = (): boolean => {
-  const today = new Date();
-  const currentYear = today.getFullYear();
+interface Row {
+  title: string;
+  movies: Movie[];
+  link: MovieListQuery;
+}
 
-  return (
-    today >= new Date(currentYear, 10, 1) &&
-    today < new Date(currentYear + 1, 0, 1)
-  );
+interface Props {
+  recent: Movie[];
+  nowPlaying: Movie[];
+  upcoming: Movie[];
+  rows: Row[];
+}
+
+const isChristmas = (today: Date): boolean => {
+  const year = today.getFullYear();
+  return today >= new Date(year, 10, 1) && today < new Date(year + 1, 0, 1);
 };
 
-const isHalloween = (): boolean => {
-  const today = new Date();
-  const currentYear = today.getFullYear();
-
-  return (
-    today >= new Date(currentYear, 9, 1) && today < new Date(currentYear, 10, 1)
-  );
+const isHalloween = (today: Date): boolean => {
+  const year = today.getFullYear();
+  return today >= new Date(year, 9, 1) && today < new Date(year, 10, 1);
 };
 
 const withRatings = (
-  tmdbMovies: TMDBMovie[] | undefined,
-  ratedById: Map<number, Movie> | undefined,
+  tmdbMovies: TMDBMovie[],
+  ratedById: Map<number, Movie>,
 ): Movie[] =>
-  tmdbMovies && ratedById
-    ? tmdbMovies.flatMap((movie) => {
-        const rated = ratedById.get(movie.id);
-        if (rated) return [rated];
-        return movie.poster_path ? [generateEmptyMovie(movie)] : [];
-      })
-    : [];
+  tmdbMovies.flatMap((movie) => {
+    const rated = ratedById.get(movie.id);
+    if (rated) return [rated];
+    return movie.poster_path ? [generateEmptyMovie(movie)] : [];
+  });
 
-const IndexPage = () => {
-  const getRecentMovies = useGetRecentMovies();
-  const getNowPlaying = useGetNowPlaying();
-  const getUpcoming = useGetUpcoming();
-  const getMoviesById = useMovieListById(
-    {
-      tmdbid: [
-        ...(getNowPlaying.data?.map((movie) => movie.id) || []),
-        ...(getUpcoming.data?.map((movie) => movie.id) || []),
-      ],
-    },
-    {
-      enabled: getNowPlaying.isSuccess,
-    },
-  );
-  const movieList = useMoviesList({});
-
-  const latestYear = useMemo(
-    () =>
-      movieList.data && movieList.data.length > 0
-        ? Math.max(...movieList.data.map((movie) => movie.year))
-        : undefined,
-    [movieList.data],
-  );
-
-  const ratedById = useMemo(
-    () =>
-      getMoviesById.data &&
-      new Map(getMoviesById.data.map((movie) => [movie.tmdbid, movie])),
-    [getMoviesById.data],
-  );
-  const nowPlaying = useMemo(
-    () => withRatings(getNowPlaying.data, ratedById),
-    [getNowPlaying.data, ratedById],
-  );
-  const upcoming = useMemo(
-    () => withRatings(getUpcoming.data, ratedById),
-    [getUpcoming.data, ratedById],
-  );
-
-  return (
-    <Layout pageTitle="Home">
-      {getRecentMovies.data && (
-        <PosterRow title="Recently Added" movies={getRecentMovies.data} />
-      )}
-      {nowPlaying.length > 0 && (
-        <PosterRow title="Now Playing in Theatres" movies={nowPlaying} />
-      )}
-      {upcoming.length > 0 && (
-        <PosterRow title="Coming Soon to Theatres" movies={upcoming} />
-      )}
-      {movieList.isPending && <Spinner />}
-      {movieList.isError && (
-        <ErrorMessage
-          message="Couldn't load the movie list."
-          onRetry={() => movieList.refetch()}
-        />
-      )}
-      {movieList.data && (
-        <>
-          {isChristmas() && (
-            <PosterRow
-              title="Best Christmas Movies"
-              movies={movieList.data
-                .filter((movie) => {
-                  return movie.holiday === "Christmas";
-                })
-                .slice(0, 20)}
-              link={gridLink({ holiday: ["Christmas"] })}
-            />
-          )}
-          {isHalloween() && (
-            <PosterRow
-              title="Best Halloween Movies"
-              movies={movieList.data
-                .filter((movie) => {
-                  return movie.holiday === "Halloween";
-                })
-                .slice(0, 20)}
-              link={gridLink({ holiday: ["Halloween"] })}
-            />
-          )}
-          <PosterRow
-            title="Best of This Year"
-            movies={movieList.data
-              .filter((movie) => movie.year === latestYear)
-              .slice(0, 20)}
-            link={gridLink({ year: [String(latestYear)] })}
-          />
-          <PosterRow
-            title="Best of Last Year"
-            movies={movieList.data
-              .filter((movie) => movie.year === (latestYear ?? 0) - 1)
-              .slice(0, 20)}
-            link={gridLink({ year: [String((latestYear ?? 0) - 1)] })}
-          />
-          <PosterRow
-            title="Best of the 80's"
-            movies={movieList.data
-              .filter((movie) => {
-                return movie.year >= 1980 && movie.year <= 1989;
-              })
-              .slice(0, 20)}
-            link={gridLink({ decade: ["1980-1989"] })}
-          />
-          <PosterRow
-            title="Best of the 90's"
-            movies={movieList.data
-              .filter((movie) => {
-                return movie.year >= 1990 && movie.year <= 1999;
-              })
-              .slice(0, 20)}
-            link={gridLink({ decade: ["1990-1999"] })}
-          />
-          <PosterRow
-            title="Marvel Cinematic Universe"
-            movies={movieList.data.filter(
-              (movie) => movie.sub_universe === "MCU",
-            )}
-            link={gridLink({ universe: ["MCU"] })}
-          />
-        </>
-      )}
-    </Layout>
-  );
+const theatreListings = async () => {
+  try {
+    return await Promise.all([fetchNowPlaying(), fetchUpcoming()]);
+  } catch {
+    return [[], []] as [TMDBMovie[], TMDBMovie[]];
+  }
 };
+
+const buildRows = (catalogue: Movie[], today: Date): Row[] => {
+  const top = (test: (movie: Movie) => boolean) =>
+    catalogue.filter(test).slice(0, 20);
+  const latestYear = Math.max(...catalogue.map((movie) => movie.year));
+  const lastYear = latestYear - 1;
+
+  const rows: Row[] = [];
+  if (isChristmas(today)) {
+    rows.push({
+      title: "Best Christmas Movies",
+      movies: top((m) => m.holiday === "Christmas"),
+      link: { holiday: ["Christmas"] },
+    });
+  }
+  if (isHalloween(today)) {
+    rows.push({
+      title: "Best Halloween Movies",
+      movies: top((m) => m.holiday === "Halloween"),
+      link: { holiday: ["Halloween"] },
+    });
+  }
+  rows.push(
+    {
+      title: "Best of This Year",
+      movies: top((m) => m.year === latestYear),
+      link: { year: [String(latestYear)] },
+    },
+    {
+      title: "Best of Last Year",
+      movies: top((m) => m.year === lastYear),
+      link: { year: [String(lastYear)] },
+    },
+    {
+      title: "Best of the 80's",
+      movies: top((m) => m.year >= 1980 && m.year <= 1989),
+      link: { decade: ["1980-1989"] },
+    },
+    {
+      title: "Best of the 90's",
+      movies: top((m) => m.year >= 1990 && m.year <= 1999),
+      link: { decade: ["1990-1999"] },
+    },
+    {
+      title: "Marvel Cinematic Universe",
+      movies: catalogue.filter((m) => m.sub_universe === "MCU"),
+      link: { universe: ["MCU"] },
+    },
+  );
+  return rows;
+};
+
+export const getStaticProps: GetStaticProps<Props> = async () => {
+  const [recent, catalogue, [nowPlayingTmdb, upcomingTmdb]] = await Promise.all(
+    [fetchRecentMovies(), fetchMoviesList({}), theatreListings()],
+  );
+
+  const theatreIds = [...nowPlayingTmdb, ...upcomingTmdb].map((m) => m.id);
+  const rated =
+    theatreIds.length > 0 ? await fetchMoviesById({ tmdbid: theatreIds }) : [];
+  const ratedById = new Map(rated.map((movie) => [movie.tmdbid, movie]));
+
+  return {
+    props: {
+      recent,
+      nowPlaying: withRatings(nowPlayingTmdb, ratedById),
+      upcoming: withRatings(upcomingTmdb, ratedById),
+      rows: buildRows(catalogue, new Date()),
+    },
+    revalidate: 900,
+  };
+};
+
+const IndexPage = ({ recent, nowPlaying, upcoming, rows }: Props) => (
+  <Layout pageTitle="Home">
+    {recent.length > 0 && <PosterRow title="Recently Added" movies={recent} />}
+    {nowPlaying.length > 0 && (
+      <PosterRow title="Now Playing in Theatres" movies={nowPlaying} />
+    )}
+    {upcoming.length > 0 && (
+      <PosterRow title="Coming Soon to Theatres" movies={upcoming} />
+    )}
+    {rows.map((row) => (
+      <PosterRow
+        key={row.title}
+        title={row.title}
+        movies={row.movies}
+        link={gridLink(row.link)}
+      />
+    ))}
+  </Layout>
+);
 
 export default IndexPage;
