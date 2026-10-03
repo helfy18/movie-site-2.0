@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import Layout from "@/components/layout";
 import MovieGrid from "@/components/movieGrid";
 import Filters from "@/components/filters";
@@ -37,11 +37,14 @@ const MovieGridPage = () => {
 
   const params = useMemo(() => parseGridQuery(router.query), [router.query]);
 
-  // Covers back/forward navigation too, where the query changes without
-  // going through onFilterApply/onFilterClear.
-  useEffect(() => {
+  // Reset pagination whenever the query changes, including back/forward
+  // navigation. Adjusting state during render (instead of in an effect)
+  // resets the page before paint: https://react.dev/learn/you-might-not-need-an-effect
+  const [prevParams, setPrevParams] = useState(params);
+  if (prevParams !== params) {
+    setPrevParams(params);
     setCurrentPage(1);
-  }, [params]);
+  }
 
   const listMovies = useMoviesList(params, {
     enabled: router.isReady,

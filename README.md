@@ -33,16 +33,15 @@ Put local overrides in `.env.local`, which is git-ignored. `.env.production` hol
 | `npm run typecheck` | TypeScript type check              |
 | `npm test`          | Unit tests (Vitest)                |
 
-Don't run `build` while `dev` is running. Both write to `.next`, and the dev server will start serving missing files.
-
 ## Layout
 
 ```
 src/
   pages/        one file per route
   components/   shared UI
-  contexts/     React Query provider and API hooks
+  api/          fetch client, React Query provider and hooks
   interfaces/   global TypeScript types for API data
   styles/       theme tokens, MUI theme, Tailwind globals
-  utils.ts      URL helpers and placeholder movie builder
+  __tests__/    unit tests (Vitest)
+  utils.ts      URL helpers and poster-shape builders
 ```
