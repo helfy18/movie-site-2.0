@@ -70,6 +70,11 @@ const buildRows = (catalogue: Movie[], today: Date): Row[] => {
       movies: top((m) => m.holiday === "Halloween"),
       link: { holiday: ["Halloween"] },
     });
+    rows.push({
+      title: "Spooky Season",
+      movies: top((m) => m.genre === "Horror"),
+      link: { genre: ["Horror"] },
+    });
   }
   rows.push(
     {
@@ -93,9 +98,14 @@ const buildRows = (catalogue: Movie[], today: Date): Row[] => {
       link: { decade: ["1990-1999"] },
     },
     {
-      title: "Marvel Cinematic Universe",
-      movies: catalogue.filter((m) => m.sub_universe === "MCU"),
-      link: { universe: ["MCU"] },
+      title: "Best of DC",
+      movies: top((m) => m.universe === "DC"),
+      link: { universe: ["DC"] },
+    },
+    {
+      title: "Best of Marvel",
+      movies: top((m) => m.universe === "Marvel"),
+      link: { universe: ["Marvel"] },
     },
   );
   return rows;
