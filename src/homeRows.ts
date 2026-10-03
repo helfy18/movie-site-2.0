@@ -27,6 +27,7 @@ export const withRatings = (
   });
 
 export const buildRows = (catalogue: Movie[], today: Date): Row[] => {
+  if (catalogue.length === 0) return [];
   const top = (test: (movie: Movie) => boolean) =>
     catalogue.filter(test).slice(0, 20).map(toPosterMovie);
   const latestYear = Math.max(...catalogue.map((movie) => movie.year));

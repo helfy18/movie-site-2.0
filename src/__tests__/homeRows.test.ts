@@ -118,6 +118,11 @@ describe("buildRows", () => {
     expect(thisYear?.movies).toHaveLength(20);
   });
 
+  it("returns no rows for an empty catalogue", () => {
+    expect(buildRows([], june)).toEqual([]);
+    expect(buildRows([], december)).toEqual([]);
+  });
+
   it("trims row movies to the poster shape", () => {
     const rows = buildRows(catalogue, june);
     for (const movie of rows.flatMap((row) => row.movies)) {

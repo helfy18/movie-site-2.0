@@ -40,12 +40,15 @@ export const useMoviesList = (
     ...options,
   });
 
+// roll distinguishes successive requests for the same filters, so each bump
+// fetches a fresh random movie instead of hitting the cache.
 export const useGetRandomMovie = (
   params: MovieListQuery,
+  roll: number,
   options?: QueryOptions<Movie>,
 ): UseQueryResult<Movie, Error> =>
   useQuery({
-    queryKey: ["movies/random", params],
+    queryKey: ["movies/random", params, roll],
     queryFn: async () => api<Movie>("/movies/random", params),
     ...options,
   });

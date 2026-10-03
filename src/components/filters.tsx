@@ -66,7 +66,8 @@ export default function Filters({
   values,
   showScore = false,
 }: FiltersProps) {
-  const runtimeRange = [filterTypes.runtime[0].min, filterTypes.runtime[0].max];
+  const { min, max } = filterTypes.runtime[0] ?? { min: 0, max: 300 };
+  const runtimeRange = [min, max];
 
   const [directors, setDirectors] = useState<string[]>(values.director ?? []);
   const [exclusives, setExclusives] = useState<string[]>(
@@ -100,7 +101,7 @@ export default function Filters({
   };
 
   const onSubmit = () => {
-    onApply({
+    const query: MovieListQuery = {
       genre: genres,
       director: directors,
       exclusive: exclusives,
@@ -108,11 +109,17 @@ export default function Filters({
       year: years,
       holiday: holidays,
       universe: universes,
-      runtime,
       decade: decades,
       provider: providers,
-      rating: score,
-    });
+    };
+    // Untouched sliders stay out of the query so URLs only carry real filters.
+    if (runtime[0] !== runtimeRange[0] || runtime[1] !== runtimeRange[1]) {
+      query.runtime = runtime;
+    }
+    if (score[0] !== 0 || score[1] !== 100) {
+      query.rating = score;
+    }
+    onApply(query);
   };
 
   const genreOptions = useMemo(

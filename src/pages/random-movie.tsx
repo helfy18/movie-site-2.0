@@ -4,7 +4,7 @@ import Spinner from "@/components/spinner";
 import ErrorMessage from "@/components/errorMessage";
 import { useGetRandomMovie, useMovieCount, useTypesList } from "@/api/hooks";
 import { Box, Button, Grid2, Link, Stack } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import DaniBadge from "@/components/daniBadge";
 import ScoreCard from "@/components/scoreCard";
@@ -12,10 +12,9 @@ import ScoreCard from "@/components/scoreCard";
 export const RandomMovie = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [params, setParams] = useState<MovieListQuery>({});
+  const [roll, setRoll] = useState(0);
 
-  const getRandomMovie = useGetRandomMovie(params, {
-    enabled: false,
-  });
+  const getRandomMovie = useGetRandomMovie(params, roll);
 
   const typesList = useTypesList();
 
@@ -25,19 +24,16 @@ export const RandomMovie = () => {
 
   const filterTypes = typesList.data;
 
-  const { refetch: fetchRandomMovie } = getRandomMovie;
-
-  useEffect(() => {
-    fetchRandomMovie();
-  }, [params, fetchRandomMovie]);
+  const onNext = () => {
+    setRoll((previous) => previous + 1);
+  };
 
   const onFilterApply = (filterValues: MovieListQuery) => {
     setParams(filterValues);
+    // Re-roll even when the filters didn't change, matching the old behavior
+    // where Apply always fetched a fresh movie.
+    setRoll((previous) => previous + 1);
     setShowFilters(false);
-  };
-
-  const onNext = () => {
-    getRandomMovie.refetch();
   };
 
   const onReturnToFilters = () => {
