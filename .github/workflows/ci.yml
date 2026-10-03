@@ -18,6 +18,7 @@ jobs:
       - run: npm run lint
       - run: npm run format:check
       - run: npm run typecheck
+      - run: npm test
       # Build runs getStaticProps, so this also verifies the pages render
       # against the live ratings API and TMDB.
       - run: npm run build

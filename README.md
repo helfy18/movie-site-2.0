@@ -24,12 +24,14 @@ Put local overrides in `.env.local`, which is git-ignored. `.env.production` hol
 
 ## Scripts
 
-| Script          | What it does                       |
-| --------------- | ---------------------------------- |
-| `npm run dev`   | Development server with hot reload |
-| `npm run build` | Production build                   |
-| `npm run start` | Serve the production build         |
-| `npm run lint`  | ESLint over the whole project      |
+| Script              | What it does                       |
+| ------------------- | ---------------------------------- |
+| `npm run dev`       | Development server with hot reload |
+| `npm run build`     | Production build                   |
+| `npm run start`     | Serve the production build         |
+| `npm run lint`      | ESLint over the whole project      |
+| `npm run typecheck` | TypeScript type check              |
+| `npm test`          | Unit tests (Vitest)                |
 
 Don't run `build` while `dev` is running. Both write to `.next`, and the dev server will start serving missing files.
 
