@@ -90,8 +90,6 @@ interface Providers {
   rent: ProviderInfo[];
   flatrate: ProviderInfo[];
   buy: ProviderInfo[];
-  // TMDB's free-with-ads and free tiers; the ratings API doesn't send these
-  // yet, so the Free row only renders once the backend passes them through.
   ads?: ProviderInfo[] | null;
   free?: ProviderInfo[] | null;
 }
