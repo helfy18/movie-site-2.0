@@ -15,8 +15,8 @@ const movieSearch = (text: string, movies: Movie[]) => {
   const lowerText = text.toLowerCase();
   const keys: (keyof Movie)[] = [
     "movie",
-    "actors",
-    "director",
+    "cast",
+    "directors",
     "universe",
     "sub_universe",
     "studio",

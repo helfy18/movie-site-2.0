@@ -47,8 +47,8 @@ interface Movie extends PosterMovie {
   review?: string;
   ranking: string;
   plot: string;
-  actors: string;
-  director: string;
+  cast: string[] | null;
+  directors: string[] | null;
   ratings: Rating[];
   boxoffice: string;
   rated: string;

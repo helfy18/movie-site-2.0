@@ -1,20 +1,27 @@
-import { Box, Stack, Grid, Collapse } from "@mui/material";
+import { Box, Chip, Stack, Grid, Collapse } from "@mui/material";
 import { scoreColor } from "@/styles/gradient";
 import { Item } from "./item";
-import SearchIcon from "@mui/icons-material/Search";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Link from "next/link";
 import { CSSProperties, useState } from "react";
 import { gridLink } from "@/utils";
 
-type GridQueryKey = "universe" | "genre" | "director" | "studio";
+type GridQueryKey =
+  | "universe"
+  | "genre"
+  | "director"
+  | "studio"
+  | "year"
+  | "holiday"
+  | "exclusive";
 
 interface Row {
   label: string;
   value?: string | number;
   style?: CSSProperties;
-  queryType?: GridQueryKey;
+  chipKey?: GridQueryKey;
+  chips?: string[];
 }
 
 interface InfoTableProps {
@@ -30,8 +37,13 @@ const singleFilter = (key: GridQueryKey, value: string): MovieListQuery => {
   return query;
 };
 
+const toChips = (value?: string) => (value ? [value] : []);
+
 const InfoTable = ({ movie }: InfoTableProps) => {
   const [expanded, setExpanded] = useState(false);
+  const cast = movie.cast ?? [];
+  const directors = movie.directors ?? [];
+  const genres = [movie.genre, movie.genre_2].filter(Boolean) as string[];
 
   const rows: Row[] = [
     { label: "Title", value: movie.movie },
@@ -40,39 +52,72 @@ const InfoTable = ({ movie }: InfoTableProps) => {
       value: `${movie.jh_score}/100`,
       style: { color: scoreColor(movie.jh_score), fontWeight: "bolder" },
     },
-    { label: "Universe", value: movie.universe, queryType: "universe" },
-    { label: "Sub Universe", value: movie.sub_universe, queryType: "universe" },
-    { label: "Genre", value: movie.genre, queryType: "genre" },
-    { label: "Secondary Genre", value: movie.genre_2, queryType: "genre" },
-    { label: "Exclusive", value: movie.exclusive },
-    { label: "Holiday", value: movie.holiday },
-    { label: "Year", value: movie.year },
+    { label: "Universe", chips: toChips(movie.universe), chipKey: "universe" },
+    {
+      label: "Sub Universe",
+      chips: toChips(movie.sub_universe),
+      chipKey: "universe",
+    },
+    {
+      label: genres.length > 1 ? "Genres" : "Genre",
+      chips: genres,
+      chipKey: "genre",
+    },
+    {
+      label: "Exclusive",
+      chips: toChips(movie.exclusive),
+      chipKey: "exclusive",
+    },
+    { label: "Holiday", chips: toChips(movie.holiday), chipKey: "holiday" },
+    { label: "Year", chips: [String(movie.year)], chipKey: "year" },
     { label: "MPA Rating", value: movie.rated },
     { label: "Runtime", value: `${movie.runtime} min` },
     { label: "Budget", value: money(movie.budget) },
     { label: "Box Office", value: money(movie.boxoffice) },
-    { label: "Actors", value: movie.actors },
-    { label: "Director", value: movie.director, queryType: "director" },
-    { label: "Studio", value: movie.studio, queryType: "studio" },
+    { label: "Actors", value: cast.join(", ") || undefined },
+    {
+      label: directors.length > 1 ? "Directors" : "Director",
+      chips: directors,
+      chipKey: "director",
+    },
+    { label: "Studio", chips: toChips(movie.studio), chipKey: "studio" },
   ];
 
   return (
     <Item sx={{ color: "secondary.main" }}>
       <Stack spacing={1.5}>
-        {rows.map(({ label, value, style, queryType }) =>
-          value ? (
-            <Grid container key={label}>
+        {rows.map(({ label, value, style, chipKey, chips }) =>
+          value || chips?.length ? (
+            <Grid
+              container
+              key={label}
+              sx={chips?.length ? { alignItems: "center" } : undefined}
+            >
               <Grid size={4}>{label}</Grid>
               <Grid size={8} style={style}>
                 <Box
                   sx={{
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "space-between",
                   }}
                   style={style}
                 >
-                  {label === "Actors" ? (
+                  {chips?.length && chipKey ? (
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                      {chips.map((name) => (
+                        <Chip
+                          key={name}
+                          label={name}
+                          component={Link}
+                          href={gridLink(singleFilter(chipKey, name))}
+                          variant="outlined"
+                          color="secondary"
+                          sx={{ fontSize: "1rem" }}
+                          clickable
+                        />
+                      ))}
+                    </Box>
+                  ) : label === "Actors" ? (
                     <Box
                       sx={{
                         display: "flex",
@@ -91,6 +136,9 @@ const InfoTable = ({ movie }: InfoTableProps) => {
                           cursor: "pointer",
                           gap: 1,
                           mb: 0.5,
+                          fontSize: "0.875rem",
+                          color: "text.disabled",
+                          "&:hover": { color: "secondary.main" },
                         }}
                       >
                         {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -99,13 +147,6 @@ const InfoTable = ({ movie }: InfoTableProps) => {
                     </Box>
                   ) : (
                     <span>{value}</span>
-                  )}
-                  {queryType && (
-                    <Link
-                      href={gridLink(singleFilter(queryType, String(value)))}
-                    >
-                      <SearchIcon sx={{ cursor: "pointer", ml: 1 }} />
-                    </Link>
                   )}
                 </Box>
               </Grid>
