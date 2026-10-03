@@ -1,23 +1,23 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-body {
-  color: theme(colors.secondary);
-  background-color: theme(colors.primary);
+/* Keep these values in sync with src/styles/tokens.ts (used by the MUI theme). */
+@theme {
+  --color-primary: #292524;
+  --color-secondary: #eab308;
+  --color-card: #44403c;
+  --color-muted: #78716c;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+body {
+  color: var(--color-secondary);
+  background-color: var(--color-primary);
 }
 
 th,
 td {
   padding: 0.5rem;
   border-right: 1px solid;
-  border-color: theme(colors.secondary);
+  border-color: var(--color-secondary);
 }
 
 tr {
@@ -31,5 +31,5 @@ table {
 }
 
 tr:nth-child(odd) {
-  background-color: theme(colors.card);
+  background-color: var(--color-card);
 }

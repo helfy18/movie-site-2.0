@@ -35,9 +35,7 @@ export default function SelectWrapper({
           displayEmpty
           renderValue={(value) =>
             value.length === 0 ? (
-              <span className="text-secondary text-opacity-20">
-                {placeholder}
-              </span>
+              <span className="text-secondary/20">{placeholder}</span>
             ) : (
               renderValue(value)
             )
