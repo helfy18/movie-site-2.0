@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import Layout from "@/components/layout";
 import MovieGrid from "@/components/movieGrid";
 import Filters from "@/components/filters";
@@ -9,7 +9,7 @@ import { useMoviesList, useTypesList } from "@/api/hooks";
 import Spinner from "@/components/spinner";
 import ErrorMessage from "@/components/errorMessage";
 import { useRouter } from "next/router";
-import { gridLink, parseGridQuery } from "@/utils";
+import { parseGridQuery } from "@/utils";
 
 const movieSearch = (text: string, movies: Movie[]) => {
   const lowerText = text.toLowerCase();
@@ -29,6 +29,13 @@ const movieSearch = (text: string, movies: Movie[]) => {
   );
 };
 
+const SEARCH_DEBOUNCE_MS = 300;
+
+const gridUrl = (filters: MovieListQuery, search: string) => ({
+  pathname: "/movie-grid",
+  query: { ...filters, ...(search ? { search } : {}) },
+});
+
 const MovieGridPage = () => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,6 +43,8 @@ const MovieGridPage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   const params = useMemo(() => parseGridQuery(router.query), [router.query]);
+  const urlSearch =
+    typeof router.query.search === "string" ? router.query.search : "";
 
   // Reset pagination whenever the query changes, including back/forward
   // navigation. Adjusting state during render (instead of in an effect)
@@ -45,6 +54,21 @@ const MovieGridPage = () => {
     setPrevParams(params);
     setCurrentPage(1);
   }
+
+  // Adopt search terms that arrive via the URL (deep links, back/forward).
+  // Our own debounced writes land with urlSearch === searchTerm and are
+  // skipped.
+  const [prevUrlSearch, setPrevUrlSearch] = useState(urlSearch);
+  if (prevUrlSearch !== urlSearch) {
+    setPrevUrlSearch(urlSearch);
+    if (urlSearch !== searchTerm) {
+      setSearchTerm(urlSearch);
+      setCurrentPage(1);
+    }
+  }
+
+  const debounceTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(debounceTimer.current), []);
 
   const listMovies = useMoviesList(params, {
     enabled: router.isReady,
@@ -66,15 +90,28 @@ const MovieGridPage = () => {
   const onSearch = (text: string) => {
     setSearchTerm(text);
     setCurrentPage(1);
+    // Mirror the term into the URL (debounced, replace) so searches are
+    // shareable without filling the browser history while typing.
+    clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => {
+      router.replace(gridUrl(params, text), undefined, {
+        shallow: true,
+        scroll: false,
+      });
+    }, SEARCH_DEBOUNCE_MS);
   };
 
   const onFilterApply = (filterValues: MovieListQuery) => {
-    router.push(gridLink(filterValues), undefined, { shallow: true });
+    clearTimeout(debounceTimer.current);
+    router.push(gridUrl(filterValues, searchTerm), undefined, {
+      shallow: true,
+    });
     setShowDropdown(false);
   };
 
   const onFilterClear = () => {
-    router.push(gridLink({}), undefined, { shallow: true });
+    clearTimeout(debounceTimer.current);
+    router.push(gridUrl({}, searchTerm), undefined, { shallow: true });
     setShowDropdown(false);
   };
 
