@@ -38,7 +38,13 @@ const renderProviderRow = (
 );
 
 const ProviderTable = ({ movie }: Props) => {
-  const { link, flatrate, rent, buy, ads } = movie.provider;
+  const { link, flatrate, rent, buy, ads, free } = movie.provider;
+  // One merged row for TMDB's free and free-with-ads tiers, deduped in case a
+  // provider appears in both.
+  const freeProviders = [...(free ?? []), ...(ads ?? [])].filter(
+    (provider, index, all) =>
+      all.findIndex((p) => p.provider_id === provider.provider_id) === index,
+  );
   return (
     <table>
       <thead>
@@ -48,8 +54,8 @@ const ProviderTable = ({ movie }: Props) => {
       </thead>
       <tbody>
         {renderProviderRow("With Account", flatrate, movie.movie, link)}
-        {!!ads?.length &&
-          renderProviderRow("Free with Ads", ads, movie.movie, link)}
+        {freeProviders.length > 0 &&
+          renderProviderRow("For Free", freeProviders, movie.movie, link)}
         {renderProviderRow("For Rent", rent, movie.movie, link)}
         {renderProviderRow("To Buy", buy, movie.movie, link)}
       </tbody>
