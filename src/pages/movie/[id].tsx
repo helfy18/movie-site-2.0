@@ -4,10 +4,8 @@ import {
   fetchMovieCount,
   fetchMoviesById,
   hasServerResponse,
-  useMovieCount,
-  useMovieGet,
-  useMovieListById,
-} from "@/contexts/apiContext";
+} from "@/api/client";
+import { useMovieCount, useMovieGet, useMovieListById } from "@/api/hooks";
 import {
   Box,
   Dialog,

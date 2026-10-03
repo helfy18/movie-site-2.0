@@ -1,4 +1,4 @@
-import { ApiProvider } from "@/contexts/apiContext";
+import { ApiProvider } from "@/api/hooks";
 import "@/styles/globals.css";
 import theme from "@/styles/theme";
 import { ThemeProvider } from "@mui/material/styles";

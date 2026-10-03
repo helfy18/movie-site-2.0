@@ -4,21 +4,21 @@ import {
   fetchMoviesById,
   fetchMoviesList,
   fetchRecentMovies,
-} from "@/contexts/apiContext";
+} from "@/api/client";
 import { fetchNowPlaying, fetchUpcoming } from "@/server/tmdb";
 import PosterRow from "@/components/posterRow";
-import { generateEmptyMovie, gridLink } from "@/utils";
+import { gridLink, toPosterMovie, unratedPosterMovie } from "@/utils";
 
 interface Row {
   title: string;
-  movies: Movie[];
+  movies: PosterMovie[];
   link: MovieListQuery;
 }
 
 interface Props {
-  recent: Movie[];
-  nowPlaying: Movie[];
-  upcoming: Movie[];
+  recent: PosterMovie[];
+  nowPlaying: PosterMovie[];
+  upcoming: PosterMovie[];
   rows: Row[];
 }
 
@@ -35,11 +35,11 @@ const isHalloween = (today: Date): boolean => {
 const withRatings = (
   tmdbMovies: TMDBMovie[],
   ratedById: Map<number, Movie>,
-): Movie[] =>
+): PosterMovie[] =>
   tmdbMovies.flatMap((movie) => {
     const rated = ratedById.get(movie.id);
-    if (rated) return [rated];
-    return movie.poster_path ? [generateEmptyMovie(movie)] : [];
+    if (rated) return [toPosterMovie(rated)];
+    return movie.poster_path ? [unratedPosterMovie(movie)] : [];
   });
 
 const theatreListings = async () => {
@@ -52,7 +52,7 @@ const theatreListings = async () => {
 
 const buildRows = (catalogue: Movie[], today: Date): Row[] => {
   const top = (test: (movie: Movie) => boolean) =>
-    catalogue.filter(test).slice(0, 20);
+    catalogue.filter(test).slice(0, 20).map(toPosterMovie);
   const latestYear = Math.max(...catalogue.map((movie) => movie.year));
   const lastYear = latestYear - 1;
 
@@ -123,7 +123,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 
   return {
     props: {
-      recent,
+      recent: recent.map(toPosterMovie),
       nowPlaying: withRatings(nowPlayingTmdb, ratedById),
       upcoming: withRatings(upcomingTmdb, ratedById),
       rows: buildRows(catalogue, new Date()),

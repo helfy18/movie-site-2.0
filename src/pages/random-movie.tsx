@@ -2,11 +2,7 @@ import Filters from "@/components/filters";
 import Layout from "@/components/layout";
 import Spinner from "@/components/spinner";
 import ErrorMessage from "@/components/errorMessage";
-import {
-  useGetRandomMovie,
-  useMovieCount,
-  useTypesList,
-} from "@/contexts/apiContext";
+import { useGetRandomMovie, useMovieCount, useTypesList } from "@/api/hooks";
 import { Box, Button, Grid2, Link, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import Image from "next/image";

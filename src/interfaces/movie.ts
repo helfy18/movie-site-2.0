@@ -26,9 +26,17 @@ interface MostRecentMovieQuery {
   count?: number;
 }
 
-interface Movie {
+// The subset of Movie that poster tiles render. Home-page props are trimmed
+// to this shape to keep the serialized page data small.
+interface PosterMovie {
   movie: string;
   jh_score: number;
+  poster: string;
+  tmdbid: number;
+  dani_approved: boolean;
+}
+
+interface Movie extends PosterMovie {
   universe?: string;
   sub_universe?: string;
   genre: string;
@@ -39,9 +47,7 @@ interface Movie {
   year: number;
   review?: string;
   ranking: string;
-  dani_approved: boolean;
   plot: string;
-  poster: string;
   actors: string;
   director: string;
   ratings: Rating[];
@@ -50,7 +56,6 @@ interface Movie {
   runtime: number;
   provider: Providers;
   budget: string;
-  tmdbid: number;
   recommendations: number[];
   rottentomatoes: string;
   imdb: string;

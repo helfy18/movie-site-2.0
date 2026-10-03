@@ -6,7 +6,7 @@ import { ArrowForward } from "@mui/icons-material";
 import Link, { LinkProps } from "next/link";
 
 interface Props {
-  movies: Movie[];
+  movies: PosterMovie[];
   title: string;
   link?: LinkProps["href"];
 }
@@ -66,7 +66,7 @@ export const Poster = ({
   movie,
   isLink,
 }: {
-  movie: Movie;
+  movie: PosterMovie;
   isLink?: boolean;
 }) => (
   <PosterItem

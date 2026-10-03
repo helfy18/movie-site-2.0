@@ -1,5 +1,5 @@
 import type { GetServerSideProps } from "next";
-import { fetchMovie, hasServerResponse } from "@/contexts/apiContext";
+import { fetchMovie, hasServerResponse } from "@/api/client";
 
 const first = (value: string | string[] | undefined) =>
   Array.isArray(value) ? value[0] : value;

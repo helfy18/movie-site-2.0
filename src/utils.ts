@@ -1,33 +1,23 @@
 import type { ParsedUrlQuery } from "querystring";
 
-export const generateEmptyMovie = (movie: TMDBMovie): Movie => {
-  return {
-    movie: movie.title,
-    jh_score: -1,
-    genre: "",
-    year: 0,
-    ranking: "",
-    plot: "",
-    poster: movie.poster_path
-      ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-      : "",
-    actors: "",
-    director: "",
-    ratings: [],
-    boxoffice: "",
-    rated: "",
-    runtime: 0,
-    provider: { link: "", rent: [], flatrate: [], buy: [] },
-    budget: "",
-    tmdbid: movie.id,
-    recommendations: [],
-    rottentomatoes: "",
-    imdb: "",
-    metacritic: "",
-    trailer: "",
-    dani_approved: false,
-  };
-};
+export const toPosterMovie = ({
+  movie,
+  jh_score,
+  poster,
+  tmdbid,
+  dani_approved,
+}: Movie): PosterMovie => ({ movie, jh_score, poster, tmdbid, dani_approved });
+
+// An unrated theatre listing: jh_score -1 renders as "N/A" and doesn't link.
+export const unratedPosterMovie = (movie: TMDBMovie): PosterMovie => ({
+  movie: movie.title,
+  jh_score: -1,
+  poster: movie.poster_path
+    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+    : "",
+  tmdbid: movie.id,
+  dani_approved: false,
+});
 
 const stringListKeys = [
   "genre",

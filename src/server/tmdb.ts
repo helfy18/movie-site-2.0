@@ -1,4 +1,4 @@
-import { buildUrl, getJson } from "@/contexts/apiContext";
+import { buildUrl, getJson } from "@/api/client";
 
 const TMDBURL = "https://api.themoviedb.org/3";
 

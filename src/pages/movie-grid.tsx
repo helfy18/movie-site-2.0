@@ -1,11 +1,11 @@
 import * as React from "react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Layout from "@/components/layout";
 import MovieGrid from "@/components/movieGrid";
 import Filters from "@/components/filters";
 import { Stack, Button, TextField, InputAdornment, Grid2 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { useMoviesList, useTypesList } from "@/contexts/apiContext";
+import { useMoviesList, useTypesList } from "@/api/hooks";
 import Spinner from "@/components/spinner";
 import ErrorMessage from "@/components/errorMessage";
 import { useRouter } from "next/router";
@@ -37,6 +37,12 @@ const MovieGridPage = () => {
 
   const params = useMemo(() => parseGridQuery(router.query), [router.query]);
 
+  // Covers back/forward navigation too, where the query changes without
+  // going through onFilterApply/onFilterClear.
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [params]);
+
   const listMovies = useMoviesList(params, {
     enabled: router.isReady,
   });
@@ -61,13 +67,11 @@ const MovieGridPage = () => {
 
   const onFilterApply = (filterValues: MovieListQuery) => {
     router.push(gridLink(filterValues), undefined, { shallow: true });
-    setCurrentPage(1);
     setShowDropdown(false);
   };
 
   const onFilterClear = () => {
     router.push(gridLink({}), undefined, { shallow: true });
-    setCurrentPage(1);
     setShowDropdown(false);
   };
 
