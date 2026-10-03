@@ -17,6 +17,7 @@ const DaniBadge = ({ size, right = 0, onClick }: Props) => (
         src="/dani.png"
         alt="Dani Approved"
         fill
+        sizes={`${size}px`}
         style={{ cursor: "pointer", objectFit: "contain" }}
       />
     </Tooltip>

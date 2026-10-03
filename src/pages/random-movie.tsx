@@ -30,8 +30,6 @@ export const RandomMovie = () => {
 
   const onFilterApply = (filterValues: MovieListQuery) => {
     setParams(filterValues);
-    // Re-roll even when the filters didn't change, matching the old behavior
-    // where Apply always fetched a fresh movie.
     setRoll((previous) => previous + 1);
     setShowFilters(false);
   };

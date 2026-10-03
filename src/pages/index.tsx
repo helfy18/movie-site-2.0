@@ -25,10 +25,6 @@ const theatreListings = async () => {
   }
 };
 
-// The ratings-API calls have no fallback on purpose: if that API is down, the
-// build (and CI) fails loudly rather than publishing an empty home page. At
-// runtime ISR keeps serving the last good page. Theatre listings are optional,
-// so TMDB failures degrade to hiding those rows instead.
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const [recent, catalogue, [nowPlayingTmdb, upcomingTmdb]] = await Promise.all(
     [fetchRecentMovies(), fetchMoviesList({}), theatreListings()],
@@ -52,9 +48,15 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 
 const IndexPage = ({ recent, nowPlaying, upcoming, rows }: Props) => (
   <Layout pageTitle="Home">
-    {recent.length > 0 && <PosterRow title="Recently Added" movies={recent} />}
+    {recent.length > 0 && (
+      <PosterRow title="Recently Added" movies={recent} priority />
+    )}
     {nowPlaying.length > 0 && (
-      <PosterRow title="Now Playing in Theatres" movies={nowPlaying} />
+      <PosterRow
+        title="Now Playing in Theatres"
+        movies={nowPlaying}
+        priority={recent.length === 0}
+      />
     )}
     {upcoming.length > 0 && (
       <PosterRow title="Coming Soon to Theatres" movies={upcoming} />

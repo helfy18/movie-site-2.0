@@ -39,8 +39,6 @@ const renderProviderRow = (
 
 const ProviderTable = ({ movie }: Props) => {
   const { link, flatrate, rent, buy, ads, free } = movie.provider;
-  // One merged row for TMDB's free and free-with-ads tiers, deduped in case a
-  // provider appears in both.
   const freeProviders = [...(free ?? []), ...(ads ?? [])].filter(
     (provider, index, all) =>
       all.findIndex((p) => p.provider_id === provider.provider_id) === index,

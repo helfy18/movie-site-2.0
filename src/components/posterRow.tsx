@@ -9,6 +9,7 @@ interface Props {
   movies: PosterMovie[];
   title: string;
   link?: LinkProps["href"];
+  priority?: boolean;
 }
 
 const PosterItem = styled(Paper)(({ theme }) => ({
@@ -22,7 +23,7 @@ const PosterItem = styled(Paper)(({ theme }) => ({
   justifyContent: "center",
 }));
 
-const PosterRow = ({ movies, title, link }: Props) => {
+const PosterRow = ({ movies, title, link, priority = false }: Props) => {
   return (
     <>
       <header className="w-full font-bold text-xl my-2 flex justify-between items-center">
@@ -39,7 +40,8 @@ const PosterRow = ({ movies, title, link }: Props) => {
         wrap="nowrap"
         style={{ overflowX: "scroll", overflowY: "clip" }}
       >
-        {movies.map((movie) => {
+        {movies.map((movie, index) => {
+          const eager = priority && index < 6;
           return (
             movie && (
               <Grid size={{ xs: "auto" }} key={movie.tmdbid} sx={{ mb: 1 }}>
@@ -48,10 +50,10 @@ const PosterRow = ({ movies, title, link }: Props) => {
                     href={`/movie/${movie.tmdbid}`}
                     style={{ textDecoration: "none" }}
                   >
-                    <Poster movie={movie} isLink />
+                    <Poster movie={movie} isLink priority={eager} />
                   </Link>
                 ) : (
-                  <Poster movie={movie} />
+                  <Poster movie={movie} priority={eager} />
                 )}
               </Grid>
             )
@@ -65,9 +67,11 @@ const PosterRow = ({ movies, title, link }: Props) => {
 export const Poster = ({
   movie,
   isLink,
+  priority = false,
 }: {
   movie: PosterMovie;
   isLink?: boolean;
+  priority?: boolean;
 }) => (
   <PosterItem
     style={{
@@ -82,7 +86,13 @@ export const Poster = ({
         width: "100%",
       }}
     >
-      <Image src={movie.poster} height={163} width={110} alt={movie.movie} />
+      <Image
+        src={movie.poster}
+        height={163}
+        width={110}
+        alt={movie.movie}
+        priority={priority}
+      />
       {movie.dani_approved && <DaniBadge size={40} />}
     </Box>
     <Typography

@@ -27,8 +27,6 @@ interface MostRecentMovieQuery {
   count?: number;
 }
 
-// The subset of Movie that poster tiles render. Home-page props are trimmed
-// to this shape to keep the serialized page data small.
 interface PosterMovie {
   movie: string;
   jh_score: number;

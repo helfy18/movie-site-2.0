@@ -116,7 +116,7 @@ export default function Filters({
       decade: decades,
       provider: providers,
     };
-    // Untouched sliders stay out of the query so URLs only carry real filters.
+
     if (runtime[0] !== runtimeRange[0] || runtime[1] !== runtimeRange[1]) {
       query.runtime = runtime;
     }

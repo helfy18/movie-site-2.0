@@ -46,18 +46,12 @@ const MovieGridPage = () => {
   const urlSearch =
     typeof router.query.search === "string" ? router.query.search : "";
 
-  // Reset pagination whenever the query changes, including back/forward
-  // navigation. Adjusting state during render (instead of in an effect)
-  // resets the page before paint: https://react.dev/learn/you-might-not-need-an-effect
   const [prevParams, setPrevParams] = useState(params);
   if (prevParams !== params) {
     setPrevParams(params);
     setCurrentPage(1);
   }
 
-  // Adopt search terms that arrive via the URL (deep links, back/forward).
-  // Our own debounced writes land with urlSearch === searchTerm and are
-  // skipped.
   const [prevUrlSearch, setPrevUrlSearch] = useState(urlSearch);
   if (prevUrlSearch !== urlSearch) {
     setPrevUrlSearch(urlSearch);
@@ -90,8 +84,6 @@ const MovieGridPage = () => {
   const onSearch = (text: string) => {
     setSearchTerm(text);
     setCurrentPage(1);
-    // Mirror the term into the URL (debounced, replace) so searches are
-    // shareable without filling the browser history while typing.
     clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {
       router.replace(gridUrl(params, text), undefined, {
