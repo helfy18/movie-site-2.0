@@ -1,6 +1,8 @@
 import {
   Button,
+  Checkbox,
   Divider,
+  FormControlLabel,
   Grid,
   ListSubheader,
   MenuItem,
@@ -84,6 +86,7 @@ export default function Filters({
     values.runtime ?? runtimeRange,
   );
   const [score, setScore] = useState<number[]>(values.rating ?? [0, 100]);
+  const [free, setFree] = useState<boolean>(values.free ?? false);
 
   const handleClear = () => {
     setDirectors([]);
@@ -97,6 +100,7 @@ export default function Filters({
     setUniverses([]);
     setRuntime(runtimeRange);
     setScore([0, 100]);
+    setFree(false);
     onClear();
   };
 
@@ -118,6 +122,9 @@ export default function Filters({
     }
     if (score[0] !== 0 || score[1] !== 100) {
       query.rating = score;
+    }
+    if (free) {
+      query.free = true;
     }
     onApply(query);
   };
@@ -293,6 +300,18 @@ export default function Filters({
         setSelected={setDecades}
         options={decadeOptions}
       />
+      <Grid size={{ xs: 12 }} sx={{ px: 2, pt: 1, textAlign: "center" }}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              color="secondary"
+              checked={free}
+              onChange={(event) => setFree(event.target.checked)}
+            />
+          }
+          label="Free to Watch"
+        />
+      </Grid>
       <Grid size={{ xs: 12 }} sx={{ p: 2 }}>
         <div className="text-center">Runtime</div>
         <Slider

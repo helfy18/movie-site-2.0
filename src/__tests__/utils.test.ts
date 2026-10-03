@@ -33,6 +33,12 @@ describe("parseGridQuery", () => {
     expect(parseGridQuery({ page: "3", utm_source: "x" })).toEqual({});
   });
 
+  it("parses free=true as a boolean and ignores other values", () => {
+    expect(parseGridQuery({ free: "true" })).toEqual({ free: true });
+    expect(parseGridQuery({ free: "false" })).toEqual({});
+    expect(parseGridQuery({ free: "1" })).toEqual({});
+  });
+
   it("parses a combined query", () => {
     expect(
       parseGridQuery({

@@ -45,6 +45,7 @@ export const parseGridQuery = (query: ParsedUrlQuery): MovieListQuery => {
     const list = toList(query[key]);
     if (list) result[key] = list.map(Number);
   }
+  if (query.free === "true") result.free = true;
   return result;
 };
 

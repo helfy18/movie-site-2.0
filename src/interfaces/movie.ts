@@ -10,6 +10,7 @@ interface MovieListQuery {
   decade?: string[];
   provider?: string[];
   rating?: number[];
+  free?: boolean;
 }
 
 interface MovieGetQuery {

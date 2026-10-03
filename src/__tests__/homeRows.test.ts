@@ -118,6 +118,35 @@ describe("buildRows", () => {
     expect(thisYear?.movies).toHaveLength(20);
   });
 
+  it("adds a Free to Watch row only when free or ad-supported movies exist", () => {
+    expect(titles(june)).not.toContain("Free to Watch");
+
+    const withFree = [
+      ...catalogue,
+      makeMovie({
+        tmdbid: 9,
+        provider: {
+          link: "",
+          rent: [],
+          flatrate: [],
+          buy: [],
+          ads: [
+            {
+              logo_path: "",
+              provider_id: 1,
+              provider_name: "Tubi TV",
+              display_priority: 1,
+            },
+          ],
+        },
+      }),
+    ];
+    const rows = buildRows(withFree, june);
+    const freeRow = rows.find((row) => row.title === "Free to Watch");
+    expect(freeRow?.movies.map((m) => m.tmdbid)).toEqual([9]);
+    expect(freeRow?.link).toEqual({ free: true });
+  });
+
   it("returns no rows for an empty catalogue", () => {
     expect(buildRows([], june)).toEqual([]);
     expect(buildRows([], december)).toEqual([]);

@@ -53,6 +53,16 @@ export const buildRows = (catalogue: Movie[], today: Date): Row[] => {
       link: { genre: ["Horror"] },
     });
   }
+  const freeMovies = top(
+    (m) => !!(m.provider.free?.length || m.provider.ads?.length),
+  );
+  if (freeMovies.length > 0) {
+    rows.push({
+      title: "Free to Watch",
+      movies: freeMovies,
+      link: { free: true },
+    });
+  }
   rows.push(
     {
       title: "Best of This Year",
