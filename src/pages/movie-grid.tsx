@@ -3,7 +3,7 @@ import { useState, useMemo, useEffect } from "react";
 import Layout from "@/components/layout";
 import MovieGrid from "@/components/movieGrid";
 import Filters from "@/components/filters";
-import { Stack, Button, TextField, InputAdornment, Grid2 } from "@mui/material";
+import { Stack, Button, TextField, InputAdornment, Grid } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useMoviesList, useTypesList } from "@/api/hooks";
 import Spinner from "@/components/spinner";
@@ -77,8 +77,8 @@ const MovieGridPage = () => {
 
   return (
     <Layout pageTitle="Movie Grid">
-      <Grid2 container>
-        <Grid2
+      <Grid container>
+        <Grid
           size={{ xs: 12, md: 6 }}
           sx={{
             textAlign: { xs: "center", md: "right" },
@@ -101,8 +101,8 @@ const MovieGridPage = () => {
             }}
             className="mx-2"
           />
-        </Grid2>
-        <Grid2
+        </Grid>
+        <Grid
           size={{ xs: 12, md: 6 }}
           sx={{
             textAlign: { xs: "center", md: "left" },
@@ -125,8 +125,8 @@ const MovieGridPage = () => {
           {typesList.isError && (
             <span className="text-muted">Filters unavailable</span>
           )}
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
       {showDropdown && filterTypes && (
         <Filters
           filterTypes={filterTypes}

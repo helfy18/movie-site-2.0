@@ -1,4 +1,4 @@
-import { Grid2, IconButton, MenuItem, Select } from "@mui/material";
+import { Grid, IconButton, MenuItem, Select } from "@mui/material";
 import { Dispatch, ReactNode, SetStateAction } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import { handleSelectChange, menuProps, selectSx } from "./selectShared";
@@ -23,7 +23,7 @@ export default function SelectWrapper({
   children,
 }: Props) {
   return (
-    <Grid2 size={{ xs: 12, md: 6 }} className="py-0 px-2">
+    <Grid size={{ xs: 12, md: 6 }} className="py-0 px-2">
       <div className="text-center">{title}</div>
       <div className="flex items-center gap-2">
         <Select
@@ -58,6 +58,6 @@ export default function SelectWrapper({
           </IconButton>
         )}
       </div>
-    </Grid2>
+    </Grid>
   );
 }

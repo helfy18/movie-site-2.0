@@ -3,7 +3,7 @@ import Layout from "@/components/layout";
 import Spinner from "@/components/spinner";
 import ErrorMessage from "@/components/errorMessage";
 import { useGetRandomMovie, useMovieCount, useTypesList } from "@/api/hooks";
-import { Box, Button, Grid2, Link, Stack } from "@mui/material";
+import { Box, Button, Grid, Link, Stack } from "@mui/material";
 import { useState } from "react";
 import Image from "next/image";
 import DaniBadge from "@/components/daniBadge";
@@ -53,8 +53,8 @@ export const RandomMovie = () => {
         <ErrorMessage message="Couldn't load a movie." onRetry={onNext} />
       ) : randomMovie ? (
         <Stack spacing={2} sx={{ width: "100%", justifyContent: "center" }}>
-          <Grid2 container spacing={2}>
-            <Grid2 size={{ xs: 6 }} className="mb-2 px-2 text-right">
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 6 }} className="mb-2 px-2 text-right">
               <Button
                 sx={{
                   width: "50%",
@@ -67,8 +67,8 @@ export const RandomMovie = () => {
               >
                 Next
               </Button>
-            </Grid2>
-            <Grid2 size={{ xs: 6 }} className="mb-2 px-2">
+            </Grid>
+            <Grid size={{ xs: 6 }} className="mb-2 px-2">
               <Button
                 sx={{
                   width: "50%",
@@ -80,8 +80,8 @@ export const RandomMovie = () => {
               >
                 Return to Filters
               </Button>
-            </Grid2>
-          </Grid2>
+            </Grid>
+          </Grid>
           <Link href={`/movie/${randomMovie.tmdbid}`}>
             <Box
               sx={{
@@ -119,7 +119,7 @@ export const RandomMovie = () => {
               </Box>
             </Box>
           </Link>
-          <Grid2 container spacing={2} sx={{ justifyContent: "center" }}>
+          <Grid container spacing={2} sx={{ justifyContent: "center" }}>
             <ScoreCard
               label="Ranking:"
               value={randomMovie.ranking}
@@ -132,7 +132,7 @@ export const RandomMovie = () => {
               total={100}
               score={randomMovie.jh_score}
             />
-          </Grid2>
+          </Grid>
         </Stack>
       ) : (
         filterTypes && (

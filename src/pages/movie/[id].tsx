@@ -11,7 +11,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  Grid2,
+  Grid,
   Stack,
   Typography,
 } from "@mui/material";
@@ -91,22 +91,22 @@ const MoviePage = ({
       <Dialog
         open={showImage}
         onClose={() => setShowImage(false)}
-        PaperProps={{ sx: { bgcolor: "background.default" } }}
+        slotProps={{ paper: { sx: { bgcolor: "background.default" } } }}
       >
         <DialogTitle align="center">Dani Approved</DialogTitle>
         <DialogContent>
-          <Stack spacing={1} alignItems="center">
+          <Stack spacing={1} sx={{ alignItems: "center" }}>
             <Image src="/dani.png" alt="verified" width="300" height="300" />
-            <Typography variant="body2" color="secondary">
+            <Typography variant="body2" sx={{ color: "secondary.main" }}>
               Drawing Credit: Phoebe Torres
             </Typography>
           </Stack>
         </DialogContent>
       </Dialog>
-      <Grid2 container className="flex flex-wrap" spacing={2.5}>
-        <Grid2
+      <Grid container className="flex flex-wrap" spacing={2.5}>
+        <Grid
           size={{ xs: 12, md: 2.8 }}
-          textAlign="center"
+          sx={{ textAlign: "center" }}
           className="space-y-4"
         >
           <Box
@@ -145,14 +145,14 @@ const MoviePage = ({
               score={movie.jh_score}
             />
           </Box>
-        </Grid2>
-        <Grid2 size={{ sm: 12, md: 5 }}>
+        </Grid>
+        <Grid size={{ sm: 12, md: 5 }}>
           <Stack spacing={2}>
             <InfoTable movie={movie} />
             <ProviderTable movie={movie} />
           </Stack>
-        </Grid2>
-        <Grid2 size={{ sm: 12, md: 4.2 }}>
+        </Grid>
+        <Grid size={{ sm: 12, md: 4.2 }}>
           <Stack spacing={2}>
             {movie.trailer && (
               <div className="w-full aspect-[16/9]">
@@ -179,8 +179,8 @@ const MoviePage = ({
             )}
             <OtherSiteReviews movie={movie} />
           </Stack>
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
       {recommended.length > 0 && (
         <PosterRow title="More Like This" movies={recommended} />
       )}

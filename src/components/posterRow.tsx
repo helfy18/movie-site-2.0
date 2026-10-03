@@ -1,4 +1,4 @@
-import { Box, Grid2, Paper, styled, Typography } from "@mui/material";
+import { Box, Grid, Paper, styled, Typography } from "@mui/material";
 import DaniBadge from "./daniBadge";
 import { scoreColor } from "@/styles/gradient";
 import Image from "next/image";
@@ -33,7 +33,7 @@ const PosterRow = ({ movies, title, link }: Props) => {
           </Link>
         )}
       </header>
-      <Grid2
+      <Grid
         container
         spacing={2}
         wrap="nowrap"
@@ -42,7 +42,7 @@ const PosterRow = ({ movies, title, link }: Props) => {
         {movies.map((movie) => {
           return (
             movie && (
-              <Grid2 size={{ xs: "auto" }} key={movie.tmdbid} mb={1}>
+              <Grid size={{ xs: "auto" }} key={movie.tmdbid} sx={{ mb: 1 }}>
                 {movie.jh_score !== -1 ? (
                   <Link
                     href={`/movie/${movie.tmdbid}`}
@@ -53,11 +53,11 @@ const PosterRow = ({ movies, title, link }: Props) => {
                 ) : (
                   <Poster movie={movie} />
                 )}
-              </Grid2>
+              </Grid>
             )
           );
         })}
-      </Grid2>
+      </Grid>
     </>
   );
 };

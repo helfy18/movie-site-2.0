@@ -1,7 +1,7 @@
 import {
   Button,
   Divider,
-  Grid2,
+  Grid,
   ListSubheader,
   MenuItem,
   Slider,
@@ -187,19 +187,19 @@ export default function Filters({
       ?.provider_name ?? id;
 
   return (
-    <Grid2 container className="mb-4 pt-2 bg-card">
-      <Grid2 size={{ xs: 6 }} className="mb-2 px-2 text-right">
+    <Grid container className="mb-4 pt-2 bg-card">
+      <Grid size={{ xs: 6 }} className="mb-2 px-2 text-right">
         <Button sx={buttonSx} onClick={onSubmit}>
           Apply
         </Button>
-      </Grid2>
-      <Grid2 size={{ xs: 6 }} className="mb-2 px-2">
+      </Grid>
+      <Grid size={{ xs: 6 }} className="mb-2 px-2">
         <Button sx={buttonSx} onClick={handleClear}>
           Reset
         </Button>
-      </Grid2>
+      </Grid>
       {showScore && (
-        <Grid2 size={{ xs: 12 }} sx={{ p: 2 }}>
+        <Grid size={{ xs: 12 }} sx={{ p: 2 }}>
           <div className="text-center">Score</div>
           <Slider
             min={0}
@@ -209,7 +209,7 @@ export default function Filters({
             value={score}
             onChange={(_, value) => setScore(value as number[])}
           />
-        </Grid2>
+        </Grid>
       )}
       <SelectWrapper
         title="Genre"
@@ -268,7 +268,7 @@ export default function Filters({
             key={provider.provider_id}
             value={String(provider.provider_id)}
           >
-            <Grid2 container spacing={1}>
+            <Grid container spacing={1}>
               <Image
                 src={`https://image.tmdb.org/t/p/w154/${provider.logo_path}`}
                 height={35}
@@ -276,8 +276,8 @@ export default function Filters({
                 alt={provider.provider_name}
                 className="rounded-full"
               />
-              <Grid2 my="auto">{provider.provider_name}</Grid2>
-            </Grid2>
+              <Grid sx={{ my: "auto" }}>{provider.provider_name}</Grid>
+            </Grid>
           </MenuItem>
         ))}
       </SelectWrapper>
@@ -293,7 +293,7 @@ export default function Filters({
         setSelected={setDecades}
         options={decadeOptions}
       />
-      <Grid2 size={{ xs: 12 }} sx={{ p: 2 }}>
+      <Grid size={{ xs: 12 }} sx={{ p: 2 }}>
         <div className="text-center">Runtime</div>
         <Slider
           min={runtimeRange[0]}
@@ -304,7 +304,7 @@ export default function Filters({
           valueLabelFormat={(val: number) => `${val} min`}
           onChange={(_, value) => setRuntime(value as number[])}
         />
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   );
 }

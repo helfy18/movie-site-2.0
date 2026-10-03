@@ -1,4 +1,4 @@
-import { Box, Stack, Grid2, Collapse } from "@mui/material";
+import { Box, Stack, Grid, Collapse } from "@mui/material";
 import { scoreColor } from "@/styles/gradient";
 import { Item } from "./item";
 import SearchIcon from "@mui/icons-material/Search";
@@ -61,13 +61,15 @@ const InfoTable = ({ movie }: InfoTableProps) => {
       <Stack spacing={1.5}>
         {rows.map(({ label, value, style, queryType }) =>
           value ? (
-            <Grid2 container key={label}>
-              <Grid2 size={4}>{label}</Grid2>
-              <Grid2 size={8} style={style}>
+            <Grid container key={label}>
+              <Grid size={4}>{label}</Grid>
+              <Grid size={8} style={style}>
                 <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="space-between"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
                   style={style}
                 >
                   {label === "Actors" ? (
@@ -106,8 +108,8 @@ const InfoTable = ({ movie }: InfoTableProps) => {
                     </Link>
                   )}
                 </Box>
-              </Grid2>
-            </Grid2>
+              </Grid>
+            </Grid>
           ) : null,
         )}
       </Stack>

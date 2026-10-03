@@ -2,7 +2,7 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
-import { Grid2, Stack } from "@mui/material";
+import { Grid, Stack } from "@mui/material";
 import { useRouter } from "next/router";
 
 interface layoutProps {
@@ -52,7 +52,7 @@ const Layout = (props: layoutProps) => {
         <Link href="/random-movie">Random Movie</Link>
       </Stack>
       <main>{props.children}</main>
-      <Grid2 container spacing={2} sx={{ mt: 4 }}>
+      <Grid container spacing={2} sx={{ mt: 4 }}>
         <a
           href="https://www.themoviedb.org/"
           target="_blank"
@@ -79,7 +79,7 @@ const Layout = (props: layoutProps) => {
             className="rounded"
           />
         </a>
-      </Grid2>
+      </Grid>
     </div>
   );
 };

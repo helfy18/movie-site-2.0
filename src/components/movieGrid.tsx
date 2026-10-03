@@ -1,4 +1,4 @@
-import { Button, Grid2 } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import Link from "next/link";
 import { Poster } from "./posterRow";
 
@@ -53,19 +53,19 @@ export default function MovieGrid({
   };
 
   return (
-    <Grid2>
-      <Grid2 container spacing={2} className="justify-center">
+    <Grid>
+      <Grid container spacing={2} className="justify-center">
         {currentMovies.map((movie) => {
           return (
-            <Grid2 size={{ xs: "auto" }} key={movie.tmdbid}>
+            <Grid size={{ xs: "auto" }} key={movie.tmdbid}>
               <Link href={`/movie/${movie.tmdbid}`}>
                 <Poster movie={movie} isLink={true} />
               </Link>
-            </Grid2>
+            </Grid>
           );
         })}
-      </Grid2>
-      <Grid2 container spacing={2} className="justify-center text-center mt-5">
+      </Grid>
+      <Grid container spacing={2} className="justify-center text-center mt-5">
         <div>
           {generatePageNumbers().map((page, index) =>
             page === "..." ? (
@@ -84,7 +84,7 @@ export default function MovieGrid({
             ),
           )}
         </div>
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   );
 }
