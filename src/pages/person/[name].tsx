@@ -162,9 +162,7 @@ const PersonPage = ({ name, person, directed, actedIn }: Props) => {
                     )}
                   </Typography>
                   <Box sx={{ display: { xs: "none", md: "block" } }}>
-                    <ScoreBars
-                      scores={rated.map((movie) => movie.jh_score)}
-                    />
+                    <ScoreBars scores={rated.map((movie) => movie.jh_score)} />
                   </Box>
                 </>
               )}
