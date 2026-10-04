@@ -161,11 +161,26 @@ const PersonPage = ({ name, person, directed, actedIn }: Props) => {
                       </>
                     )}
                   </Typography>
-                  <ScoreBars scores={rated.map((movie) => movie.jh_score)} />
+                  <Box sx={{ display: { xs: "none", md: "block" } }}>
+                    <ScoreBars
+                      scores={rated.map((movie) => movie.jh_score)}
+                    />
+                  </Box>
                 </>
               )}
             </Stack>
           </Grid>
+          {best && (
+            <Grid
+              size={12}
+              sx={{
+                display: { xs: "flex", md: "none" },
+                justifyContent: "center",
+              }}
+            >
+              <ScoreBars scores={rated.map((movie) => movie.jh_score)} />
+            </Grid>
+          )}
           {bio && (
             <Grid size={12}>
               {bio.length > bioCollapseChars ? (
