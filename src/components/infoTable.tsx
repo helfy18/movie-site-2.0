@@ -94,8 +94,7 @@ const InfoTable = ({ movie }: InfoTableProps) => {
               sx={
                 chips?.length
                   ? {
-                      alignItems:
-                        label === "Actors" ? "flex-start" : "center",
+                      alignItems: label === "Actors" ? "flex-start" : "center",
                     }
                   : undefined
               }
