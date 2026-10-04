@@ -93,9 +93,8 @@ const PersonPage = ({ name, person, directed, actedIn }: Props) => {
     [directed, actedIn],
   );
 
-  const avg = (
-    rated.reduce((sum, movie) => sum + movie.jh_score, 0) / (rated.length || 1)
-  ).toFixed(2);
+  const avg =
+    rated.reduce((sum, movie) => sum + movie.jh_score, 0) / (rated.length || 1);
   const best = rated[0];
   const worst = rated[rated.length - 1];
   const daniCount = rated.filter((movie) => movie.dani_approved).length;
@@ -150,7 +149,7 @@ const PersonPage = ({ name, person, directed, actedIn }: Props) => {
                       component="span"
                       sx={{ color: scoreColor(avg), fontWeight: "bolder" }}
                     >
-                      {avg}
+                      {avg.toFixed(2)}
                     </Box>
                     {daniCount > 0 && ` · ${daniCount} Dani approved`}
                   </Typography>
