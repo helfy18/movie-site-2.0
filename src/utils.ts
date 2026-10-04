@@ -6,7 +6,13 @@ export const toPosterMovie = ({
   poster,
   tmdbid,
   dani_approved,
-}: Movie): PosterMovie => ({ movie, jh_score, poster, tmdbid, dani_approved });
+}: PosterMovie): PosterMovie => ({
+  movie,
+  jh_score,
+  poster,
+  tmdbid,
+  dani_approved,
+});
 
 // An unrated theatre listing: jh_score -1 renders as "N/A" and doesn't link.
 export const unratedPosterMovie = (movie: TMDBMovie): PosterMovie => ({

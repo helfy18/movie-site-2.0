@@ -36,6 +36,16 @@ interface PosterMovie {
   dani_approved: boolean;
 }
 
+// Shape of a view=compact list response: only these fields carry real values.
+interface CompactMovie extends PosterMovie {
+  cast: string[] | null;
+  directors: string[] | null;
+  universe?: string;
+  sub_universe?: string;
+  studio?: string;
+  year: number;
+}
+
 interface Movie extends PosterMovie {
   universe?: string;
   sub_universe?: string;

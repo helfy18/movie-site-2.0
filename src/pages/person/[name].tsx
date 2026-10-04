@@ -1,15 +1,8 @@
 import Layout from "@/components/layout";
-import { fetchMoviesList, hasServerResponse } from "@/api/client";
+import { fetchMoviesListCompact, hasServerResponse } from "@/api/client";
 import { fetchPerson } from "@/server/tmdb";
 import { toPosterMovie } from "@/utils";
-import {
-  Avatar,
-  Box,
-  Collapse,
-  Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Avatar, Box, Collapse, Grid, Stack, Typography } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -43,12 +36,12 @@ export const getStaticProps: GetStaticProps<Props, { name: string }> = async ({
   const name = params?.name;
   if (!name) return { notFound: true };
 
-  let directed: Movie[];
-  let actedIn: Movie[];
+  let directed: CompactMovie[];
+  let actedIn: CompactMovie[];
   try {
     [directed, actedIn] = await Promise.all([
-      fetchMoviesList({ director: [name] }),
-      fetchMoviesList({ actor: [name] }),
+      fetchMoviesListCompact({ director: [name] }),
+      fetchMoviesListCompact({ actor: [name] }),
     ]);
   } catch (error) {
     if (hasServerResponse(error)) return { notFound: true, revalidate: 60 };
@@ -100,9 +93,9 @@ const PersonPage = ({ name, person, directed, actedIn }: Props) => {
     [directed, actedIn],
   );
 
-  const avg = Math.round(
-    rated.reduce((sum, movie) => sum + movie.jh_score, 0) / (rated.length || 1),
-  );
+  const avg = (
+    rated.reduce((sum, movie) => sum + movie.jh_score, 0) / (rated.length || 1)
+  ).toFixed(2);
   const best = rated[0];
   const worst = rated[rated.length - 1];
   const daniCount = rated.filter((movie) => movie.dani_approved).length;
@@ -179,10 +172,7 @@ const PersonPage = ({ name, person, directed, actedIn }: Props) => {
               {bio.length > bioCollapseChars ? (
                 <>
                   <Collapse in={expanded} collapsedSize={60}>
-                    <Typography
-                      variant="body2"
-                      sx={{ whiteSpace: "pre-line" }}
-                    >
+                    <Typography variant="body2" sx={{ whiteSpace: "pre-line" }}>
                       {bio}
                     </Typography>
                   </Collapse>

@@ -5,15 +5,15 @@ import MovieGrid from "@/components/movieGrid";
 import Filters from "@/components/filters";
 import { Stack, Button, TextField, InputAdornment, Grid } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { useMoviesList, useTypesList } from "@/api/hooks";
+import { useMoviesListCompact, useTypesList } from "@/api/hooks";
 import Spinner from "@/components/spinner";
 import ErrorMessage from "@/components/errorMessage";
 import { useRouter } from "next/router";
 import { parseGridQuery } from "@/utils";
 
-const movieSearch = (text: string, movies: Movie[]) => {
+const movieSearch = (text: string, movies: CompactMovie[]) => {
   const lowerText = text.toLowerCase();
-  const keys: (keyof Movie)[] = [
+  const keys: (keyof CompactMovie)[] = [
     "movie",
     "cast",
     "directors",
@@ -64,7 +64,7 @@ const MovieGridPage = () => {
   const debounceTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(debounceTimer.current), []);
 
-  const listMovies = useMoviesList(params, {
+  const listMovies = useMoviesListCompact(params, {
     enabled: router.isReady,
   });
 

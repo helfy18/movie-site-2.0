@@ -40,5 +40,7 @@ export const fetchMoviesById = (params: MovieListByIdQuery) =>
 export const fetchMovieCount = () => api<number>("/movies/count");
 export const fetchMoviesList = (params: MovieListQuery) =>
   api<Movie[]>("/movies/list", params);
+export const fetchMoviesListCompact = (params: MovieListQuery) =>
+  api<CompactMovie[]>("/movies/list", { ...params, view: "compact" });
 export const fetchRecentMovies = (params?: MostRecentMovieQuery) =>
-  api<Movie[]>("/movies/mostRecent", params);
+  api<CompactMovie[]>("/movies/mostRecent", { ...params, view: "compact" });

@@ -12,6 +12,7 @@ import {
   fetchMovieCount,
   fetchMoviesById,
   fetchMoviesList,
+  fetchMoviesListCompact,
 } from "./client";
 
 type QueryOptions<T> = Omit<UseQueryOptions<T, Error>, "queryKey" | "queryFn">;
@@ -37,6 +38,16 @@ export const useMoviesList = (
   useQuery({
     queryKey: ["movies/list", params],
     queryFn: async () => fetchMoviesList(params),
+    ...options,
+  });
+
+export const useMoviesListCompact = (
+  params: MovieListQuery,
+  options?: QueryOptions<CompactMovie[]>,
+): UseQueryResult<CompactMovie[], Error> =>
+  useQuery({
+    queryKey: ["movies/list", "compact", params],
+    queryFn: async () => fetchMoviesListCompact(params),
     ...options,
   });
 
