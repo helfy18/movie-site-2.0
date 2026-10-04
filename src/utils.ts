@@ -27,6 +27,7 @@ const stringListKeys = [
   "holiday",
   "year",
   "director",
+  "actor",
   "decade",
   "provider",
 ] as const;
@@ -53,3 +54,6 @@ export const gridLink = (query: MovieListQuery) => ({
   pathname: "/movie-grid",
   query: { ...query },
 });
+
+export const personLink = (name: string) =>
+  `/person/${encodeURIComponent(name)}`;

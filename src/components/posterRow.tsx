@@ -38,10 +38,10 @@ const PosterRow = ({ movies, title, link, priority = false }: Props) => {
         container
         spacing={2}
         wrap="nowrap"
-        style={{ overflowX: "scroll", overflowY: "clip" }}
+        style={{ overflowX: "auto", overflowY: "clip" }}
       >
         {movies.map((movie, index) => {
-          const eager = priority && index < 6;
+          const eager = priority && index < 10;
           return (
             movie && (
               <Grid size={{ xs: "auto" }} key={movie.tmdbid} sx={{ mb: 1 }}>

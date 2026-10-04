@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Poster } from "./posterRow";
 
 interface MovieGridProps {
-  movies: Movie[];
+  movies: PosterMovie[];
   page: number;
   onPageChange: (page: number) => void;
 }

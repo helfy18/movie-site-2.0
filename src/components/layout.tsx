@@ -60,7 +60,7 @@ const Layout = (props: layoutProps) => {
         >
           <Image
             src="/tmdb.svg"
-            height={50}
+            height={36}
             width={50}
             alt="TMDB"
             className="rounded"
@@ -73,7 +73,7 @@ const Layout = (props: layoutProps) => {
         >
           <Image
             src="/letterboxd.png"
-            height={50}
+            height={36}
             width={163}
             alt="Letterboxd"
             className="rounded"

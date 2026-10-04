@@ -5,7 +5,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Link from "next/link";
 import { CSSProperties, useState } from "react";
-import { gridLink } from "@/utils";
+import { gridLink, personLink } from "@/utils";
 
 type GridQueryKey =
   | "universe"
@@ -74,7 +74,7 @@ const InfoTable = ({ movie }: InfoTableProps) => {
     { label: "Runtime", value: `${movie.runtime} min` },
     { label: "Budget", value: money(movie.budget) },
     { label: "Box Office", value: money(movie.boxoffice) },
-    { label: "Actors", value: cast.join(", ") || undefined },
+    { label: "Actors", chips: cast },
     {
       label: directors.length > 1 ? "Directors" : "Director",
       chips: directors,
@@ -91,7 +91,14 @@ const InfoTable = ({ movie }: InfoTableProps) => {
             <Grid
               container
               key={label}
-              sx={chips?.length ? { alignItems: "center" } : undefined}
+              sx={
+                chips?.length
+                  ? {
+                      alignItems:
+                        label === "Actors" ? "flex-start" : "center",
+                    }
+                  : undefined
+              }
             >
               <Grid size={4}>{label}</Grid>
               <Grid size={8} style={style}>
@@ -109,7 +116,11 @@ const InfoTable = ({ movie }: InfoTableProps) => {
                           key={name}
                           label={name}
                           component={Link}
-                          href={gridLink(singleFilter(chipKey, name))}
+                          href={
+                            chipKey === "director"
+                              ? personLink(name)
+                              : gridLink(singleFilter(chipKey, name))
+                          }
                           variant="outlined"
                           color="secondary"
                           sx={{ fontSize: "1rem" }}
@@ -125,8 +136,23 @@ const InfoTable = ({ movie }: InfoTableProps) => {
                         flex: 1,
                       }}
                     >
-                      <Collapse in={expanded} collapsedSize={50}>
-                        {value}
+                      <Collapse in={expanded} collapsedSize={68}>
+                        <Box
+                          sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
+                        >
+                          {cast.map((name) => (
+                            <Chip
+                              key={name}
+                              label={name}
+                              component={Link}
+                              href={personLink(name)}
+                              variant="outlined"
+                              color="secondary"
+                              sx={{ fontSize: "1rem" }}
+                              clickable
+                            />
+                          ))}
+                        </Box>
                       </Collapse>
                       <Box
                         onClick={() => setExpanded(!expanded)}

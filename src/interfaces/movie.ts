@@ -6,6 +6,7 @@ interface MovieListQuery {
   holiday?: string[];
   year?: string[];
   director?: string[];
+  actor?: string[];
   runtime?: number[];
   decade?: string[];
   provider?: string[];
@@ -77,6 +78,18 @@ interface TMDBMovie {
   video: boolean;
   vote_average: number;
   vote_count: number;
+}
+
+interface TMDBPersonResult {
+  id: number;
+  name: string;
+}
+
+interface TMDBPerson {
+  id: number;
+  name: string;
+  biography: string;
+  profile_path: string | null;
 }
 
 interface Rating {
