@@ -87,6 +87,9 @@ export default function Filters({
   );
   const [score, setScore] = useState<number[]>(values.rating ?? [0, 100]);
   const [free, setFree] = useState<boolean>(values.free ?? false);
+  const [daniApproved, setDaniApproved] = useState<boolean>(
+    values.dani_approved ?? false,
+  );
 
   const handleClear = () => {
     setDirectors([]);
@@ -101,6 +104,7 @@ export default function Filters({
     setRuntime(runtimeRange);
     setScore([0, 100]);
     setFree(false);
+    setDaniApproved(false);
     onClear();
   };
 
@@ -125,6 +129,9 @@ export default function Filters({
     }
     if (free) {
       query.free = true;
+    }
+    if (daniApproved) {
+      query.dani_approved = true;
     }
     onApply(query);
   };
@@ -310,6 +317,16 @@ export default function Filters({
             />
           }
           label="Free to Watch"
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              color="secondary"
+              checked={daniApproved}
+              onChange={(event) => setDaniApproved(event.target.checked)}
+            />
+          }
+          label="Dani Approved"
         />
       </Grid>
       <Grid size={{ xs: 12 }} sx={{ p: 2 }}>
