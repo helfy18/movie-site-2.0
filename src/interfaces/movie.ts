@@ -12,6 +12,7 @@ interface MovieListQuery {
   provider?: string[];
   rating?: number[];
   free?: boolean;
+  dani_approved?: boolean;
 }
 
 interface MovieGetQuery {

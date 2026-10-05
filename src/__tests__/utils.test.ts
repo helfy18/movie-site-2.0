@@ -39,6 +39,13 @@ describe("parseGridQuery", () => {
     expect(parseGridQuery({ free: "1" })).toEqual({});
   });
 
+  it("parses dani_approved=true as a boolean and ignores other values", () => {
+    expect(parseGridQuery({ dani_approved: "true" })).toEqual({
+      dani_approved: true,
+    });
+    expect(parseGridQuery({ dani_approved: "false" })).toEqual({});
+  });
+
   it("parses a combined query", () => {
     expect(
       parseGridQuery({

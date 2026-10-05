@@ -147,6 +147,19 @@ describe("buildRows", () => {
     expect(freeRow?.link).toEqual({ free: true });
   });
 
+  it("adds a Dani Approved row only when approved movies exist", () => {
+    expect(titles(june)).not.toContain("Dani Approved");
+
+    const withDani = [
+      ...catalogue,
+      makeMovie({ tmdbid: 10, dani_approved: true }),
+    ];
+    const rows = buildRows(withDani, june);
+    const daniRow = rows.find((row) => row.title === "Dani Approved");
+    expect(daniRow?.movies.map((m) => m.tmdbid)).toEqual([10]);
+    expect(daniRow?.link).toEqual({ dani_approved: true });
+  });
+
   it("returns no rows for an empty catalogue", () => {
     expect(buildRows([], june)).toEqual([]);
     expect(buildRows([], december)).toEqual([]);

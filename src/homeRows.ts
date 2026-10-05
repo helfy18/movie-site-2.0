@@ -63,6 +63,14 @@ export const buildRows = (catalogue: Movie[], today: Date): Row[] => {
       link: { free: true },
     });
   }
+  const daniMovies = top((m) => m.dani_approved);
+  if (daniMovies.length > 0) {
+    rows.push({
+      title: "Dani Approved",
+      movies: daniMovies,
+      link: { dani_approved: true },
+    });
+  }
   rows.push(
     {
       title: "Best of This Year",

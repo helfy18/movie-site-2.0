@@ -50,6 +50,7 @@ const Layout = (props: layoutProps) => {
         <Link href="/about">About</Link>
         <Link href="/movie-grid">Ratings</Link>
         <Link href="/random-movie">Random Movie</Link>
+        <Link href="/stats">Stats</Link>
       </Stack>
       <main>{props.children}</main>
       <Grid container spacing={2} sx={{ mt: 4 }}>
