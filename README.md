@@ -1,6 +1,6 @@
 # JD Movies
 
-A personal movie ratings site. Browse every movie I've rated, filter by genre, universe, director, streaming provider and more, see what's playing in theatres, or get a random pick.
+A personal movie ratings site. Browse every movie I've rated, filter by genre, universe, director, streaming provider and more, see what's playing in theatres, or get a random pick. Every actor and director links to a person page with their stats and filmography, and the stats page charts the whole catalogue: score distribution, decades, genres, leaderboards, where my ratings disagree with critics, and the best movie of each year.
 
 Built with Next.js (pages router), React Query, MUI and Tailwind. Movie data comes from a separate ratings API, with posters, provider availability and theatre listings from [TMDB](https://www.themoviedb.org/) and [JustWatch](https://www.justwatch.com/).
 
@@ -43,5 +43,7 @@ src/
   interfaces/   global TypeScript types for API data
   styles/       theme tokens, MUI theme, Tailwind globals
   __tests__/    unit tests (Vitest)
+  homeRows.ts   home-page poster row building
+  stats.ts      stats-page aggregation
   utils.ts      URL helpers and poster-shape builders
 ```
