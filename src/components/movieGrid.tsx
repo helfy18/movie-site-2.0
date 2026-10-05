@@ -12,14 +12,14 @@ const moviesPerPage: number = 48;
 
 export default function MovieGrid({
   movies,
-  page: currentPage,
+  page,
   onPageChange,
 }: MovieGridProps) {
+  const totalPages = Math.max(1, Math.ceil(movies.length / moviesPerPage));
+  const currentPage = Math.min(page, totalPages);
   const lastMovie = currentPage * moviesPerPage;
   const firstMovie = lastMovie - moviesPerPage;
   const currentMovies = movies.slice(firstMovie, lastMovie);
-
-  const totalPages = Math.ceil(movies.length / moviesPerPage);
 
   const handlePageChange = (page: number) => {
     if (page > 0 && page <= totalPages) {

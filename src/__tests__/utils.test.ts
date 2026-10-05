@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   gridLink,
+  movieSearch,
   parseGridQuery,
   toPosterMovie,
   unratedPosterMovie,
@@ -98,6 +99,31 @@ describe("unratedPosterMovie", () => {
     expect(
       unratedPosterMovie(makeTmdbMovie({ poster_path: null })).poster,
     ).toBe("");
+  });
+});
+
+describe("movieSearch", () => {
+  const movies = [
+    makeMovie({ movie: "The Batman", cast: ["Zoë Kravitz"], tmdbid: 1 }),
+    makeMovie({
+      movie: "Amélie",
+      directors: ["Jean-Pierre Jeunet"],
+      tmdbid: 2,
+    }),
+  ];
+
+  it("matches accented text from unaccented input and vice versa", () => {
+    expect(movieSearch("zoe kravitz", movies).map((m) => m.tmdbid)).toEqual([
+      1,
+    ]);
+    expect(movieSearch("amelie", movies).map((m) => m.tmdbid)).toEqual([2]);
+    expect(movieSearch("Amélie", movies).map((m) => m.tmdbid)).toEqual([2]);
+  });
+
+  it("searches titles, cast and directors case-insensitively", () => {
+    expect(movieSearch("batman", movies)).toHaveLength(1);
+    expect(movieSearch("jeunet", movies)).toHaveLength(1);
+    expect(movieSearch("nolan", movies)).toHaveLength(0);
   });
 });
 

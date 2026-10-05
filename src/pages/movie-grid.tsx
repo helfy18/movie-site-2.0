@@ -9,55 +9,37 @@ import { useMoviesListCompact, useTypesList } from "@/api/hooks";
 import Spinner from "@/components/spinner";
 import ErrorMessage from "@/components/errorMessage";
 import { useRouter } from "next/router";
-import { parseGridQuery } from "@/utils";
-
-const movieSearch = (text: string, movies: CompactMovie[]) => {
-  const lowerText = text.toLowerCase();
-  const keys: (keyof CompactMovie)[] = [
-    "movie",
-    "cast",
-    "directors",
-    "universe",
-    "sub_universe",
-    "studio",
-  ];
-
-  return movies.filter((movie) =>
-    keys.some((key) =>
-      movie[key]?.toString().toLowerCase().includes(lowerText),
-    ),
-  );
-};
+import { movieSearch, parseGridQuery } from "@/utils";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
-const gridUrl = (filters: MovieListQuery, search: string) => ({
+const gridUrl = (filters: MovieListQuery, search: string, page = 1) => ({
   pathname: "/movie-grid",
-  query: { ...filters, ...(search ? { search } : {}) },
+  query: {
+    ...filters,
+    ...(search ? { search } : {}),
+    ...(page > 1 ? { page } : {}),
+  },
 });
 
 const MovieGridPage = () => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
   const [showDropdown, setShowDropdown] = useState(false);
 
   const params = useMemo(() => parseGridQuery(router.query), [router.query]);
   const urlSearch =
     typeof router.query.search === "string" ? router.query.search : "";
-
-  const [prevParams, setPrevParams] = useState(params);
-  if (prevParams !== params) {
-    setPrevParams(params);
-    setCurrentPage(1);
-  }
+  const urlPage = Number(
+    typeof router.query.page === "string" ? router.query.page : NaN,
+  );
+  const currentPage = Number.isInteger(urlPage) && urlPage > 0 ? urlPage : 1;
 
   const [prevUrlSearch, setPrevUrlSearch] = useState(urlSearch);
   if (prevUrlSearch !== urlSearch) {
     setPrevUrlSearch(urlSearch);
     if (urlSearch !== searchTerm) {
       setSearchTerm(urlSearch);
-      setCurrentPage(1);
     }
   }
 
@@ -81,9 +63,16 @@ const MovieGridPage = () => {
     [searchTerm, allMovies],
   );
 
+  const onPageChange = (page: number) => {
+    clearTimeout(debounceTimer.current);
+    router.replace(gridUrl(params, searchTerm, page), undefined, {
+      shallow: true,
+      scroll: false,
+    });
+  };
+
   const onSearch = (text: string) => {
     setSearchTerm(text);
-    setCurrentPage(1);
     clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {
       router.replace(gridUrl(params, text), undefined, {
@@ -165,6 +154,7 @@ const MovieGridPage = () => {
           onApply={onFilterApply}
           onClear={onFilterClear}
           values={params}
+          showScore
         ></Filters>
       )}
       <Stack direction="row">
@@ -178,7 +168,7 @@ const MovieGridPage = () => {
           <MovieGrid
             movies={displayMovies}
             page={currentPage}
-            onPageChange={setCurrentPage}
+            onPageChange={onPageChange}
           />
         )}
       </Stack>

@@ -64,3 +64,25 @@ export const gridLink = (query: MovieListQuery) => ({
 
 export const personLink = (name: string) =>
   `/person/${encodeURIComponent(name)}`;
+
+const stripAccents = (text: string) =>
+  text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+
+export const movieSearch = (text: string, movies: CompactMovie[]) => {
+  const needle = stripAccents(text);
+  const keys: (keyof CompactMovie)[] = [
+    "movie",
+    "cast",
+    "directors",
+    "universe",
+    "sub_universe",
+    "studio",
+  ];
+
+  return movies.filter((movie) =>
+    keys.some((key) => {
+      const value = movie[key];
+      return value != null && stripAccents(value.toString()).includes(needle);
+    }),
+  );
+};

@@ -45,5 +45,5 @@ src/
   __tests__/    unit tests (Vitest)
   homeRows.ts   home-page poster row building
   stats.ts      stats-page aggregation
-  utils.ts      URL helpers and poster-shape builders
+  utils.ts      URL helpers, grid search and poster-shape builders
 ```
