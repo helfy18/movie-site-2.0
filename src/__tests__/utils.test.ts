@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   gridLink,
+  jsonLdScript,
   movieSearch,
   parseGridQuery,
+  sitemapPaths,
   toPosterMovie,
   unratedPosterMovie,
 } from "@/utils";
@@ -99,6 +101,39 @@ describe("unratedPosterMovie", () => {
     expect(
       unratedPosterMovie(makeTmdbMovie({ poster_path: null })).poster,
     ).toBe("");
+  });
+});
+
+describe("sitemapPaths", () => {
+  it("lists static pages, movies, and people with enough appearances", () => {
+    const movies = [
+      makeMovie({ tmdbid: 1, cast: ["Regular", "One Timer"] }),
+      makeMovie({ tmdbid: 2, cast: ["Regular"], directors: ["Two Timer"] }),
+      makeMovie({ tmdbid: 3, cast: ["Regular", "Two Timer"] }),
+    ];
+    const paths = sitemapPaths(movies);
+    expect(paths).toContain("");
+    expect(paths).toContain("/stats");
+    expect(paths).toContain("/movie/1");
+    expect(paths).toContain("/movie/3");
+    expect(paths).toContain("/person/Regular");
+    expect(paths).not.toContain("/person/One%20Timer");
+    expect(paths).not.toContain("/person/Two%20Timer");
+  });
+
+  it("counts a person once per movie even when both acting and directing", () => {
+    const paths = sitemapPaths([
+      makeMovie({ tmdbid: 1, cast: ["Both"], directors: ["Both"] }),
+    ]);
+    expect(paths).not.toContain("/person/Both");
+  });
+});
+
+describe("jsonLdScript", () => {
+  it("escapes < so content cannot close the script tag", () => {
+    expect(jsonLdScript({ name: "</script><b>" })).toBe(
+      '{"name":"\\u003c/script>\\u003cb>"}',
+    );
   });
 });
 

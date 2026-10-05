@@ -1,7 +1,7 @@
 import Layout from "@/components/layout";
 import { fetchMoviesListCompact, hasServerResponse } from "@/api/client";
 import { fetchPerson } from "@/server/tmdb";
-import { toPosterMovie } from "@/utils";
+import { jsonLdScript, toPosterMovie } from "@/utils";
 import { Avatar, Box, Collapse, Grid, Stack, Typography } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -100,12 +100,31 @@ const PersonPage = ({ name, person, directed, actedIn }: Props) => {
   const daniCount = rated.filter((movie) => movie.dani_approved).length;
   const bio = person?.biography?.trim();
 
+  const description = `${name} on JD Movies: ${rated.length} movie${
+    rated.length === 1 ? "" : "s"
+  } rated, average score ${avg.toFixed(2)}.`;
+  const photo = person?.profile_path
+    ? `https://image.tmdb.org/t/p/w342${person.profile_path}`
+    : best?.poster;
+
   return (
     <Layout pageTitle={name}>
       <Head>
-        <meta
-          name="description"
-          content={`${name}'s movies rated on JD Movies`}
+        <meta name="description" content={description} />
+        <meta property="og:type" content="profile" />
+        <meta property="og:title" content={name} />
+        <meta property="og:description" content={description} />
+        {photo && <meta property="og:image" content={photo} />}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: jsonLdScript({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              name,
+              ...(photo ? { image: photo } : {}),
+            }),
+          }}
         />
       </Head>
       <Item sx={{ color: "secondary.main", mb: 3 }}>

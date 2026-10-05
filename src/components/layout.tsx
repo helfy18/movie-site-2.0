@@ -24,7 +24,11 @@ const Layout = (props: layoutProps) => {
       }}
     >
       <Head>
-        <title>{props.pageTitle}</title>
+        <title>{`${props.pageTitle} | JD Movies`}</title>
+        <meta
+          name="google-site-verification"
+          content="WC_EnnFH_-m85mlDsjMdgTJNaP-jeVgCvyv4m--YdkM"
+        />
       </Head>
       <Link href="/">
         <header className="text-4xl flex items-center justify-center font-bold font-mono">

@@ -26,6 +26,7 @@ import ScoreCard from "@/components/scoreCard";
 import ProviderTable from "@/components/providerTable";
 import OtherSiteReviews from "@/components/otherSiteReviews";
 import PosterRow from "@/components/posterRow";
+import { jsonLdScript } from "@/utils";
 
 interface Props {
   movie: Movie;
@@ -87,6 +88,38 @@ const MoviePage = ({
         <meta property="og:title" content={movie.movie} />
         <meta property="og:description" content={movie.plot} />
         <meta property="og:image" content={movie.poster} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: jsonLdScript({
+              "@context": "https://schema.org",
+              "@type": "Movie",
+              name: movie.movie,
+              image: movie.poster,
+              description: movie.plot,
+              datePublished: String(movie.year),
+              director: (movie.directors ?? []).map((name) => ({
+                "@type": "Person",
+                name,
+              })),
+              actor: (movie.cast ?? []).slice(0, 10).map((name) => ({
+                "@type": "Person",
+                name,
+              })),
+              review: {
+                "@type": "Review",
+                author: { "@type": "Person", name: "Johnathan" },
+                reviewRating: {
+                  "@type": "Rating",
+                  ratingValue: movie.jh_score,
+                  bestRating: 100,
+                  worstRating: 0,
+                },
+                ...(movie.review ? { reviewBody: movie.review } : {}),
+              },
+            }),
+          }}
+        />
       </Head>
       <Dialog
         open={showImage}
