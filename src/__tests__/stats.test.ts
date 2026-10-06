@@ -172,6 +172,29 @@ describe("buildStats", () => {
     ]);
   });
 
+  it("does not double the label when a sub-universe matches its universe", () => {
+    const movies = Array.from({ length: 3 }, (_, i) =>
+      makeMovie({
+        universe: "Disney Animation",
+        sub_universe: "Disney Animation",
+        jh_score: 70,
+        tmdbid: i,
+      }),
+    );
+    const stats = buildStats(movies);
+    expect(stats.subUniverses.best[0].name).toBe("Disney Animation");
+  });
+
+  it("includes universes without sub-universes under their own name", () => {
+    const movies = Array.from({ length: 3 }, (_, i) =>
+      makeMovie({ universe: "John Wick", jh_score: 80, tmdbid: i }),
+    );
+    const stats = buildStats(movies);
+    expect(stats.subUniverses.best).toEqual([
+      { name: "John Wick", count: 3, avg: 80, filter: "John Wick" },
+    ]);
+  });
+
   it("ranks best, worst and most watched independently", () => {
     const movies = [
       ...Array.from({ length: 5 }, (_, i) =>

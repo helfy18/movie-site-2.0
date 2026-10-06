@@ -96,6 +96,33 @@ export const jsonLdScript = (data: object) =>
 const stripAccents = (text: string) =>
   text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 
+export interface PersonMatch {
+  name: string;
+  count: number;
+}
+
+const PERSON_SEARCH_LIMIT = 6;
+
+export const personSearch = (
+  text: string,
+  movies: CompactMovie[],
+): PersonMatch[] => {
+  const needle = stripAccents(text.trim());
+  if (needle.length < 2) return [];
+  const counts = new Map<string, number>();
+  for (const movie of movies) {
+    const names = new Set([...(movie.cast ?? []), ...(movie.directors ?? [])]);
+    for (const name of names) {
+      counts.set(name, (counts.get(name) ?? 0) + 1);
+    }
+  }
+  return [...counts]
+    .filter(([name]) => stripAccents(name).includes(needle))
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+    .slice(0, PERSON_SEARCH_LIMIT);
+};
+
 export const movieSearch = (text: string, movies: CompactMovie[]) => {
   const needle = stripAccents(text);
   const keys: (keyof CompactMovie)[] = [

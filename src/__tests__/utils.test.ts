@@ -4,6 +4,7 @@ import {
   jsonLdScript,
   movieSearch,
   parseGridQuery,
+  personSearch,
   sitemapPaths,
   toPosterMovie,
   unratedPosterMovie,
@@ -159,6 +160,40 @@ describe("movieSearch", () => {
     expect(movieSearch("batman", movies)).toHaveLength(1);
     expect(movieSearch("jeunet", movies)).toHaveLength(1);
     expect(movieSearch("nolan", movies)).toHaveLength(0);
+  });
+});
+
+describe("personSearch", () => {
+  const movies = [
+    makeMovie({ tmdbid: 1, cast: ["Tom Hanks", "Zoë Saldaña"] }),
+    makeMovie({ tmdbid: 2, cast: ["Tom Hanks"], directors: ["Tom Hooper"] }),
+    makeMovie({ tmdbid: 3, cast: ["Tom Hardy"] }),
+  ];
+
+  it("matches actors and directors, ranked by appearance count", () => {
+    expect(personSearch("tom", movies).map((p) => p.name)).toEqual([
+      "Tom Hanks",
+      "Tom Hardy",
+      "Tom Hooper",
+    ]);
+  });
+
+  it("matches accent-insensitively", () => {
+    expect(personSearch("saldana", movies).map((p) => p.name)).toEqual([
+      "Zoë Saldaña",
+    ]);
+  });
+
+  it("requires at least two characters", () => {
+    expect(personSearch("t", movies)).toEqual([]);
+    expect(personSearch(" ", movies)).toEqual([]);
+  });
+
+  it("caps the number of matches", () => {
+    const crowd = Array.from({ length: 10 }, (_, i) =>
+      makeMovie({ tmdbid: i, cast: [`Match ${i}`] }),
+    );
+    expect(personSearch("match", crowd)).toHaveLength(6);
   });
 });
 

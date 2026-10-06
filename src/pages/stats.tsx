@@ -304,7 +304,7 @@ const StatsPage = ({ stats }: Props) => (
         <LeaderList title="Most Watched" people={stats.actors.mostWatched} />
       </Grid>
     </Section>
-    <Section title={`Sub-Universes (min ${MIN_SUB_UNIVERSE_MOVIES} movies)`}>
+    <Section title={`Universes (min ${MIN_SUB_UNIVERSE_MOVIES} movies)`}>
       <Grid container spacing={2}>
         <LeaderList
           title="Highest Average"

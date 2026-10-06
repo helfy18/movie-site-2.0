@@ -3,13 +3,22 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import Layout from "@/components/layout";
 import MovieGrid from "@/components/movieGrid";
 import Filters from "@/components/filters";
-import { Stack, Button, TextField, InputAdornment, Grid } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  Grid,
+  InputAdornment,
+  Stack,
+  TextField,
+} from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useMoviesListCompact, useTypesList } from "@/api/hooks";
 import Spinner from "@/components/spinner";
 import ErrorMessage from "@/components/errorMessage";
 import { useRouter } from "next/router";
-import { movieSearch, parseGridQuery } from "@/utils";
+import Link from "next/link";
+import { movieSearch, parseGridQuery, personLink, personSearch } from "@/utils";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -60,6 +69,11 @@ const MovieGridPage = () => {
 
   const displayMovies = useMemo(
     () => movieSearch(searchTerm, allMovies),
+    [searchTerm, allMovies],
+  );
+
+  const peopleMatches = useMemo(
+    () => (searchTerm ? personSearch(searchTerm, allMovies) : []),
     [searchTerm, allMovies],
   );
 
@@ -156,6 +170,33 @@ const MovieGridPage = () => {
           values={params}
           showScore
         ></Filters>
+      )}
+      {peopleMatches.length > 0 && (
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 0.5,
+            justifyContent: "center",
+            alignItems: "center",
+            mb: 1.5,
+          }}
+        >
+          <Box component="span" sx={{ mr: 1 }}>
+            People:
+          </Box>
+          {peopleMatches.map((person) => (
+            <Chip
+              key={person.name}
+              label={person.name}
+              component={Link}
+              href={personLink(person.name)}
+              variant="outlined"
+              color="secondary"
+              clickable
+            />
+          ))}
+        </Box>
       )}
       <Stack direction="row">
         {listMovies.isPending && <Spinner />}

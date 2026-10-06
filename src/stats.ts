@@ -226,7 +226,7 @@ const labelSubUniverses = (
     const parent = parents.get(p.name);
     return {
       ...p,
-      name: parent ? `${parent} - ${p.name}` : p.name,
+      name: parent && parent !== p.name ? `${parent} - ${p.name}` : p.name,
       filter: p.name,
     };
   };
@@ -258,9 +258,10 @@ export const buildStats = (catalogue: Movie[]): SiteStats => {
     for (const genre of [movie.genre, movie.genre_2]) {
       if (genre) tallyInto(genres, genre, score);
     }
-    if (movie.sub_universe) {
-      tallyInto(subUniverses, movie.sub_universe, score);
-      if (movie.universe)
+    const franchise = movie.sub_universe || movie.universe;
+    if (franchise) {
+      tallyInto(subUniverses, franchise, score);
+      if (movie.sub_universe && movie.universe)
         subUniverseParents.set(movie.sub_universe, movie.universe);
     }
     for (const name of movie.directors ?? []) tallyInto(directors, name, score);
