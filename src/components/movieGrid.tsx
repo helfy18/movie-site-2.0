@@ -59,7 +59,7 @@ export default function MovieGrid({
           return (
             <Grid size={{ xs: "auto" }} key={movie.tmdbid}>
               <Link href={`/movie/${movie.tmdbid}`}>
-                <Poster movie={movie} isLink={true} />
+                <Poster movie={movie} />
               </Link>
             </Grid>
           );

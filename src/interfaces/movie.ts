@@ -91,6 +91,41 @@ interface TMDBMovie {
   vote_count: number;
 }
 
+interface TMDBMovieDetail {
+  adult: boolean;
+  budget: number;
+  genres: { id: number; name: string }[];
+  id: number;
+  overview: string;
+  poster_path: string | null;
+  release_date: string;
+  revenue: number;
+  runtime: number;
+  title: string;
+  credits: {
+    cast: { name: string }[];
+    crew: { name: string; job: string }[];
+  };
+  videos: { results: { key: string; site: string; type: string }[] };
+  "watch/providers": { results: Record<string, TMDBProviderCountry> };
+  release_dates: {
+    results: {
+      iso_3166_1: string;
+      release_dates: { certification: string }[];
+    }[];
+  };
+  recommendations: { results: { id: number }[] };
+}
+
+interface TMDBProviderCountry {
+  link: string;
+  flatrate?: ProviderInfo[];
+  rent?: ProviderInfo[];
+  buy?: ProviderInfo[];
+  ads?: ProviderInfo[];
+  free?: ProviderInfo[];
+}
+
 interface TMDBPersonResult {
   id: number;
   name: string;

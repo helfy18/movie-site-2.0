@@ -4,7 +4,9 @@ import {
   fetchMovieCount,
   fetchMoviesById,
   hasServerResponse,
+  isNotFound,
 } from "@/api/client";
+import { fetchTmdbMovie } from "@/server/tmdb";
 import { useMovieCount, useMovieGet, useMovieListById } from "@/api/hooks";
 import {
   Box,
@@ -49,8 +51,19 @@ export const getStaticProps: GetStaticProps<Props, { id: string }> = async ({
   try {
     movie = await fetchMovie({ tmdbid: id });
   } catch (error) {
-    if (hasServerResponse(error)) return { notFound: true, revalidate: 60 };
-    throw error;
+    // Only a definite miss falls through to TMDB, so an outage on the
+    // ratings API never serves the unreviewed version of a rated movie.
+    if (!hasServerResponse(error)) throw error;
+    if (!isNotFound(error)) return { notFound: true, revalidate: 60 };
+    try {
+      const fallback = await fetchTmdbMovie(id);
+      if (!fallback) return { notFound: true, revalidate: 60 };
+      movie = fallback;
+    } catch (tmdbError) {
+      if (hasServerResponse(tmdbError))
+        return { notFound: true, revalidate: 60 };
+      throw tmdbError;
+    }
   }
 
   const [recommended, totalCount] = await Promise.all([
@@ -71,8 +84,11 @@ const MoviePage = ({
   const [showImage, setShowImage] = useState(false);
 
   const movie =
-    useMovieGet({ tmdbid: initialMovie.tmdbid }, { initialData: initialMovie })
-      .data ?? initialMovie;
+    useMovieGet(
+      { tmdbid: initialMovie.tmdbid },
+      { initialData: initialMovie, enabled: initialMovie.jh_score !== -1 },
+    ).data ?? initialMovie;
+  const reviewed = movie.jh_score !== -1;
   const recommended =
     useMovieListById(
       { tmdbid: movie.recommendations },
@@ -83,6 +99,7 @@ const MoviePage = ({
   return (
     <Layout pageTitle={movie.movie} holiday={movie.holiday}>
       <Head>
+        {!reviewed && <meta name="robots" content="noindex" />}
         <meta name="description" content={movie.plot} />
         <meta property="og:type" content="video.movie" />
         <meta property="og:title" content={movie.movie} />
@@ -106,17 +123,21 @@ const MoviePage = ({
                 "@type": "Person",
                 name,
               })),
-              review: {
-                "@type": "Review",
-                author: { "@type": "Person", name: "Johnathan" },
-                reviewRating: {
-                  "@type": "Rating",
-                  ratingValue: movie.jh_score,
-                  bestRating: 100,
-                  worstRating: 0,
-                },
-                ...(movie.review ? { reviewBody: movie.review } : {}),
-              },
+              ...(reviewed
+                ? {
+                    review: {
+                      "@type": "Review",
+                      author: { "@type": "Person", name: "Johnathan" },
+                      reviewRating: {
+                        "@type": "Rating",
+                        ratingValue: movie.jh_score,
+                        bestRating: 100,
+                        worstRating: 0,
+                      },
+                      ...(movie.review ? { reviewBody: movie.review } : {}),
+                    },
+                  }
+                : {}),
             }),
           }}
         />
@@ -150,18 +171,20 @@ const MoviePage = ({
               width: "100%",
             }}
           >
-            <Image
-              src={movie.poster.replace("w500", "w780")}
-              width={275}
-              height={400}
-              sizes="(max-width: 900px) 100vw, 275px"
-              style={{ width: "100%", height: "auto" }}
-              alt={movie.movie}
-              placeholder="blur"
-              blurDataURL="/spin.svg"
-              className="rounded"
-              priority
-            />
+            {movie.poster && (
+              <Image
+                src={movie.poster.replace("w500", "w780")}
+                width={275}
+                height={400}
+                sizes="(max-width: 900px) 100vw, 275px"
+                style={{ width: "100%", height: "auto" }}
+                alt={movie.movie}
+                placeholder="blur"
+                blurDataURL="/spin.svg"
+                className="rounded"
+                priority
+              />
+            )}
             {movie.dani_approved && (
               <DaniBadge
                 size={100}
@@ -171,12 +194,25 @@ const MoviePage = ({
             )}
           </Box>
           <Box className="w-full flex items-center justify-center">
-            <ScoreCard
-              label="Ranking:"
-              value={movie.ranking}
-              total={count}
-              score={movie.jh_score}
-            />
+            {reviewed ? (
+              <ScoreCard
+                label="Ranking:"
+                value={movie.ranking}
+                total={count}
+                score={movie.jh_score}
+              />
+            ) : (
+              <Item
+                sx={{
+                  color: "secondary.main",
+                  fontSize: "1.3em",
+                  fontWeight: "bold",
+                  width: "fit-content",
+                }}
+              >
+                Not Yet Reviewed
+              </Item>
+            )}
           </Box>
         </Grid>
         <Grid size={{ sm: 12, md: 5 }}>

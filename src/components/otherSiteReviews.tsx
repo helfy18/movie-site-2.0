@@ -5,7 +5,7 @@ interface Props {
 }
 
 const OtherSiteReviews = ({ movie }: Props) => {
-  const sites = [
+  const allSites = [
     {
       name: "IMDb",
       logo: "/imdb.png",
@@ -28,6 +28,8 @@ const OtherSiteReviews = ({ movie }: Props) => {
       value: movie.metacritic,
     },
   ];
+  const sites = allSites.filter((site) => site.value);
+  if (sites.length === 0) return null;
 
   return (
     <table className="text-center">

@@ -33,6 +33,9 @@ export const api = <T>(path: string, params?: object) =>
 export const hasServerResponse = (error: unknown): boolean =>
   error instanceof HttpError;
 
+export const isNotFound = (error: unknown): boolean =>
+  error instanceof HttpError && error.status === 404;
+
 export const fetchMovie = (params: MovieGetQuery) =>
   api<Movie>("/movies/get", params);
 export const fetchMoviesById = (params: MovieListByIdQuery) =>

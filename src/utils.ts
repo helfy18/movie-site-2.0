@@ -14,7 +14,8 @@ export const toPosterMovie = ({
   dani_approved,
 });
 
-// An unrated theatre listing: jh_score -1 renders as "N/A" and doesn't link.
+// An unrated theatre listing: jh_score -1 renders as "N/A" and the movie
+// page falls back to TMDB data.
 export const unratedPosterMovie = (movie: TMDBMovie): PosterMovie => ({
   movie: movie.title,
   jh_score: -1,

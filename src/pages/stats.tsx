@@ -348,7 +348,7 @@ const StatsPage = ({ stats }: Props) => (
               href={`/movie/${movie.tmdbid}`}
               style={{ textDecoration: "none" }}
             >
-              <Poster movie={movie} isLink />
+              <Poster movie={movie} />
             </Link>
           </Box>
         ))}

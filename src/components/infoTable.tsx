@@ -49,7 +49,7 @@ const InfoTable = ({ movie }: InfoTableProps) => {
     { label: "Title", value: movie.movie },
     {
       label: "Score",
-      value: `${movie.jh_score}/100`,
+      value: movie.jh_score !== -1 ? `${movie.jh_score}/100` : undefined,
       style: { color: scoreColor(movie.jh_score), fontWeight: "bolder" },
     },
     { label: "Universe", chips: toChips(movie.universe), chipKey: "universe" },
@@ -69,9 +69,16 @@ const InfoTable = ({ movie }: InfoTableProps) => {
       chipKey: "exclusive",
     },
     { label: "Holiday", chips: toChips(movie.holiday), chipKey: "holiday" },
-    { label: "Year", chips: [String(movie.year)], chipKey: "year" },
+    {
+      label: "Year",
+      chips: movie.year ? [String(movie.year)] : [],
+      chipKey: "year",
+    },
     { label: "MPA Rating", value: movie.rated },
-    { label: "Runtime", value: `${movie.runtime} min` },
+    {
+      label: "Runtime",
+      value: movie.runtime ? `${movie.runtime} min` : undefined,
+    },
     { label: "Budget", value: money(movie.budget) },
     { label: "Box Office", value: money(movie.boxoffice) },
     { label: "Actors", chips: cast },

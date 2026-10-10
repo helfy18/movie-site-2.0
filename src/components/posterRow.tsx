@@ -45,16 +45,12 @@ const PosterRow = ({ movies, title, link, priority = false }: Props) => {
           return (
             movie && (
               <Grid size={{ xs: "auto" }} key={movie.tmdbid} sx={{ mb: 1 }}>
-                {movie.jh_score !== -1 ? (
-                  <Link
-                    href={`/movie/${movie.tmdbid}`}
-                    style={{ textDecoration: "none" }}
-                  >
-                    <Poster movie={movie} isLink priority={eager} />
-                  </Link>
-                ) : (
+                <Link
+                  href={`/movie/${movie.tmdbid}`}
+                  style={{ textDecoration: "none" }}
+                >
                   <Poster movie={movie} priority={eager} />
-                )}
+                </Link>
               </Grid>
             )
           );
@@ -66,18 +62,12 @@ const PosterRow = ({ movies, title, link, priority = false }: Props) => {
 
 export const Poster = ({
   movie,
-  isLink,
   priority = false,
 }: {
   movie: PosterMovie;
-  isLink?: boolean;
   priority?: boolean;
 }) => (
-  <PosterItem
-    style={{
-      cursor: movie.jh_score === -1 && !isLink ? "not-allowed" : "pointer",
-    }}
-  >
+  <PosterItem style={{ cursor: "pointer" }}>
     <Box
       sx={{
         px: "0rem",
