@@ -29,7 +29,6 @@ export const unratedPosterMovie = (movie: TMDBMovie): PosterMovie => ({
 const stringListKeys = [
   "genre",
   "universe",
-  "exclusive",
   "studio",
   "holiday",
   "year",

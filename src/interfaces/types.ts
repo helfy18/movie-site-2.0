@@ -1,6 +1,5 @@
 interface AllType {
   director: FilterType[];
-  exclusive: string[];
   genre: FilterType[];
   holiday: string[];
   runtime: Runtime[];

@@ -11,8 +11,7 @@ type GridQueryKey =
   | "director"
   | "studio"
   | "year"
-  | "holiday"
-  | "exclusive";
+  | "holiday";
 
 interface Row {
   label: string;
@@ -58,11 +57,6 @@ const InfoTable = ({ movie }: InfoTableProps) => {
       label: genres.length > 1 ? "Genres" : "Genre",
       chips: genres,
       chipKey: "genre",
-    },
-    {
-      label: "Exclusive",
-      chips: toChips(movie.exclusive),
-      chipKey: "exclusive",
     },
     { label: "Holiday", chips: toChips(movie.holiday), chipKey: "holiday" },
     {

@@ -1,7 +1,6 @@
 interface MovieListQuery {
   genre?: string[];
   universe?: string[];
-  exclusive?: string[];
   studio?: string[];
   holiday?: string[];
   year?: string[];
@@ -61,7 +60,6 @@ interface Movie extends PosterMovie {
   genre: string;
   genre_2?: string;
   holiday?: string;
-  exclusive?: string;
   studio?: string;
   year: number;
   review?: string;

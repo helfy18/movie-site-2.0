@@ -72,9 +72,6 @@ export default function Filters({
   const runtimeRange = [min, max];
 
   const [directors, setDirectors] = useState<string[]>(values.director ?? []);
-  const [exclusives, setExclusives] = useState<string[]>(
-    values.exclusive ?? [],
-  );
   const [studios, setStudios] = useState<string[]>(values.studio ?? []);
   const [years, setYears] = useState<string[]>(values.year ?? []);
   const [providers, setProviders] = useState<string[]>(values.provider ?? []);
@@ -93,7 +90,6 @@ export default function Filters({
 
   const handleClear = () => {
     setDirectors([]);
-    setExclusives([]);
     setStudios([]);
     setYears([]);
     setProviders([]);
@@ -112,7 +108,6 @@ export default function Filters({
     const query: MovieListQuery = {
       genre: genres,
       director: directors,
-      exclusive: exclusives,
       studio: studios,
       year: years,
       holiday: holidays,
