@@ -1,0 +1,15 @@
+{
+  "id": "/",
+  "name": "JD Movies",
+  "short_name": "JD Movies",
+  "description": "Every movie Johnathan has rated, with filters, stats and a random pick.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#292524",
+  "theme_color": "#292524",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
