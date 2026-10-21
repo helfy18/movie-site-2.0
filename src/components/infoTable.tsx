@@ -6,12 +6,7 @@ import { CSSProperties } from "react";
 import { gridLink, personLink } from "@/utils";
 
 type GridQueryKey =
-  | "universe"
-  | "genre"
-  | "director"
-  | "studio"
-  | "year"
-  | "holiday";
+  "universe" | "genre" | "director" | "studio" | "year" | "holiday";
 
 interface Row {
   label: string;
