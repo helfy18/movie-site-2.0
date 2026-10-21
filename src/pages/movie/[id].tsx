@@ -28,7 +28,8 @@ import ScoreCard from "@/components/scoreCard";
 import ProviderTable from "@/components/providerTable";
 import OtherSiteReviews from "@/components/otherSiteReviews";
 import PosterRow from "@/components/posterRow";
-import { jsonLdScript } from "@/utils";
+import CastSection from "@/components/castSection";
+import { castNames, jsonLdScript } from "@/utils";
 
 interface Props {
   movie: Movie;
@@ -95,6 +96,7 @@ const MoviePage = ({
       { initialData: initialRecommended },
     ).data ?? [];
   const count = useMovieCount({ initialData: totalCount }).data;
+  const cast = movie.cast ?? [];
 
   return (
     <Layout pageTitle={movie.movie} holiday={movie.holiday}>
@@ -119,10 +121,12 @@ const MoviePage = ({
                 "@type": "Person",
                 name,
               })),
-              actor: (movie.cast ?? []).slice(0, 10).map((name) => ({
-                "@type": "Person",
-                name,
-              })),
+              actor: castNames(movie)
+                .slice(0, 10)
+                .map((name) => ({
+                  "@type": "Person",
+                  name,
+                })),
               ...(reviewed
                 ? {
                     review: {
@@ -250,6 +254,7 @@ const MoviePage = ({
           </Stack>
         </Grid>
       </Grid>
+      {cast.length > 0 && <CastSection cast={cast} />}
       {recommended.length > 0 && (
         <PosterRow title="More Like This" movies={recommended} />
       )}

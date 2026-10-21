@@ -37,9 +37,17 @@ interface PosterMovie {
   dani_approved: boolean;
 }
 
+interface CastMember {
+  name: string;
+  character: string;
+  profile_path: string;
+  tmdbid: number;
+}
+
 // Shape of a view=compact list response: only these fields carry real values.
+// Cast members carry only their name.
 interface CompactMovie extends PosterMovie {
-  cast: string[] | null;
+  cast: CastMember[] | null;
   directors: string[] | null;
   universe?: string;
   sub_universe?: string;
@@ -59,7 +67,7 @@ interface Movie extends PosterMovie {
   review?: string;
   ranking: string;
   plot: string;
-  cast: string[] | null;
+  cast: CastMember[] | null;
   directors: string[] | null;
   ratings: Rating[];
   boxoffice: string;
@@ -103,7 +111,12 @@ interface TMDBMovieDetail {
   runtime: number;
   title: string;
   credits: {
-    cast: { name: string }[];
+    cast: {
+      id: number;
+      name: string;
+      character: string;
+      profile_path: string | null;
+    }[];
     crew: { name: string; job: string }[];
   };
   videos: { results: { key: string; site: string; type: string }[] };

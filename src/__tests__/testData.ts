@@ -1,3 +1,6 @@
+export const actors = (...names: string[]): CastMember[] =>
+  names.map((name) => ({ name, character: "", profile_path: "", tmdbid: 0 }));
+
 export const makeMovie = (overrides: Partial<Movie> = {}): Movie => ({
   movie: "Test Movie",
   jh_score: 75,

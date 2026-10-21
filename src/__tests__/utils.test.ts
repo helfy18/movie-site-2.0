@@ -9,7 +9,7 @@ import {
   toPosterMovie,
   unratedPosterMovie,
 } from "@/utils";
-import { makeMovie, makeTmdbMovie } from "./testData";
+import { actors, makeMovie, makeTmdbMovie } from "./testData";
 
 describe("parseGridQuery", () => {
   it("returns an empty query for an empty object", () => {
@@ -108,9 +108,13 @@ describe("unratedPosterMovie", () => {
 describe("sitemapPaths", () => {
   it("lists static pages, movies, and people with enough appearances", () => {
     const movies = [
-      makeMovie({ tmdbid: 1, cast: ["Regular", "One Timer"] }),
-      makeMovie({ tmdbid: 2, cast: ["Regular"], directors: ["Two Timer"] }),
-      makeMovie({ tmdbid: 3, cast: ["Regular", "Two Timer"] }),
+      makeMovie({ tmdbid: 1, cast: actors("Regular", "One Timer") }),
+      makeMovie({
+        tmdbid: 2,
+        cast: actors("Regular"),
+        directors: ["Two Timer"],
+      }),
+      makeMovie({ tmdbid: 3, cast: actors("Regular", "Two Timer") }),
     ];
     const paths = sitemapPaths(movies);
     expect(paths).toContain("");
@@ -124,7 +128,7 @@ describe("sitemapPaths", () => {
 
   it("counts a person once per movie even when both acting and directing", () => {
     const paths = sitemapPaths([
-      makeMovie({ tmdbid: 1, cast: ["Both"], directors: ["Both"] }),
+      makeMovie({ tmdbid: 1, cast: actors("Both"), directors: ["Both"] }),
     ]);
     expect(paths).not.toContain("/person/Both");
   });
@@ -140,7 +144,7 @@ describe("jsonLdScript", () => {
 
 describe("movieSearch", () => {
   const movies = [
-    makeMovie({ movie: "The Batman", cast: ["Zoë Kravitz"], tmdbid: 1 }),
+    makeMovie({ movie: "The Batman", cast: actors("Zoë Kravitz"), tmdbid: 1 }),
     makeMovie({
       movie: "Amélie",
       directors: ["Jean-Pierre Jeunet"],
@@ -165,9 +169,13 @@ describe("movieSearch", () => {
 
 describe("personSearch", () => {
   const movies = [
-    makeMovie({ tmdbid: 1, cast: ["Tom Hanks", "Zoë Saldaña"] }),
-    makeMovie({ tmdbid: 2, cast: ["Tom Hanks"], directors: ["Tom Hooper"] }),
-    makeMovie({ tmdbid: 3, cast: ["Tom Hardy"] }),
+    makeMovie({ tmdbid: 1, cast: actors("Tom Hanks", "Zoë Saldaña") }),
+    makeMovie({
+      tmdbid: 2,
+      cast: actors("Tom Hanks"),
+      directors: ["Tom Hooper"],
+    }),
+    makeMovie({ tmdbid: 3, cast: actors("Tom Hardy") }),
   ];
 
   it("matches actors and directors, ranked by appearance count", () => {
@@ -191,7 +199,7 @@ describe("personSearch", () => {
 
   it("caps the number of matches", () => {
     const crowd = Array.from({ length: 10 }, (_, i) =>
-      makeMovie({ tmdbid: i, cast: [`Match ${i}`] }),
+      makeMovie({ tmdbid: i, cast: actors(`Match ${i}`) }),
     );
     expect(personSearch("match", crowd)).toHaveLength(6);
   });

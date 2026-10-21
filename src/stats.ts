@@ -1,4 +1,4 @@
-import { toPosterMovie } from "@/utils";
+import { castNames, toPosterMovie } from "@/utils";
 
 export interface GroupStat {
   label: string;
@@ -265,7 +265,7 @@ export const buildStats = (catalogue: Movie[]): SiteStats => {
         subUniverseParents.set(movie.sub_universe, movie.universe);
     }
     for (const name of movie.directors ?? []) tallyInto(directors, name, score);
-    (movie.cast ?? []).forEach((name, billing) => {
+    castNames(movie).forEach((name, billing) => {
       tallyInto(actors, name, score);
       if (billing < TOP_BILLING) tallyInto(topBilledActors, name, score);
     });

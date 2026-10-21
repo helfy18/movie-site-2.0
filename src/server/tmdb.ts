@@ -58,7 +58,12 @@ export const fetchTmdbMovie = async (tmdbid: number): Promise<Movie | null> => {
     year: detail.release_date ? Number(detail.release_date.slice(0, 4)) : 0,
     ranking: "",
     plot: detail.overview,
-    cast: detail.credits.cast.slice(0, CAST_LIMIT).map((person) => person.name),
+    cast: detail.credits.cast.slice(0, CAST_LIMIT).map((person) => ({
+      name: person.name,
+      character: person.character,
+      profile_path: person.profile_path ?? "",
+      tmdbid: person.id,
+    })),
     directors: detail.credits.crew
       .filter((person) => person.job === "Director")
       .map((person) => person.name),

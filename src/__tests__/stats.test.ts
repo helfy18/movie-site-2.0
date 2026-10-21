@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildStats, BUCKET_COUNT, GENRE_LIMIT } from "@/stats";
-import { makeMovie } from "./testData";
+import { actors, makeMovie } from "./testData";
 
 describe("buildStats", () => {
   it("computes totals from the catalogue", () => {
@@ -90,9 +90,13 @@ describe("buildStats", () => {
     const filler = Array.from({ length: 10 }, (_, i) => `Filler ${i}`);
     const movies = [
       ...Array.from({ length: 5 }, (_, i) =>
-        makeMovie({ jh_score: 90, cast: [...filler, "Cameo King"], tmdbid: i }),
+        makeMovie({
+          jh_score: 90,
+          cast: actors(...filler, "Cameo King"),
+          tmdbid: i,
+        }),
       ),
-      makeMovie({ jh_score: 90, cast: ["Cameo King"], tmdbid: 99 }),
+      makeMovie({ jh_score: 90, cast: actors("Cameo King"), tmdbid: 99 }),
     ];
     const stats = buildStats(movies);
     const names = (list: { name: string }[]) => list.map((p) => p.name);
@@ -198,10 +202,14 @@ describe("buildStats", () => {
   it("ranks best, worst and most watched independently", () => {
     const movies = [
       ...Array.from({ length: 5 }, (_, i) =>
-        makeMovie({ jh_score: 95, cast: ["Great", "Busy"], tmdbid: i }),
+        makeMovie({ jh_score: 95, cast: actors("Great", "Busy"), tmdbid: i }),
       ),
       ...Array.from({ length: 5 }, (_, i) =>
-        makeMovie({ jh_score: 20, cast: ["Rough", "Busy"], tmdbid: 10 + i }),
+        makeMovie({
+          jh_score: 20,
+          cast: actors("Rough", "Busy"),
+          tmdbid: 10 + i,
+        }),
       ),
     ];
     const stats = buildStats(movies);

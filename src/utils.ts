@@ -66,13 +66,16 @@ export const gridLink = (query: MovieListQuery) => ({
 export const personLink = (name: string) =>
   `/person/${encodeURIComponent(name)}`;
 
+export const castNames = (movie: Pick<CompactMovie, "cast">) =>
+  (movie.cast ?? []).map((member) => member.name);
+
 // People below this many appearances are left out of the sitemap as thin pages.
 const MIN_SITEMAP_APPEARANCES = 3;
 
 export const sitemapPaths = (movies: CompactMovie[]): string[] => {
   const appearances = new Map<string, number>();
   for (const movie of movies) {
-    const names = new Set([...(movie.cast ?? []), ...(movie.directors ?? [])]);
+    const names = new Set([...castNames(movie), ...(movie.directors ?? [])]);
     for (const name of names) {
       appearances.set(name, (appearances.get(name) ?? 0) + 1);
     }
@@ -112,7 +115,7 @@ export const personSearch = (
   if (needle.length < 2) return [];
   const counts = new Map<string, number>();
   for (const movie of movies) {
-    const names = new Set([...(movie.cast ?? []), ...(movie.directors ?? [])]);
+    const names = new Set([...castNames(movie), ...(movie.directors ?? [])]);
     for (const name of names) {
       counts.set(name, (counts.get(name) ?? 0) + 1);
     }
@@ -128,7 +131,6 @@ export const movieSearch = (text: string, movies: CompactMovie[]) => {
   const needle = stripAccents(text);
   const keys: (keyof CompactMovie)[] = [
     "movie",
-    "cast",
     "directors",
     "universe",
     "sub_universe",
@@ -136,9 +138,9 @@ export const movieSearch = (text: string, movies: CompactMovie[]) => {
   ];
 
   return movies.filter((movie) =>
-    keys.some((key) => {
-      const value = movie[key];
-      return value != null && stripAccents(value.toString()).includes(needle);
-    }),
+    [...keys.map((key) => movie[key]), castNames(movie)].some(
+      (value) =>
+        value != null && stripAccents(value.toString()).includes(needle),
+    ),
   );
 };
