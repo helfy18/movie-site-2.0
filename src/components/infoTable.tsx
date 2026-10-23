@@ -33,7 +33,9 @@ const toChips = (value?: string) => (value ? [value] : []);
 
 const InfoTable = ({ movie }: InfoTableProps) => {
   const directors = movie.directors ?? [];
-  const genres = [movie.genre, movie.genre_2].filter(Boolean) as string[];
+  const genres = [movie.genre, movie.genre_2, movie.genre_3].filter(
+    Boolean,
+  ) as string[];
 
   const rows: Row[] = [
     { label: "Title", value: movie.movie },

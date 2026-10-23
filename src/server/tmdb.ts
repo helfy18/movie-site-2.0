@@ -55,6 +55,7 @@ export const fetchTmdbMovie = async (tmdbid: number): Promise<Movie | null> => {
     dani_approved: false,
     genre: detail.genres[0]?.name ?? "",
     genre_2: detail.genres[1]?.name,
+    genre_3: detail.genres[2]?.name,
     year: detail.release_date ? Number(detail.release_date.slice(0, 4)) : 0,
     ranking: "",
     plot: detail.overview,

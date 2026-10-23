@@ -59,6 +59,7 @@ interface Movie extends PosterMovie {
   sub_universe?: string;
   genre: string;
   genre_2?: string;
+  genre_3?: string;
   holiday?: string;
   studio?: string;
   year: number;

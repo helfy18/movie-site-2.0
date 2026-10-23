@@ -162,7 +162,7 @@ const buildDani = (catalogue: Movie[]): DaniStats => {
   const rest = catalogue.filter((m) => !m.dani_approved);
   const genreCounts = new Map<string, { total: number; approved: number }>();
   for (const m of catalogue) {
-    for (const genre of [m.genre, m.genre_2]) {
+    for (const genre of [m.genre, m.genre_2, m.genre_3]) {
       if (!genre) continue;
       const entry = genreCounts.get(genre) ?? { total: 0, approved: 0 };
       entry.total += 1;
@@ -255,7 +255,7 @@ export const buildStats = (catalogue: Movie[]): SiteStats => {
     runtimeMinutes += movie.runtime;
     distribution[Math.min(BUCKET_COUNT - 1, Math.floor(score / BUCKET_SIZE))]++;
     tallyInto(decades, `${Math.floor(movie.year / 10) * 10}s`, score);
-    for (const genre of [movie.genre, movie.genre_2]) {
+    for (const genre of [movie.genre, movie.genre_2, movie.genre_3]) {
       if (genre) tallyInto(genres, genre, score);
     }
     const franchise = movie.sub_universe || movie.universe;

@@ -51,6 +51,24 @@ describe("buildStats", () => {
     ]);
   });
 
+  it("counts a third genre the same as the first two", () => {
+    const stats = buildStats([
+      makeMovie({
+        year: 2018,
+        jh_score: 90,
+        genre: "Superhero",
+        genre_2: "Animated",
+        genre_3: "Comedy",
+      }),
+    ]);
+    expect(stats.genres).toContainEqual({
+      label: "Comedy",
+      count: 1,
+      avg: 90,
+      query: { genre: ["Comedy"] },
+    });
+  });
+
   it("computes the median score", () => {
     const scores = [10, 40, 70, 100];
     const stats = buildStats(
