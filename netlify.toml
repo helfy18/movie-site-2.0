@@ -2,5 +2,7 @@
   command = "npm run build"
   publish = "out"
 
-# Static export: no Next.js runtime, no functions. If the Netlify UI still
-# lists the "Next.js" build plugin for this site, remove it there.
+[build.environment]
+  # Static export: no Next.js runtime, no functions. Netlify auto-installs
+  # its Next.js runtime when it detects Next.js; this opts out of that.
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
