@@ -3,6 +3,7 @@ import {
   fetchMovie,
   fetchMovieCount,
   fetchMoviesById,
+  fetchMoviesListCompact,
   hasServerResponse,
   isNotFound,
 } from "@/api/client";
@@ -37,10 +38,24 @@ interface Props {
   totalCount: number;
 }
 
-export const getStaticPaths: GetStaticPaths = async () => ({
-  paths: [],
-  fallback: "blocking",
-});
+// Every rated movie is pre-rendered at build time so crawlers hit the CDN
+// instead of a serverless function. Unrated movies (TMDB fallback) and
+// anything added since the last build still render on demand.
+export const getStaticPaths: GetStaticPaths = async () => {
+  const movies = await fetchMoviesListCompact({});
+  return {
+    paths: movies.map((movie) => ({ params: { id: String(movie.tmdbid) } })),
+    fallback: "blocking",
+  };
+};
+
+// The catalogue size is the same for every page in a build; fetch it once.
+let movieCountPromise: Promise<number> | undefined;
+const cachedMovieCount = () =>
+  (movieCountPromise ??= fetchMovieCount().catch((error) => {
+    movieCountPromise = undefined;
+    throw error;
+  }));
 
 export const getStaticProps: GetStaticProps<Props, { id: string }> = async ({
   params,
@@ -71,10 +86,11 @@ export const getStaticProps: GetStaticProps<Props, { id: string }> = async ({
     movie.recommendations.length > 0
       ? fetchMoviesById({ tmdbid: movie.recommendations })
       : [],
-    fetchMovieCount(),
+    cachedMovieCount(),
   ]);
 
-  return { props: { movie, recommended, totalCount }, revalidate: 3600 };
+  // The catalogue only changes when the sheet is synced, so a day is plenty.
+  return { props: { movie, recommended, totalCount }, revalidate: 86400 };
 };
 
 const MoviePage = ({

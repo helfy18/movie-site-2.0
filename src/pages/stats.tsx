@@ -34,7 +34,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   }
   if (catalogue.length === 0) return { notFound: true, revalidate: 60 };
 
-  return { props: { stats: buildStats(catalogue) }, revalidate: 3600 };
+  return { props: { stats: buildStats(catalogue) }, revalidate: 86400 };
 };
 
 const HeroTile = ({

@@ -69,7 +69,8 @@ export const castNames = (movie: Pick<CompactMovie, "cast">) =>
   (movie.cast ?? []).map((member) => member.name);
 
 // People below this many appearances are left out of the sitemap as thin pages.
-const MIN_SITEMAP_APPEARANCES = 3;
+// 10 keeps the crawl surface to a few hundred person pages (3 gave ~6,800).
+const MIN_SITEMAP_APPEARANCES = 10;
 
 export const sitemapPaths = (movies: CompactMovie[]): string[] => {
   const appearances = new Map<string, number>();

@@ -107,6 +107,7 @@ describe("unratedPosterMovie", () => {
 
 describe("sitemapPaths", () => {
   it("lists static pages, movies, and people with enough appearances", () => {
+    // "Regular" appears in 10 movies (the threshold); the others in 1 and 2.
     const movies = [
       makeMovie({ tmdbid: 1, cast: actors("Regular", "One Timer") }),
       makeMovie({
@@ -115,6 +116,9 @@ describe("sitemapPaths", () => {
         directors: ["Two Timer"],
       }),
       makeMovie({ tmdbid: 3, cast: actors("Regular", "Two Timer") }),
+      ...Array.from({ length: 7 }, (_, i) =>
+        makeMovie({ tmdbid: 10 + i, cast: actors("Regular") }),
+      ),
     ];
     const paths = sitemapPaths(movies);
     expect(paths).toContain("");

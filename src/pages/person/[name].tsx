@@ -59,7 +59,7 @@ export const getStaticProps: GetStaticProps<Props, { name: string }> = async ({
       directed: directed.map(toPosterMovie),
       actedIn: actedIn.map(toPosterMovie),
     },
-    revalidate: 3600,
+    revalidate: 86400,
   };
 };
 
