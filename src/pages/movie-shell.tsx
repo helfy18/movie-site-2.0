@@ -9,6 +9,7 @@ import {
 } from "@/api/client";
 import { fetchTmdbMovie } from "@/server/tmdb";
 import { useMovieCount } from "@/api/hooks";
+import { toPosterMovie } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Typography } from "@mui/material";
 import Head from "next/head";
@@ -37,7 +38,7 @@ const loadMovie = async (id: number) => {
           () => [] as Movie[],
         )
       : [];
-  return { movie, recommended };
+  return { movie, recommended: recommended.map(toPosterMovie) };
 };
 
 const Notice = ({ title, message }: { title: string; message: string }) => (

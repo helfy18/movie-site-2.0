@@ -1,5 +1,5 @@
 import Layout from "@/components/layout";
-import { useMovieCount, useMovieGet, useMovieListById } from "@/api/hooks";
+import { useMovieCount, useMovieGet } from "@/api/hooks";
 import {
   Box,
   Dialog,
@@ -24,7 +24,8 @@ import { castNames, jsonLdScript } from "@/utils";
 
 export interface MovieDetailProps {
   movie: Movie;
-  recommended: Movie[];
+  // Poster-row fields only: the full Movie objects were 90% of each page.
+  recommended: PosterMovie[];
   totalCount: number;
 }
 
@@ -41,11 +42,7 @@ const MovieDetail = ({
       { initialData: initialMovie, enabled: initialMovie.jh_score !== -1 },
     ).data ?? initialMovie;
   const reviewed = movie.jh_score !== -1;
-  const recommended =
-    useMovieListById(
-      { tmdbid: movie.recommendations },
-      { initialData: initialRecommended },
-    ).data ?? [];
+  const recommended = initialRecommended;
   const count = useMovieCount({ initialData: totalCount }).data;
   const cast = movie.cast ?? [];
 

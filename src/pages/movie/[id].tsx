@@ -8,6 +8,7 @@ import {
 } from "@/api/client";
 import { fetchNowPlaying, fetchTmdbMovie, fetchUpcoming } from "@/server/tmdb";
 import MovieDetail, { type MovieDetailProps } from "@/components/movieDetail";
+import { toPosterMovie } from "@/utils";
 import type { GetStaticPaths, GetStaticProps } from "next";
 
 // Static export: every rated movie plus whatever is currently in theatres
@@ -64,7 +65,9 @@ export const getStaticProps: GetStaticProps<
     cachedMovieCount(),
   ]);
 
-  return { props: { movie, recommended, totalCount } };
+  return {
+    props: { movie, recommended: recommended.map(toPosterMovie), totalCount },
+  };
 };
 
 const MoviePage = (props: MovieDetailProps) => <MovieDetail {...props} />;
