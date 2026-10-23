@@ -2,6 +2,7 @@ import { FC, ReactNode, useState } from "react";
 import {
   QueryClient,
   QueryClientProvider,
+  useQueries,
   useQuery,
   UseQueryOptions,
   UseQueryResult,
@@ -51,15 +52,19 @@ export const useMoviesListCompact = (
     ...options,
   });
 
-export const useGetRandomMovie = (
+// One query per upcoming card, keyed by roll so dealing never refetches a
+// card that has already been drawn.
+export const useRandomDeck = (
   params: MovieListQuery,
   roll: number,
-  options?: QueryOptions<Movie>,
-): UseQueryResult<Movie, Error> =>
-  useQuery({
-    queryKey: ["movies/random", params, roll],
-    queryFn: async () => api<Movie>("/movies/random", params),
-    ...options,
+  size: number,
+): UseQueryResult<Movie, Error>[] =>
+  useQueries({
+    queries: Array.from({ length: size }, (_, offset) => ({
+      queryKey: ["movies/random", params, roll + offset],
+      queryFn: async () => api<Movie>("/movies/random", params),
+      staleTime: Infinity,
+    })),
   });
 
 export const useMovieGet = (

@@ -122,6 +122,7 @@ const MovieGridPage = () => {
         >
           <TextField
             placeholder="Search for Title, Actor, Director..."
+            autoFocus={router.query.focus === "search"}
             value={searchTerm}
             onChange={(event) => onSearch(event.target.value)}
             color="secondary"

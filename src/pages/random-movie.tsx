@@ -2,31 +2,36 @@ import Filters from "@/components/filters";
 import Layout from "@/components/layout";
 import Spinner from "@/components/spinner";
 import ErrorMessage from "@/components/errorMessage";
-import { useGetRandomMovie, useMovieCount, useTypesList } from "@/api/hooks";
-import { Box, Button, Grid, Link, Stack } from "@mui/material";
+import PosterDeck from "@/components/posterDeck";
+import { useMovieCount, useRandomDeck, useTypesList } from "@/api/hooks";
+import { scoreColor } from "@/styles/gradient";
+import { gridLink } from "@/utils";
+import { Box, Button, Chip, Stack, Typography } from "@mui/material";
+import Link from "next/link";
 import { useState } from "react";
-import Image from "next/image";
-import DaniBadge from "@/components/daniBadge";
-import ScoreCard from "@/components/scoreCard";
 
-export const RandomMovie = () => {
+const DECK_SIZE = 3;
+
+const activeFilterCount = (params: MovieListQuery) =>
+  Object.values(params).filter((value) =>
+    Array.isArray(value) ? value.length > 0 : Boolean(value),
+  ).length;
+
+const genresOf = (movie: Movie) =>
+  [movie.genre, movie.genre_2, movie.genre_3].filter(Boolean) as string[];
+
+const RandomMovie = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [params, setParams] = useState<MovieListQuery>({});
   const [roll, setRoll] = useState(0);
 
-  const getRandomMovie = useGetRandomMovie(params, roll);
-
   const typesList = useTypesList();
+  const totalCount = useMovieCount();
+  const deck = useRandomDeck(params, roll, DECK_SIZE);
+  const front = deck[0];
+  const movie = front.data;
 
-  const getTotalCount = useMovieCount();
-
-  const randomMovie = showFilters ? undefined : getRandomMovie.data;
-
-  const filterTypes = typesList.data;
-
-  const onNext = () => {
-    setRoll((previous) => previous + 1);
-  };
+  const onDeal = () => setRoll((previous) => previous + 1);
 
   const onFilterApply = (filterValues: MovieListQuery) => {
     setParams(filterValues);
@@ -34,115 +39,187 @@ export const RandomMovie = () => {
     setShowFilters(false);
   };
 
-  const onReturnToFilters = () => {
-    setShowFilters(true);
-  };
+  const filterCount = activeFilterCount(params);
+  const summary =
+    filterCount > 0
+      ? `Drawing from movies matching ${filterCount} filter${
+          filterCount === 1 ? "" : "s"
+        }`
+      : `Drawing from all ${totalCount.data?.toLocaleString() ?? ""} rated movies`;
 
-  return (
-    <Layout pageTitle="Random Movie" holiday={randomMovie?.holiday}>
-      {typesList.isError ? (
+  if (typesList.isError) {
+    return (
+      <Layout pageTitle="Random Movie">
         <ErrorMessage
           message="Couldn't load the filters."
           onRetry={() => typesList.refetch()}
         />
-      ) : getRandomMovie.isFetching || !filterTypes ? (
+      </Layout>
+    );
+  }
+  if (!typesList.data) {
+    return (
+      <Layout pageTitle="Random Movie">
         <Spinner />
-      ) : getRandomMovie.isError && !showFilters ? (
-        <ErrorMessage message="Couldn't load a movie." onRetry={onNext} />
-      ) : randomMovie ? (
-        <Stack spacing={2} sx={{ width: "100%", justifyContent: "center" }}>
-          <Grid container spacing={2}>
-            <Grid size={{ xs: 6 }} className="mb-2 px-2 text-right">
-              <Button
-                sx={{
-                  width: "50%",
-                  borderRadius: "0.5rem",
-                  color: "secondary.main",
-                  outline: "1px solid",
-                  height: "100%",
-                }}
-                onClick={onNext}
-              >
-                Next
-              </Button>
-            </Grid>
-            <Grid size={{ xs: 6 }} className="mb-2 px-2">
-              <Button
-                sx={{
-                  width: "50%",
-                  borderRadius: "0.5rem",
-                  color: "secondary.main",
-                  outline: "1px solid",
-                }}
-                onClick={onReturnToFilters}
-              >
-                Return to Filters
-              </Button>
-            </Grid>
-          </Grid>
-          <Link href={`/movie/${randomMovie.tmdbid}`}>
-            <Box
-              sx={{
-                px: { xs: "2rem", md: "0rem" },
-                position: "relative",
-                display: "flex",
-                justifyContent: "center",
-                maxHeight: "60vh",
-                overflow: "hidden",
-              }}
+      </Layout>
+    );
+  }
+
+  if (showFilters) {
+    return (
+      <Layout pageTitle="Random Movie">
+        <Box className="max-w-3xl mx-auto">
+          <Box className="flex justify-between items-baseline mb-2">
+            <Typography variant="h5" component="h1" sx={{ fontWeight: "bold" }}>
+              Filters
+            </Typography>
+            <Button
+              color="secondary"
+              sx={{ textTransform: "none", fontWeight: 600 }}
+              onClick={() => setShowFilters(false)}
             >
-              <Box
-                sx={{
-                  position: "relative",
-                  height: "60vh",
-                  width: "auto",
-                }}
-              >
-                <Image
-                  src={randomMovie.poster.replace("w500", "w780")}
-                  alt={randomMovie.movie}
-                  placeholder="blur"
-                  blurDataURL="/spin.svg"
-                  width={300}
-                  height={450}
-                  style={{
-                    maxHeight: "60vh",
-                    height: "100%",
-                    width: "auto",
-                    objectFit: "contain",
-                  }}
-                  className="rounded"
-                />
-                {randomMovie.dani_approved && <DaniBadge size={64} />}
-              </Box>
-            </Box>
-          </Link>
-          <Grid container spacing={2} sx={{ justifyContent: "center" }}>
-            <ScoreCard
-              label="Ranking:"
-              value={randomMovie.ranking}
-              total={getTotalCount.data}
-              score={randomMovie.jh_score}
-            />
-            <ScoreCard
-              label="Score:"
-              value={randomMovie.jh_score}
-              total={100}
-              score={randomMovie.jh_score}
-            />
-          </Grid>
-        </Stack>
-      ) : (
-        filterTypes && (
+              Cancel
+            </Button>
+          </Box>
           <Filters
-            filterTypes={filterTypes}
+            filterTypes={typesList.data}
             onApply={onFilterApply}
-            onClear={() => {}}
+            onClear={() => onFilterApply({})}
             values={params}
             showScore
           />
-        )
-      )}
+        </Box>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout pageTitle="Random Movie" holiday={movie?.holiday}>
+      <Box className="max-w-3xl mx-auto">
+        <Box className="flex justify-between items-baseline">
+          <Typography
+            variant="h5"
+            component="h1"
+            sx={{ fontWeight: "bold", color: "text.secondary" }}
+          >
+            Random movie
+          </Typography>
+          <Button
+            color="secondary"
+            sx={{ textTransform: "none", fontWeight: 600 }}
+            onClick={() => setShowFilters(true)}
+          >
+            Filters
+          </Button>
+        </Box>
+        <Typography
+          variant="body2"
+          sx={{ color: "text.disabled", mb: 2, minHeight: "1.5em" }}
+        >
+          {summary}
+        </Typography>
+        {front.isError ? (
+          <ErrorMessage message="Couldn't load a movie." onRetry={onDeal} />
+        ) : (
+          <Stack spacing={2} sx={{ alignItems: "center", pt: 1 }}>
+            <PosterDeck
+              movies={deck.map((card) => card.data)}
+              onDeal={onDeal}
+            />
+            <Box sx={{ textAlign: "center", minHeight: 150, width: "100%" }}>
+              {movie && (
+                <>
+                  <Typography
+                    variant="h5"
+                    component="h2"
+                    sx={{ fontWeight: "bold", color: "text.secondary" }}
+                  >
+                    {movie.movie}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "text.disabled" }}>
+                    {[
+                      movie.year,
+                      movie.rated,
+                      movie.runtime && `${movie.runtime} min`,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </Typography>
+                  <Box className="flex justify-center flex-wrap gap-1.5 mt-2">
+                    {genresOf(movie).map((genre) => (
+                      <Chip
+                        key={genre}
+                        label={genre}
+                        component={Link}
+                        href={gridLink({ genre: [genre] })}
+                        variant="outlined"
+                        color="secondary"
+                        size="small"
+                        clickable
+                      />
+                    ))}
+                  </Box>
+                  <Typography
+                    sx={{
+                      mt: 1.5,
+                      fontSize: "1.4rem",
+                      fontWeight: 800,
+                      lineHeight: 1.1,
+                      color: scoreColor(movie.jh_score),
+                    }}
+                  >
+                    {movie.jh_score}/100
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "text.disabled", fontWeight: 600 }}
+                  >
+                    #{movie.ranking} of {totalCount.data?.toLocaleString()}
+                  </Typography>
+                </>
+              )}
+            </Box>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={onDeal}
+              disabled={!movie}
+              sx={{
+                width: "100%",
+                maxWidth: 360,
+                py: 1.5,
+                borderRadius: "14px",
+                fontWeight: 800,
+                fontSize: "1rem",
+                textTransform: "none",
+              }}
+            >
+              Deal me another
+            </Button>
+            <Box className="flex gap-5 text-sm">
+              {movie && (
+                <Link
+                  href={`/movie/${movie.tmdbid}`}
+                  prefetch={false}
+                  className="font-semibold"
+                >
+                  See full page →
+                </Link>
+              )}
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "text.disabled",
+                  display: "none",
+                  "@media (pointer: coarse)": { display: "block" },
+                }}
+              >
+                or swipe the card
+              </Typography>
+            </Box>
+          </Stack>
+        )}
+      </Box>
     </Layout>
   );
 };
