@@ -21,10 +21,25 @@ export const buildUrl = (base: string, path: string, params?: object) => {
   return query ? `${base}${path}?${query}` : `${base}${path}`;
 };
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// During `next build` thousands of requests hit the API in a burst; retry
+// transient failures (5xx, network) so one hiccup doesn't fail the build.
+// In the browser a single attempt is fine; react-query handles retries.
+const BUILD_RETRIES = typeof window === "undefined" ? 3 : 0;
+
 export const getJson = async <T>(url: string): Promise<T> => {
-  const res = await fetch(url);
-  if (!res.ok) throw new HttpError(res.status, res.statusText);
-  return res.json();
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) return res.json();
+      if (res.status < 500 || attempt >= BUILD_RETRIES)
+        throw new HttpError(res.status, res.statusText);
+    } catch (error) {
+      if (error instanceof HttpError || attempt >= BUILD_RETRIES) throw error;
+    }
+    await sleep(1000 * 2 ** attempt);
+  }
 };
 
 export const api = <T>(path: string, params?: object) =>

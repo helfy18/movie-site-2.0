@@ -1,0 +1,6 @@
+[build]
+  command = "npm run build"
+  publish = "out"
+
+# Static export: no Next.js runtime, no functions. If the Netlify UI still
+# lists the "Next.js" build plugin for this site, remove it there.

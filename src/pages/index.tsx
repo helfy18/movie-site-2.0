@@ -42,7 +42,6 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
       upcoming: withRatings(upcomingTmdb, ratedById),
       rows: buildRows(catalogue, new Date()),
     },
-    revalidate: 900,
   };
 };
 
