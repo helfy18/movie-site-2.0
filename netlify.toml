@@ -1,0 +1,8 @@
+[build]
+  command = "npm run build"
+  publish = "out"
+
+[build.environment]
+  # Static export: no Next.js runtime, no functions. Netlify auto-installs
+  # its Next.js runtime when it detects Next.js; this opts out of that.
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"

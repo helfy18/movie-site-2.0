@@ -29,12 +29,12 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   try {
     catalogue = await fetchMoviesList({});
   } catch (error) {
-    if (hasServerResponse(error)) return { notFound: true, revalidate: 60 };
+    if (hasServerResponse(error)) return { notFound: true };
     throw error;
   }
-  if (catalogue.length === 0) return { notFound: true, revalidate: 60 };
+  if (catalogue.length === 0) return { notFound: true };
 
-  return { props: { stats: buildStats(catalogue) }, revalidate: 86400 };
+  return { props: { stats: buildStats(catalogue) } };
 };
 
 const HeroTile = ({

@@ -68,11 +68,11 @@ export const personLink = (name: string) =>
 export const castNames = (movie: Pick<CompactMovie, "cast">) =>
   (movie.cast ?? []).map((member) => member.name);
 
-// People below this many appearances are left out of the sitemap as thin pages.
-// 10 keeps the crawl surface to a few hundred person pages (3 gave ~6,800).
-const MIN_SITEMAP_APPEARANCES = 10;
+// People below this many appearances are left out of the sitemap and the
+// static build as thin pages; they still work through the client-side shell.
+const MIN_SITEMAP_APPEARANCES = 5;
 
-export const sitemapPaths = (movies: CompactMovie[]): string[] => {
+export const sitemapPeople = (movies: CompactMovie[]): string[] => {
   const appearances = new Map<string, number>();
   for (const movie of movies) {
     const names = new Set([...castNames(movie), ...(movie.directors ?? [])]);
@@ -80,18 +80,20 @@ export const sitemapPaths = (movies: CompactMovie[]): string[] => {
       appearances.set(name, (appearances.get(name) ?? 0) + 1);
     }
   }
-  return [
-    "",
-    "/movie-grid",
-    "/random-movie",
-    "/stats",
-    "/about",
-    ...movies.map((movie) => `/movie/${movie.tmdbid}`),
-    ...[...appearances]
-      .filter(([, count]) => count >= MIN_SITEMAP_APPEARANCES)
-      .map(([name]) => personLink(name)),
-  ];
+  return [...appearances]
+    .filter(([, count]) => count >= MIN_SITEMAP_APPEARANCES)
+    .map(([name]) => name);
 };
+
+export const sitemapPaths = (movies: CompactMovie[]): string[] => [
+  "",
+  "/movie-grid",
+  "/random-movie",
+  "/stats",
+  "/about",
+  ...movies.map((movie) => `/movie/${movie.tmdbid}`),
+  ...sitemapPeople(movies).map(personLink),
+];
 
 // Escapes < so embedded text can't close the JSON-LD script tag.
 export const jsonLdScript = (data: object) =>

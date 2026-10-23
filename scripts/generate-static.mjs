@@ -16,7 +16,7 @@ for (const file of [".env.production", ".env.local"]) {
 
 const SITEURL = process.env.NEXT_PUBLIC_SITEURL ?? "http://localhost:3000";
 const APIURL = process.env.NEXT_PUBLIC_APIURL ?? "http://localhost:8080";
-const MIN_SITEMAP_APPEARANCES = 10;
+const MIN_SITEMAP_APPEARANCES = 5; // keep in step with src/utils.ts
 
 // Crawlers that scrape for training data or hammer the site without sending
 // visitors. Each page they fetch after its cache expires costs a function call.
@@ -49,6 +49,9 @@ const robots = [
   "User-agent: *",
   "Allow: /",
   "Disallow: /movie-page",
+  "Disallow: /movie-shell/",
+  "Disallow: /person-shell/",
+  "Disallow: /find",
   "",
   ...BLOCKED_BOTS.flatMap((bot) => [`User-agent: ${bot}`, "Disallow: /", ""]),
   `Sitemap: ${SITEURL}/sitemap.xml`,
@@ -80,7 +83,7 @@ const paths = [
   ...[...appearances]
     .filter(([, n]) => n >= MIN_SITEMAP_APPEARANCES)
     .map(([name]) => `/person/${encodeURIComponent(name)}`),
-];
+].map((p) => (p ? `${p}/` : p)); // trailingSlash: true
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${paths.map((p) => `  <url><loc>${SITEURL}${p}</loc></url>`).join("\n")}

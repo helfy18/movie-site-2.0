@@ -1,0 +1,8 @@
+# Legacy movie-page links (Google integration and older sites still use these)
+/movie-page  id=:id                 /movie/:id                        301
+/movie-page  title=:title year=:year /find?title=:title&year=:year     302
+
+# Long tail: anything not pre-rendered falls to the client-side shells.
+# Netlify serves an existing file first, so these only apply to misses.
+/movie/*     /movie-shell/   200
+/person/*    /person-shell/  200

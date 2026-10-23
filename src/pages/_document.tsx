@@ -12,18 +12,6 @@ class AppDocument extends Document {
   static async getInitialProps(
     ctx: DocumentContext,
   ): Promise<DocumentInitialProps> {
-    // Temporary diagnostics: log who is driving server renders, so the
-    // once-a-minute burst in the Netlify function log can be identified.
-    // Remove once the culprit is known.
-    if (ctx.req) {
-      console.log(
-        `render ${ctx.req.url} ua=${ctx.req.headers["user-agent"] ?? "-"} ip=${
-          ctx.req.headers["x-nf-client-connection-ip"] ??
-          ctx.req.headers["x-forwarded-for"] ??
-          "-"
-        }`,
-      );
-    }
     return Document.getInitialProps(ctx);
   }
 
