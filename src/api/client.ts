@@ -62,3 +62,10 @@ export const fetchMoviesListCompact = (params: MovieListQuery) =>
   api<CompactMovie[]>("/movies/list", { ...params, view: "compact" });
 export const fetchRecentMovies = (params?: MostRecentMovieQuery) =>
   api<CompactMovie[]>("/movies/mostRecent", { ...params, view: "compact" });
+
+// The unfiltered compact list is written to the export by scripts/generate-static.mjs
+// and served from the CDN. Falls back to the API when the file is missing (next dev).
+export const fetchCatalogue = () =>
+  getJson<CompactMovie[]>("/data/movies.json").catch(() =>
+    fetchMoviesListCompact({}),
+  );

@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-query";
 import {
   api,
+  fetchCatalogue,
   fetchMovie,
   fetchMovieCount,
   fetchMoviesById,
@@ -45,12 +46,16 @@ export const useMoviesList = (
 export const useMoviesListCompact = (
   params: MovieListQuery,
   options?: QueryOptions<CompactMovie[]>,
-): UseQueryResult<CompactMovie[], Error> =>
-  useQuery({
-    queryKey: ["movies/list", "compact", params],
-    queryFn: async () => fetchMoviesListCompact(params),
+): UseQueryResult<CompactMovie[], Error> => {
+  const unfiltered = Object.keys(params).length === 0;
+  return useQuery({
+    queryKey: unfiltered ? ["catalogue"] : ["movies/list", "compact", params],
+    queryFn: async () =>
+      unfiltered ? fetchCatalogue() : fetchMoviesListCompact(params),
+    staleTime: unfiltered ? Infinity : undefined,
     ...options,
   });
+};
 
 // One query per upcoming card, keyed by roll so dealing never refetches a
 // card that has already been drawn.

@@ -44,12 +44,13 @@ const MovieGridPage = () => {
   );
   const currentPage = Number.isInteger(urlPage) && urlPage > 0 ? urlPage : 1;
 
+  // The input is uncontrolled so text typed before React hydrates survives;
+  // the page's own JavaScript takes a moment to arrive after the static HTML.
+  const searchInput = useRef<HTMLInputElement>(null);
   const [prevUrlSearch, setPrevUrlSearch] = useState(urlSearch);
   if (prevUrlSearch !== urlSearch) {
     setPrevUrlSearch(urlSearch);
-    if (urlSearch !== searchTerm) {
-      setSearchTerm(urlSearch);
-    }
+    if (urlSearch !== searchTerm) setSearchTerm(urlSearch);
   }
 
   const debounceTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -96,6 +97,23 @@ const MovieGridPage = () => {
     }, SEARCH_DEBOUNCE_MS);
   };
 
+  // Pick up anything typed before hydration, once.
+  useEffect(() => {
+    const typed = searchInput.current?.value ?? "";
+    if (typed !== "") onSearch(typed);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Keep the box in step with the URL on back/forward; a change that came
+  // from typing already matches and is left alone.
+  const syncedUrlSearch = useRef(urlSearch);
+  useEffect(() => {
+    if (syncedUrlSearch.current === urlSearch) return;
+    syncedUrlSearch.current = urlSearch;
+    if (searchInput.current && searchInput.current.value !== urlSearch)
+      searchInput.current.value = urlSearch;
+  }, [urlSearch]);
+
   const onFilterApply = (filterValues: MovieListQuery) => {
     clearTimeout(debounceTimer.current);
     router.push(gridUrl(filterValues, searchTerm), undefined, {
@@ -123,7 +141,8 @@ const MovieGridPage = () => {
           <TextField
             placeholder="Search for Title, Actor, Director..."
             autoFocus={router.query.focus === "search"}
-            value={searchTerm}
+            defaultValue={urlSearch}
+            inputRef={searchInput}
             onChange={(event) => onSearch(event.target.value)}
             color="secondary"
             slotProps={{

@@ -1,7 +1,7 @@
 // Writes public/robots.txt and public/sitemap.xml before `next build`, so
 // neither needs a serverless function at request time. Mirrors sitemapPaths()
 // in src/utils.ts (kept in TS for the unit tests); keep the two in step.
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 
 for (const file of [".env.production", ".env.local"]) {
   if (!existsSync(file)) continue;
@@ -64,6 +64,11 @@ if (!res.ok)
   throw new Error(`ratings API ${res.status} while building the sitemap`);
 const movies = await res.json();
 
+// The grid's unfiltered list, served from the CDN instead of the API on
+// every visit. Same snapshot the rest of the export is built from.
+mkdirSync("public/data", { recursive: true });
+writeFileSync("public/data/movies.json", JSON.stringify(movies));
+
 const appearances = new Map();
 for (const movie of movies) {
   const names = new Set([
@@ -91,5 +96,5 @@ ${paths.map((p) => `  <url><loc>${SITEURL}${p}</loc></url>`).join("\n")}
 `;
 writeFileSync("public/sitemap.xml", xml);
 console.log(
-  `generate-static: robots.txt (${BLOCKED_BOTS.length} bots blocked), sitemap.xml (${paths.length} urls)`,
+  `generate-static: robots.txt (${BLOCKED_BOTS.length} bots blocked), sitemap.xml (${paths.length} urls), data/movies.json (${movies.length} movies)`,
 );
