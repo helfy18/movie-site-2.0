@@ -16,7 +16,6 @@ const PosterItem = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(1),
   textAlign: "center",
   color: theme.palette.text.secondary,
-  height: "250px",
   width: "100px",
   fontSize: "13px",
   boxSizing: "content-box",
@@ -77,7 +76,7 @@ export const Poster = ({
       }}
     >
       <Image
-        src={movie.poster}
+        src={movie.poster.replace("/w500/", "/w342/")}
         height={163}
         width={110}
         alt={movie.movie}
@@ -101,7 +100,9 @@ export const Poster = ({
         textOverflow: "ellipsis",
         display: "-webkit-box",
         WebkitBoxOrient: "vertical",
-        WebkitLineClamp: 4,
+        WebkitLineClamp: 2,
+        lineHeight: 1.43,
+        minHeight: "2.86em",
       }}
     >
       {movie.movie}

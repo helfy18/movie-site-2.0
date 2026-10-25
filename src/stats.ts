@@ -122,18 +122,22 @@ const parseScore = (value: string | undefined, pattern: RegExp, scale = 1) => {
   return match ? Math.round(parseFloat(match[1]) * scale) : null;
 };
 
-const criticSites = [
+// score: the site's value on a 0 to 100 scale; raw: as the site reports it.
+export const criticSites = [
   {
     site: "IMDb",
     score: (m: Movie) => parseScore(m.imdb, /^([\d.]+)\/10$/, 10),
+    raw: (m: Movie) => m.imdb,
   },
   {
     site: "Rotten Tomatoes",
     score: (m: Movie) => parseScore(m.rottentomatoes, /^(\d+)%$/),
+    raw: (m: Movie) => m.rottentomatoes,
   },
   {
     site: "Metacritic",
     score: (m: Movie) => parseScore(m.metacritic, /^(\d+)\/100$/),
+    raw: (m: Movie) => m.metacritic,
   },
 ];
 

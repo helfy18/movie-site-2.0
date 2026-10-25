@@ -5,21 +5,18 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  Grid,
   Stack,
   Typography,
 } from "@mui/material";
 import Head from "next/head";
 import Image from "next/image";
 import { useState } from "react";
-import InfoTable from "@/components/infoTable";
-import { Item } from "@/components/item";
-import DaniBadge from "@/components/daniBadge";
-import ScoreCard from "@/components/scoreCard";
-import ProviderTable from "@/components/providerTable";
-import OtherSiteReviews from "@/components/otherSiteReviews";
+import TitleBlock from "@/components/titleBlock";
+import CastList from "@/components/castList";
+import WhereToWatch from "@/components/whereToWatch";
+import CriticBars from "@/components/criticBars";
+import DetailsCard from "@/components/detailsCard";
 import PosterRow from "@/components/posterRow";
-import CastSection from "@/components/castSection";
 import { castNames, jsonLdScript } from "@/utils";
 
 export interface MovieDetailProps {
@@ -29,9 +26,12 @@ export interface MovieDetailProps {
   totalCount: number;
 }
 
+// A short plot leaves room for an extra row of cast in the middle column.
+const SHORT_PLOT_CHARS = 200;
+
 const MovieDetail = ({
   movie: initialMovie,
-  recommended: initialRecommended,
+  recommended,
   totalCount,
 }: MovieDetailProps) => {
   const [showImage, setShowImage] = useState(false);
@@ -42,9 +42,16 @@ const MovieDetail = ({
       { initialData: initialMovie, enabled: initialMovie.jh_score !== -1 },
     ).data ?? initialMovie;
   const reviewed = movie.jh_score !== -1;
-  const recommended = initialRecommended;
   const count = useMovieCount({ initialData: totalCount }).data;
   const cast = movie.cast ?? [];
+  const castShown = movie.plot.length <= SHORT_PLOT_CHARS ? 12 : 10;
+
+  const sectionHeading = {
+    fontSize: "1.25rem",
+    fontWeight: 700,
+    color: "secondary.main",
+    mb: 1.5,
+  };
 
   return (
     <Layout pageTitle={movie.movie} holiday={movie.holiday}>
@@ -109,102 +116,122 @@ const MovieDetail = ({
           </Stack>
         </DialogContent>
       </Dialog>
-      <Grid container className="flex flex-wrap" spacing={2.5}>
-        <Grid
-          size={{ xs: 12, md: 2.8 }}
-          sx={{ textAlign: "center" }}
-          className="space-y-4"
-        >
-          <Box
-            sx={{
-              px: { xs: "2rem", md: "0rem" },
-              position: "relative",
-              display: "inline-block",
-              width: "100%",
-            }}
-          >
-            {movie.poster && (
-              <Image
-                src={movie.poster.replace("w500", "w780")}
-                width={275}
-                height={400}
-                sizes="(max-width: 900px) 100vw, 275px"
-                style={{ width: "100%", height: "auto" }}
-                alt={movie.movie}
-                placeholder="blur"
-                blurDataURL="/spin.svg"
-                className="rounded"
-                priority
-              />
-            )}
-            {movie.dani_approved && (
-              <DaniBadge
-                size={100}
-                right={{ xs: 32, md: 0 }}
-                onClick={() => setShowImage(true)}
-              />
-            )}
+
+      <TitleBlock
+        movie={movie}
+        totalCount={count}
+        onDaniClick={() => setShowImage(true)}
+      />
+
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            md: "240px minmax(0, 1fr)",
+            lg: "300px minmax(0, 1fr) 340px",
+          },
+          gap: 3.25,
+          py: 3,
+        }}
+      >
+        {movie.poster && (
+          <Box sx={{ maxWidth: { xs: 220, md: "none" }, mx: "auto" }}>
+            <Image
+              src={movie.poster.replace("w500", "w780")}
+              width={300}
+              height={450}
+              sizes="(max-width: 900px) 220px, 300px"
+              style={{ width: "100%", height: "auto" }}
+              alt={`${movie.movie} poster`}
+              className="rounded-lg"
+              priority
+            />
           </Box>
-          <Box className="w-full flex items-center justify-center">
-            {reviewed ? (
-              <ScoreCard
-                label="Ranking:"
-                value={movie.ranking}
-                total={count}
-                score={movie.jh_score}
-              />
-            ) : (
-              <Item
-                sx={{
-                  color: "secondary.main",
-                  fontSize: "1.3em",
-                  fontWeight: "bold",
-                  width: "fit-content",
-                }}
-              >
-                Not Yet Reviewed
-              </Item>
-            )}
-          </Box>
-        </Grid>
-        <Grid size={{ sm: 12, md: 5 }}>
-          <Stack spacing={2}>
-            <InfoTable movie={movie} />
-            <ProviderTable movie={movie} />
-          </Stack>
-        </Grid>
-        <Grid size={{ sm: 12, md: 4.2 }}>
-          <Stack spacing={2}>
-            {movie.trailer && (
-              <div className="w-full aspect-[16/9]">
-                <iframe
-                  src={movie.trailer}
-                  allow="autoplay; encrypted-media"
-                  allowFullScreen
-                  title="video"
-                  className="w-full h-full"
-                />
-              </div>
-            )}
-            <Item sx={{ color: "secondary.main" }}>
-              Plot:
-              <br />
+        )}
+        <Stack spacing={2}>
+          {movie.plot && (
+            <Typography sx={{ color: "text.secondary", maxWidth: "62ch" }}>
               {movie.plot}
-            </Item>
-            {movie.review && (
-              <Item sx={{ color: "secondary.main" }}>
-                Review:
-                <br />
-                {movie.review}
-              </Item>
-            )}
-            <OtherSiteReviews movie={movie} />
-          </Stack>
-        </Grid>
-      </Grid>
-      {cast.length > 0 && <CastSection cast={cast} />}
+            </Typography>
+          )}
+          <CastList cast={cast} shown={castShown} />
+        </Stack>
+        <Box
+          sx={{
+            display: "grid",
+            gap: 2,
+            gridColumn: { md: "1 / -1", lg: "auto" },
+            gridTemplateColumns: { md: "1fr 1fr", lg: "1fr" },
+            alignItems: "start",
+          }}
+        >
+          {movie.trailer && (
+            <Box
+              sx={{
+                gridRow: { md: "1 / span 2", lg: "auto" },
+                aspectRatio: "16 / 9",
+                borderRadius: "10px",
+                overflow: "hidden",
+                bgcolor: "#000",
+              }}
+            >
+              <iframe
+                src={movie.trailer}
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+                title="Trailer"
+                className="w-full h-full"
+              />
+            </Box>
+          )}
+          <CriticBars movie={movie} />
+          <WhereToWatch movie={movie} />
+        </Box>
+      </Box>
+
+      {movie.review && (
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "minmax(0, 1fr) 240px" },
+            gap: 4,
+            alignItems: "start",
+            pt: 3.5,
+            pb: 1,
+            borderTop: "1px solid",
+            borderColor: "background.paper",
+          }}
+        >
+          <Box>
+            <Typography component="h2" sx={sectionHeading}>
+              Johnathan&apos;s review
+            </Typography>
+            <Typography
+              sx={{
+                color: "text.secondary",
+                maxWidth: "72ch",
+                fontSize: "1.0625rem",
+                lineHeight: 1.65,
+                whiteSpace: "pre-line",
+              }}
+            >
+              {movie.review}
+            </Typography>
+          </Box>
+          <DetailsCard movie={movie} totalCount={count} />
+        </Box>
+      )}
+      {!movie.review && (
+        <Box sx={{ maxWidth: 360, pt: 3 }}>
+          <DetailsCard movie={movie} totalCount={count} />
+        </Box>
+      )}
+
       {recommended.length > 0 && (
-        <PosterRow title="More Like This" movies={recommended} />
+        <Box sx={{ pt: 3 }}>
+          <PosterRow title="More Like This" movies={recommended} />
+        </Box>
       )}
     </Layout>
   );
