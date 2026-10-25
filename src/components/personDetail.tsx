@@ -1,40 +1,41 @@
 import Layout from "@/components/layout";
 import { jsonLdScript } from "@/utils";
-import { Avatar, Box, Collapse, Grid, Stack, Typography } from "@mui/material";
+import { Avatar, Box, Button, Collapse, Typography } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Item } from "@/components/item";
-import PosterRow from "@/components/posterRow";
+import Filmography from "@/components/filmography";
 import ScoreBars from "@/components/scoreBars";
 import { scoreColor } from "@/styles/gradient";
 
 export interface PersonDetailProps {
   name: string;
   person: TMDBPerson | null;
-  directed: PosterMovie[];
-  actedIn: PosterMovie[];
+  directed: FilmographyMovie[];
+  actedIn: FilmographyMovie[];
 }
 
-const bioCollapseChars = 300;
-
-const byScore = (movies: PosterMovie[]) =>
-  [...movies].sort((a, b) => b.jh_score - a.jh_score);
+const BIO_COLLAPSE_CHARS = 300;
 
 const MovieLink = ({ movie }: { movie: PosterMovie }) => (
-  <Link href={`/movie/${movie.tmdbid}`} className="underline">
-    {movie.movie}{" "}
+  <>
+    <Link
+      href={`/movie/${movie.tmdbid}`}
+      prefetch={false}
+      className="underline underline-offset-4"
+    >
+      {movie.movie}
+    </Link>{" "}
     <Box
       component="span"
-      sx={{ color: scoreColor(movie.jh_score), fontWeight: "bolder" }}
+      sx={{ color: scoreColor(movie.jh_score), fontWeight: 800 }}
     >
-      ({movie.jh_score})
+      {movie.jh_score}
     </Box>
-  </Link>
+  </>
 );
 
 const PersonDetail = ({
@@ -45,15 +46,13 @@ const PersonDetail = ({
 }: PersonDetailProps) => {
   const [expanded, setExpanded] = useState(false);
 
-  const directedSorted = useMemo(() => byScore(directed), [directed]);
-  const actedSorted = useMemo(() => byScore(actedIn), [actedIn]);
   const rated = useMemo(
     () =>
-      byScore([
+      [
         ...new Map(
           [...directed, ...actedIn].map((movie) => [movie.tmdbid, movie]),
         ).values(),
-      ]),
+      ].sort((a, b) => b.jh_score - a.jh_score),
     [directed, actedIn],
   );
 
@@ -63,6 +62,7 @@ const PersonDetail = ({
   const worst = rated[rated.length - 1];
   const daniCount = rated.filter((movie) => movie.dani_approved).length;
   const bio = person?.biography?.trim();
+  const longBio = Boolean(bio && bio.length > BIO_COLLAPSE_CHARS);
 
   const description = `${name} on JD Movies: ${rated.length} movie${
     rated.length === 1 ? "" : "s"
@@ -91,125 +91,119 @@ const PersonDetail = ({
           }}
         />
       </Head>
-      <Item sx={{ color: "secondary.main", mb: 3 }}>
-        <Grid container spacing={2}>
-          <Grid size="auto">
-            <Box sx={{ width: { xs: 100, md: 150 } }}>
-              {person?.profile_path ? (
-                <Image
-                  src={`https://image.tmdb.org/t/p/w342${person.profile_path}`}
-                  width={342}
-                  height={513}
-                  sizes="150px"
-                  style={{ width: "100%", height: "auto" }}
-                  alt={name}
-                  className="rounded"
-                />
-              ) : (
-                <Avatar
-                  variant="rounded"
-                  sx={{
-                    width: "100%",
-                    height: { xs: 150, md: 225 },
-                  }}
-                >
-                  <PersonIcon sx={{ fontSize: 80 }} />
-                </Avatar>
-              )}
-            </Box>
-          </Grid>
-          <Grid size="grow">
-            <Stack spacing={{ xs: 0.5, md: 1.5 }}>
-              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-                {name}
-              </Typography>
-              {best && (
-                <>
-                  <Typography>
-                    {rated.length} movie{rated.length === 1 ? "" : "s"} rated
-                    {" · "}Avg{" "}
-                    <Box
-                      component="span"
-                      sx={{ color: scoreColor(avg), fontWeight: "bolder" }}
-                    >
-                      {avg.toFixed(2)}
-                    </Box>
-                    {daniCount > 0 && ` · ${daniCount} Dani approved`}
-                  </Typography>
-                  <Typography>
-                    Best: <MovieLink movie={best} />
-                    {worst.tmdbid !== best.tmdbid && (
-                      <>
-                        {" · "}Worst: <MovieLink movie={worst} />
-                      </>
-                    )}
-                  </Typography>
-                  <Box sx={{ display: { xs: "none", md: "block" } }}>
-                    <ScoreBars scores={rated.map((movie) => movie.jh_score)} />
-                  </Box>
-                </>
-              )}
-            </Stack>
-          </Grid>
-          {best && (
-            <Grid
-              size={12}
-              sx={{
-                display: { xs: "flex", md: "none" },
-                justifyContent: "center",
-              }}
+      <Item
+        sx={{
+          p: 2,
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", md: "auto minmax(0, 1fr)" },
+          gap: "12px 24px",
+        }}
+      >
+        <Box sx={{ width: { xs: 110, md: 150 } }}>
+          {person?.profile_path ? (
+            <Image
+              src={`https://image.tmdb.org/t/p/w342${person.profile_path}`}
+              width={342}
+              height={513}
+              sizes="150px"
+              style={{ width: "100%", height: "auto" }}
+              alt={name}
+              className="rounded-lg"
+            />
+          ) : (
+            <Avatar
+              variant="rounded"
+              sx={{ width: "100%", height: { xs: 165, md: 225 } }}
             >
+              <PersonIcon sx={{ fontSize: 80 }} />
+            </Avatar>
+          )}
+        </Box>
+        <Box sx={{ minWidth: 0 }}>
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{ fontWeight: 700, color: "text.secondary", lineHeight: 1.1 }}
+          >
+            {name}
+          </Typography>
+          {best && (
+            <>
+              <Typography sx={{ color: "text.disabled", mt: 0.5 }}>
+                {rated.length} movie{rated.length === 1 ? "" : "s"} rated
+                {" · "}Average{" "}
+                <Box
+                  component="span"
+                  sx={{ color: scoreColor(avg), fontWeight: 800 }}
+                >
+                  {avg.toFixed(2)}
+                </Box>
+                {daniCount > 0 && (
+                  <>
+                    {" · "}
+                    <Image
+                      src="/dani.png"
+                      alt=""
+                      width={18}
+                      height={18}
+                      style={{
+                        display: "inline",
+                        verticalAlign: "text-bottom",
+                        marginRight: 4,
+                      }}
+                    />
+                    {daniCount} Dani approved
+                  </>
+                )}
+              </Typography>
+              <Typography sx={{ color: "text.disabled", mt: 0.5 }}>
+                Best <MovieLink movie={best} />
+                {worst.tmdbid !== best.tmdbid && (
+                  <>
+                    {" · "}Worst <MovieLink movie={worst} />
+                  </>
+                )}
+              </Typography>
               <ScoreBars scores={rated.map((movie) => movie.jh_score)} />
-            </Grid>
+            </>
           )}
-          {bio && (
-            <Grid size={12}>
-              {bio.length > bioCollapseChars ? (
-                <>
-                  <Collapse in={expanded} collapsedSize={60}>
-                    <Typography variant="body2" sx={{ whiteSpace: "pre-line" }}>
-                      {bio}
-                    </Typography>
-                  </Collapse>
-                  <Box
-                    onClick={() => setExpanded(!expanded)}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      cursor: "pointer",
-                      gap: 1,
-                      fontSize: "0.875rem",
-                      color: "text.disabled",
-                      "&:hover": { color: "secondary.main" },
-                    }}
-                  >
-                    {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    {expanded ? "Show less" : "Show more"}
-                  </Box>
-                </>
-              ) : (
-                <Typography variant="body2" sx={{ whiteSpace: "pre-line" }}>
-                  {bio}
-                </Typography>
-              )}
-            </Grid>
-          )}
-        </Grid>
+        </Box>
+        {bio && (
+          <Box
+            sx={{
+              gridColumn: "1 / -1",
+              borderTop: "1px solid",
+              borderColor: "#5a544e",
+              pt: 1.5,
+            }}
+          >
+            <Collapse in={expanded || !longBio} collapsedSize={66}>
+              <Typography
+                variant="body2"
+                sx={{
+                  whiteSpace: "pre-line",
+                  color: "text.secondary",
+                  maxWidth: "80ch",
+                }}
+              >
+                {bio}
+              </Typography>
+            </Collapse>
+            {longBio && (
+              <Button
+                size="small"
+                color="secondary"
+                onClick={() => setExpanded((previous) => !previous)}
+                sx={{ px: 0, mt: 0.5, textTransform: "none", fontWeight: 600 }}
+              >
+                {expanded ? "Show less" : "Read more"}
+              </Button>
+            )}
+          </Box>
+        )}
       </Item>
-      {directedSorted.length > 0 && (
-        <PosterRow
-          title={`Directed (${directedSorted.length})`}
-          movies={directedSorted}
-          priority
-        />
-      )}
-      {actedSorted.length > 0 && (
-        <PosterRow
-          title={`Acted In (${actedSorted.length})`}
-          movies={actedSorted}
-          priority={directedSorted.length === 0}
-        />
-      )}
+      <Filmography title="Directed" movies={directed} />
+      <Filmography title="Acted in" movies={actedIn} />
     </Layout>
   );
 };

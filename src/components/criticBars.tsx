@@ -71,15 +71,15 @@ const Unit = ({ children }: { children: React.ReactNode }) => (
 );
 
 const CriticBars = ({ movie }: Props) => {
-  const critics = criticSites
-    .map((site) => ({
-      label: site.site,
-      value: site.score(movie),
-      raw: site.raw(movie),
-    }))
-    .filter((site) => site.value !== null && site.raw);
+  // Every site gets a row; a missing score shows as N/A on an empty track so
+  // the three always line up under the site's own bar.
+  const critics = criticSites.map((site) => ({
+    label: site.site,
+    value: site.score(movie),
+    raw: site.raw(movie),
+  }));
   const reviewed = movie.jh_score !== -1;
-  if (critics.length === 0 && !reviewed) return null;
+  if (!reviewed && critics.every((site) => site.value === null)) return null;
 
   return (
     <Box
@@ -109,8 +109,16 @@ const CriticBars = ({ movie }: Props) => {
         <Row
           key={site.label}
           label={site.label}
-          value={site.value as number}
-          display={site.raw}
+          value={site.value ?? 0}
+          display={
+            site.value === null ? (
+              <Box component="span" sx={{ color: "text.disabled" }}>
+                N/A
+              </Box>
+            ) : (
+              site.raw
+            )
+          }
           color="#8a8580"
         />
       ))}

@@ -43,7 +43,7 @@ const HeroTile = ({
   label,
   color,
   query,
-  size = { xs: 6, md: 2.4 },
+  size,
 }: {
   value: string;
   label: string;
@@ -66,11 +66,8 @@ const HeroTile = ({
       <Typography variant="body2">{label}</Typography>
     </Item>
   );
-  return (
-    <Grid size={size}>
-      {query ? <Link href={gridLink(query)}>{tile}</Link> : tile}
-    </Grid>
-  );
+  const content = query ? <Link href={gridLink(query)}>{tile}</Link> : tile;
+  return size ? <Grid size={size}>{content}</Grid> : <Box>{content}</Box>;
 };
 
 const Section = ({
@@ -94,6 +91,38 @@ const Section = ({
   </Box>
 );
 
+// Side by side on desktop; on phones one pane at a time with the next
+// peeking at the edge, using CSS scroll snap so it needs no JavaScript.
+const SnapRow = ({
+  children,
+  columns = 3,
+  peek = "86%",
+}: {
+  children: React.ReactNode;
+  columns?: number;
+  peek?: string;
+}) => (
+  <Box
+    sx={{
+      display: { xs: "flex", md: "grid" },
+      gridTemplateColumns: { md: `repeat(${columns}, 1fr)` },
+      gap: 2,
+      overflowX: { xs: "auto", md: "visible" },
+      scrollSnapType: { xs: "x mandatory", md: "none" },
+      mx: { xs: -2, md: 0 },
+      px: { xs: 2, md: 0 },
+      pb: { xs: 1, md: 0 },
+      "& > *": {
+        flex: { xs: `0 0 ${peek}`, md: "auto" },
+        scrollSnapAlign: "start",
+        minWidth: 0,
+      },
+    }}
+  >
+    {children}
+  </Box>
+);
+
 const LeaderList = ({
   title,
   people,
@@ -103,101 +132,97 @@ const LeaderList = ({
   people: PersonStat[];
   linkFor?: (name: string) => React.ComponentProps<typeof Link>["href"];
 }) => (
-  <Grid size={{ xs: 12, md: 4 }}>
-    <Item sx={{ color: "secondary.main", height: "100%" }}>
-      <Typography sx={{ fontWeight: "bold", mb: 1 }}>{title}</Typography>
-      <Stack spacing={0.75}>
-        {people.map((person, index) => (
+  <Item sx={{ color: "secondary.main", height: "100%" }}>
+    <Typography sx={{ fontWeight: "bold", mb: 1 }}>{title}</Typography>
+    <Stack spacing={0.75}>
+      {people.map((person, index) => (
+        <Box
+          key={person.name}
+          sx={{ display: "flex", gap: 1, alignItems: "baseline" }}
+        >
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            {index + 1}.
+          </Typography>
           <Box
-            key={person.name}
-            sx={{ display: "flex", gap: 1, alignItems: "baseline" }}
+            sx={{
+              flex: 1,
+              minWidth: 0,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
           >
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>
-              {index + 1}.
-            </Typography>
-            <Box
-              sx={{
-                flex: 1,
-                minWidth: 0,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
+            <Link
+              href={linkFor(person.filter ?? person.name)}
+              className="underline"
+              title={person.name}
             >
-              <Link
-                href={linkFor(person.filter ?? person.name)}
-                className="underline"
-                title={person.name}
-              >
-                {person.name}
-              </Link>
-            </Box>
-            <Box
-              component="span"
-              sx={{ color: scoreColor(person.avg), fontWeight: "bolder" }}
-            >
-              {person.avg.toFixed(2)}
-            </Box>
-            <Typography
-              variant="body2"
-              sx={{ color: "text.secondary", whiteSpace: "nowrap" }}
-            >
-              ({person.count})
-            </Typography>
+              {person.name}
+            </Link>
           </Box>
-        ))}
-      </Stack>
-    </Item>
-  </Grid>
+          <Box
+            component="span"
+            sx={{ color: scoreColor(person.avg), fontWeight: "bolder" }}
+          >
+            {person.avg.toFixed(2)}
+          </Box>
+          <Typography
+            variant="body2"
+            sx={{ color: "text.secondary", whiteSpace: "nowrap" }}
+          >
+            ({person.count})
+          </Typography>
+        </Box>
+      ))}
+    </Stack>
+  </Item>
 );
 
 const CriticColumn = ({ site, gaps }: { site: string; gaps: CriticGap[] }) => (
-  <Grid size={{ xs: 12, md: 4 }}>
-    <Item sx={{ color: "secondary.main", height: "100%" }}>
-      <Typography sx={{ fontWeight: "bold", mb: 1 }}>{site}</Typography>
-      <Stack spacing={0.75}>
-        {gaps.map((gap, index) => (
+  <Item sx={{ color: "secondary.main", height: "100%" }}>
+    <Typography sx={{ fontWeight: "bold", mb: 1 }}>{site}</Typography>
+    <Stack spacing={0.75}>
+      {gaps.map((gap, index) => (
+        <Box
+          key={gap.tmdbid}
+          sx={{ display: "flex", gap: 1, alignItems: "baseline" }}
+        >
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            {index + 1}.
+          </Typography>
           <Box
-            key={gap.tmdbid}
-            sx={{ display: "flex", gap: 1, alignItems: "baseline" }}
+            sx={{
+              flex: 1,
+              minWidth: 0,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
           >
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>
-              {index + 1}.
-            </Typography>
-            <Box
-              sx={{
-                flex: 1,
-                minWidth: 0,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
+            <Link
+              href={`/movie/${gap.tmdbid}`}
+              className="underline"
+              title={gap.movie}
             >
-              <Link
-                href={`/movie/${gap.tmdbid}`}
-                className="underline"
-                title={gap.movie}
-              >
-                {gap.movie}
-              </Link>
-            </Box>
-            <Box
-              component="span"
-              sx={{ color: scoreColor(gap.mine), fontWeight: "bolder" }}
-            >
-              {gap.mine}
-            </Box>
-            <Typography
-              variant="body2"
-              sx={{ color: "text.secondary", whiteSpace: "nowrap" }}
-            >
-              vs {gap.theirs}
-            </Typography>
+              {gap.movie}
+            </Link>
           </Box>
-        ))}
-      </Stack>
-    </Item>
-  </Grid>
+          <Box
+            component="span"
+            sx={{ color: scoreColor(gap.mine), fontWeight: "bolder" }}
+          >
+            {gap.mine}
+          </Box>
+          <Typography
+            variant="body2"
+            sx={{ color: "text.secondary", whiteSpace: "nowrap" }}
+          >
+            vs {gap.theirs}
+          </Typography>
+        </Box>
+      ))}
+    </Stack>
+  </Item>
 );
 
 const StatsPage = ({ stats }: Props) => (
@@ -205,7 +230,7 @@ const StatsPage = ({ stats }: Props) => (
     <Head>
       <meta name="description" content="Stats across every movie rated" />
     </Head>
-    <Grid container spacing={2}>
+    <SnapRow columns={5} peek="44%">
       <HeroTile
         value={String(stats.movieCount)}
         label="movies rated"
@@ -227,7 +252,7 @@ const StatsPage = ({ stats }: Props) => (
         label="perfect 100s"
         query={{ rating: [100, 100] }}
       />
-    </Grid>
+    </SnapRow>
     <Grid container spacing={2}>
       <Grid size={{ xs: 12, md: 6 }}>
         <Section title="By Score" fullHeight>
@@ -290,23 +315,23 @@ const StatsPage = ({ stats }: Props) => (
       </Grid>
     </Section>
     <Section title={`Directors (min ${MIN_DIRECTOR_MOVIES} movies)`}>
-      <Grid container spacing={2}>
+      <SnapRow>
         <LeaderList title="Highest Average" people={stats.directors.best} />
         <LeaderList title="Lowest Average" people={stats.directors.worst} />
         <LeaderList title="Most Watched" people={stats.directors.mostWatched} />
-      </Grid>
+      </SnapRow>
     </Section>
     <Section
       title={`Actors (min ${MIN_ACTOR_MOVIES} movies · averages count top-${TOP_BILLING} billing only)`}
     >
-      <Grid container spacing={2}>
+      <SnapRow>
         <LeaderList title="Highest Average" people={stats.actors.best} />
         <LeaderList title="Lowest Average" people={stats.actors.worst} />
         <LeaderList title="Most Watched" people={stats.actors.mostWatched} />
-      </Grid>
+      </SnapRow>
     </Section>
     <Section title={`Universes (min ${MIN_SUB_UNIVERSE_MOVIES} movies)`}>
-      <Grid container spacing={2}>
+      <SnapRow>
         <LeaderList
           title="Highest Average"
           people={stats.subUniverses.best}
@@ -322,23 +347,23 @@ const StatsPage = ({ stats }: Props) => (
           people={stats.subUniverses.mostWatched}
           linkFor={(name) => gridLink({ universe: [name] })}
         />
-      </Grid>
+      </SnapRow>
     </Section>
     <Section title="Critics Disagreement">
       <Typography sx={{ fontWeight: "bold", mb: 1 }}>I Liked More</Typography>
-      <Grid container spacing={2}>
+      <SnapRow>
         {stats.critics.map(({ site, higher }) => (
           <CriticColumn key={site} site={site} gaps={higher} />
         ))}
-      </Grid>
+      </SnapRow>
       <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
         Critics Liked More
       </Typography>
-      <Grid container spacing={2}>
+      <SnapRow>
         {stats.critics.map(({ site, lower }) => (
           <CriticColumn key={site} site={site} gaps={lower} />
         ))}
-      </Grid>
+      </SnapRow>
     </Section>
     <Section title="Best of Each Year">
       <Box sx={{ display: "flex", gap: 2, overflowX: "auto", pb: 1 }}>

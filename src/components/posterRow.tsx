@@ -62,17 +62,35 @@ const PosterRow = ({ movies, title, link, priority = false }: Props) => {
 export const Poster = ({
   movie,
   priority = false,
+  fill = false,
 }: {
   movie: PosterMovie;
   priority?: boolean;
+  // Fill the parent instead of the fixed row width (the grid's columns).
+  fill?: boolean;
 }) => (
-  <PosterItem style={{ cursor: "pointer" }}>
+  <PosterItem
+    style={{ cursor: "pointer" }}
+    sx={
+      fill
+        ? {
+            width: { xs: "auto", md: "100px" },
+            boxSizing: { xs: "border-box", md: "content-box" },
+          }
+        : undefined
+    }
+  >
     <Box
       sx={{
         px: "0rem",
         position: "relative",
         display: "inline-block",
         width: "100%",
+        ...(fill
+          ? {
+              "& > img": { width: "100%", height: "auto" },
+            }
+          : {}),
       }}
     >
       <Image

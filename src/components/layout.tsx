@@ -8,6 +8,7 @@ import GridViewIcon from "@mui/icons-material/GridView";
 import StyleIcon from "@mui/icons-material/Style";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import SearchIcon from "@mui/icons-material/Search";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 interface layoutProps {
   pageTitle: string;
@@ -71,7 +72,16 @@ const Layout = (props: layoutProps) => {
           content="WC_EnnFH_-m85mlDsjMdgTJNaP-jeVgCvyv4m--YdkM"
         />
       </Head>
-      <header className="flex items-center justify-center md:justify-start gap-4 py-3">
+      <header className="relative flex items-center justify-center md:justify-start gap-4 py-3">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          aria-label="Back"
+          className="standalone-back absolute left-0 hidden md:hidden items-center gap-1 text-sm font-semibold bg-transparent border-0 p-0 cursor-pointer"
+        >
+          <ArrowBackIcon fontSize="small" />
+          Back
+        </button>
         <Link
           href="/"
           className="flex items-center gap-2 text-2xl font-bold font-mono"

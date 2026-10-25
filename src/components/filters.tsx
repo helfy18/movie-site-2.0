@@ -20,9 +20,9 @@ interface FiltersProps {
   showScore?: boolean;
 }
 
-const byName = (a: string, b: string) => a.localeCompare(b);
+export const byName = (a: string, b: string) => a.localeCompare(b);
 
-const buildGenreFilter = (genres: FilterType[]) => {
+export const buildGenreFilter = (genres: FilterType[]) => {
   const genreStrings = [...genres]
     .sort((a, b) => b.totalCount - a.totalCount)
     .map((genre) => genre.fieldValue);
@@ -32,7 +32,7 @@ const buildGenreFilter = (genres: FilterType[]) => {
   };
 };
 
-const generateDecades = (years: number[]) =>
+export const generateDecades = (years: number[]) =>
   Array.from(
     new Set(
       years.map((year) => {
@@ -42,7 +42,7 @@ const generateDecades = (years: number[]) =>
     ),
   );
 
-const sortUniverses = (universes: Universe[]) =>
+export const sortUniverses = (universes: Universe[]) =>
   universes
     .filter((val) => val.fieldValue)
     .sort((a, b) => {

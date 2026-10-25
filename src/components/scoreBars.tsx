@@ -23,9 +23,17 @@ const ScoreBars = ({ scores }: { scores: number[] }) => {
   return (
     <Box sx={{ mt: 1, width: "fit-content" }}>
       <Typography
-        sx={{ color: "secondary.main", textAlign: "center", mb: 0.5 }}
+        component="h2"
+        sx={{
+          fontSize: "0.7rem",
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          color: "text.disabled",
+          fontWeight: 600,
+          mb: 0.75,
+        }}
       >
-        Scores Given
+        Scores given
       </Typography>
       <Box
         sx={{

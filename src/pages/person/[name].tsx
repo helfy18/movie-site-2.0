@@ -1,6 +1,6 @@
 import { fetchMoviesListCompact, hasServerResponse } from "@/api/client";
 import { fetchPerson } from "@/server/tmdb";
-import { sitemapPeople, toPosterMovie } from "@/utils";
+import { sitemapPeople, toFilmographyMovie } from "@/utils";
 import PersonDetail, {
   type PersonDetailProps,
 } from "@/components/personDetail";
@@ -28,8 +28,8 @@ export const loadPerson = async (
   return {
     name,
     person,
-    directed: directed.map(toPosterMovie),
-    actedIn: actedIn.map(toPosterMovie),
+    directed: directed.map((movie) => toFilmographyMovie(movie, name)),
+    actedIn: actedIn.map((movie) => toFilmographyMovie(movie, name)),
   };
 };
 

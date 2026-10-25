@@ -33,3 +33,10 @@ table {
 tr:nth-child(odd) {
   background-color: var(--color-card);
 }
+
+/* The home-screen app has no browser back button; show ours there. */
+@media (display-mode: standalone) and (max-width: 899px) {
+  .standalone-back {
+    display: flex;
+  }
+}

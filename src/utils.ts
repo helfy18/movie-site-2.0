@@ -65,6 +65,18 @@ export const gridLink = (query: MovieListQuery) => ({
 export const personLink = (name: string) =>
   `/person/${encodeURIComponent(name)}`;
 
+export const toFilmographyMovie = (
+  movie: CompactMovie,
+  name: string,
+): FilmographyMovie => {
+  const index = (movie.cast ?? []).findIndex((member) => member.name === name);
+  return {
+    ...toPosterMovie(movie),
+    year: movie.year,
+    billing: index === -1 ? null : index + 1,
+  };
+};
+
 export const castNames = (movie: Pick<CompactMovie, "cast">) =>
   (movie.cast ?? []).map((member) => member.name);
 

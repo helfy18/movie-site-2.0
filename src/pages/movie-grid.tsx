@@ -2,16 +2,8 @@ import * as React from "react";
 import { useState, useMemo, useRef, useEffect } from "react";
 import Layout from "@/components/layout";
 import MovieGrid from "@/components/movieGrid";
-import Filters from "@/components/filters";
-import {
-  Box,
-  Button,
-  Chip,
-  Grid,
-  InputAdornment,
-  Stack,
-  TextField,
-} from "@mui/material";
+import FilterStrip from "@/components/filterStrip";
+import { Box, Chip, InputAdornment, Stack, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useMoviesListCompact, useTypesList } from "@/api/hooks";
 import Spinner from "@/components/spinner";
@@ -34,7 +26,6 @@ const gridUrl = (filters: MovieListQuery, search: string, page = 1) => ({
 const MovieGridPage = () => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-  const [showDropdown, setShowDropdown] = useState(false);
 
   const params = useMemo(() => parseGridQuery(router.query), [router.query]);
   const urlSearch =
@@ -119,77 +110,40 @@ const MovieGridPage = () => {
     router.push(gridUrl(filterValues, searchTerm), undefined, {
       shallow: true,
     });
-    setShowDropdown(false);
-  };
-
-  const onFilterClear = () => {
-    clearTimeout(debounceTimer.current);
-    router.push(gridUrl({}, searchTerm), undefined, { shallow: true });
-    setShowDropdown(false);
   };
 
   return (
     <Layout pageTitle="Movie Grid">
-      <Grid container>
-        <Grid
-          size={{ xs: 12, md: 6 }}
-          sx={{
-            textAlign: { xs: "center", md: "right" },
-            marginY: "0.5rem",
-          }}
-        >
-          <TextField
-            placeholder="Search for Title, Actor, Director..."
-            autoFocus={router.query.focus === "search"}
-            defaultValue={urlSearch}
-            inputRef={searchInput}
-            onChange={(event) => onSearch(event.target.value)}
-            color="secondary"
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon color="secondary" />
-                  </InputAdornment>
-                ),
-              },
-            }}
-            className="mx-2"
-          />
-        </Grid>
-        <Grid
-          size={{ xs: 12, md: 6 }}
-          sx={{
-            textAlign: { xs: "center", md: "left" },
-            marginY: "0.5rem",
-          }}
-        >
-          <Button
-            onClick={() => setShowDropdown(!showDropdown)}
-            disabled={!filterTypes}
-            sx={{
-              px: 10,
-              py: 2,
-              mx: 1,
-              color: "secondary.main",
-              outline: "1px solid",
-            }}
-          >
-            {showDropdown ? "Hide" : "Filters"} &#8597;
-          </Button>
-          {typesList.isError && (
-            <span className="text-muted">Filters unavailable</span>
-          )}
-        </Grid>
-      </Grid>
-      {showDropdown && filterTypes && (
-        <Filters
+      <TextField
+        fullWidth
+        placeholder="Search for title, actor, director"
+        autoFocus={router.query.focus === "search"}
+        defaultValue={urlSearch}
+        inputRef={searchInput}
+        onChange={(event) => onSearch(event.target.value)}
+        color="secondary"
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon color="secondary" />
+              </InputAdornment>
+            ),
+          },
+        }}
+        sx={{ mb: 1.5 }}
+      />
+      {filterTypes ? (
+        <FilterStrip
           filterTypes={filterTypes}
-          onApply={onFilterApply}
-          onClear={onFilterClear}
           values={params}
-          showScore
-        ></Filters>
+          resultCount={displayMovies.length}
+          onChange={onFilterApply}
+        />
+      ) : (
+        typesList.isError && (
+          <span className="text-muted">Filters unavailable</span>
+        )
       )}
       {peopleMatches.length > 0 && (
         <Box

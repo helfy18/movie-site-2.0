@@ -54,12 +54,17 @@ export default function MovieGrid({
 
   return (
     <Grid>
-      <Grid container spacing={2} className="justify-center">
+      <Grid
+        container
+        spacing={{ xs: 1.25, md: 2 }}
+        columns={{ xs: 3, sm: 4, md: 12 }}
+        className="justify-center"
+      >
         {currentMovies.map((movie) => {
           return (
-            <Grid size={{ xs: "auto" }} key={movie.tmdbid}>
+            <Grid size={{ xs: 1, md: "auto" }} key={movie.tmdbid}>
               <Link href={`/movie/${movie.tmdbid}`}>
-                <Poster movie={movie} />
+                <Poster movie={movie} fill />
               </Link>
             </Grid>
           );

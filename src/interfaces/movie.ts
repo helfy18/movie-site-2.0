@@ -36,6 +36,13 @@ interface PosterMovie {
   dani_approved: boolean;
 }
 
+// A poster tile on a person page, with what the sort control needs.
+interface FilmographyMovie extends PosterMovie {
+  year: number;
+  // Position in the cast list, or null when the person directed it.
+  billing: number | null;
+}
+
 interface CastMember {
   name: string;
   character: string;
