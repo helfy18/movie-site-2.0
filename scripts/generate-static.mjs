@@ -59,15 +59,59 @@ const robots = [
 ].join("\n");
 writeFileSync("public/robots.txt", robots);
 
-const res = await fetch(`${APIURL}/movies/list?view=compact`);
-if (!res.ok)
-  throw new Error(`ratings API ${res.status} while building the sitemap`);
-const movies = await res.json();
+// The full catalogue, fetched one decade at a time. A single request for all
+// of it can outrun the API host's gateway timeout when the API is slow; the
+// pieces are small enough to always get through. Pages that need the whole
+// catalogue (home, stats) read .cache/catalogue.json instead of the API.
+const getJson = async (url, attempts = 4) => {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) return res.json();
+      if (res.status < 500 || attempt >= attempts)
+        throw new Error(`${res.status} from ${url}`);
+    } catch (error) {
+      if (attempt >= attempts) throw error;
+    }
+    await new Promise((r) => setTimeout(r, 2000 * attempt));
+  }
+};
+
+const expected = await getJson(`${APIURL}/movies/count`);
+const thisDecade = Math.floor(new Date().getFullYear() / 10) * 10;
+const movies = [];
+for (let start = 1900; start <= thisDecade; start += 10) {
+  const chunk = await getJson(
+    `${APIURL}/movies/list?decade=${start}-${start + 9}`,
+  );
+  movies.push(...chunk);
+  console.log(`generate-static: ${start}s ${chunk.length} movies`);
+}
+movies.sort((a, b) => Number(a.ranking) - Number(b.ranking));
+if (movies.length !== expected)
+  console.warn(
+    `generate-static: fetched ${movies.length} movies but the API counts ${expected}`,
+  );
+mkdirSync(".cache", { recursive: true });
+writeFileSync(".cache/catalogue.json", JSON.stringify(movies));
 
 // The grid's unfiltered list, served from the CDN instead of the API on
-// every visit. Same snapshot the rest of the export is built from.
+// every visit: the fields the grid renders and searches, cast as names only.
+const compact = movies.map((m) => ({
+  movie: m.movie,
+  jh_score: m.jh_score,
+  poster: m.poster,
+  tmdbid: m.tmdbid,
+  dani_approved: m.dani_approved,
+  cast: (m.cast ?? []).map((c) => ({ name: c.name })),
+  directors: m.directors ?? [],
+  universe: m.universe ?? "",
+  sub_universe: m.sub_universe ?? "",
+  studio: m.studio ?? "",
+  year: m.year,
+}));
 mkdirSync("public/data", { recursive: true });
-writeFileSync("public/data/movies.json", JSON.stringify(movies));
+writeFileSync("public/data/movies.json", JSON.stringify(compact));
 
 const appearances = new Map();
 for (const movie of movies) {
@@ -96,5 +140,5 @@ ${paths.map((p) => `  <url><loc>${SITEURL}${p}</loc></url>`).join("\n")}
 `;
 writeFileSync("public/sitemap.xml", xml);
 console.log(
-  `generate-static: robots.txt (${BLOCKED_BOTS.length} bots blocked), sitemap.xml (${paths.length} urls), data/movies.json (${movies.length} movies)`,
+  `generate-static: robots.txt (${BLOCKED_BOTS.length} bots blocked), sitemap.xml (${paths.length} urls), catalogue (${movies.length} movies)`,
 );

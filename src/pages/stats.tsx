@@ -1,5 +1,6 @@
 import Layout from "@/components/layout";
-import { fetchMoviesList, hasServerResponse } from "@/api/client";
+import { hasServerResponse } from "@/api/client";
+import { readCatalogue } from "@/server/catalogue";
 import {
   buildStats,
   MIN_ACTOR_MOVIES,
@@ -27,7 +28,7 @@ interface Props {
 export const getStaticProps: GetStaticProps<Props> = async () => {
   let catalogue: Movie[];
   try {
-    catalogue = await fetchMoviesList({});
+    catalogue = await readCatalogue();
   } catch (error) {
     if (hasServerResponse(error)) return { notFound: true };
     throw error;

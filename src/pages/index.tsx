@@ -1,11 +1,8 @@
 import type { GetStaticProps } from "next";
 import Layout from "../components/layout";
-import {
-  fetchMoviesById,
-  fetchMoviesList,
-  fetchRecentMovies,
-} from "@/api/client";
+import { fetchMoviesById, fetchRecentMovies } from "@/api/client";
 import { fetchNowPlaying, fetchUpcoming } from "@/server/tmdb";
+import { readCatalogue } from "@/server/catalogue";
 import PosterRow from "@/components/posterRow";
 import { gridLink, toPosterMovie } from "@/utils";
 import { buildRows, withRatings, type Row } from "@/homeRows";
@@ -27,7 +24,7 @@ const theatreListings = async () => {
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const [recent, catalogue, [nowPlayingTmdb, upcomingTmdb]] = await Promise.all(
-    [fetchRecentMovies(), fetchMoviesList({}), theatreListings()],
+    [fetchRecentMovies(), readCatalogue(), theatreListings()],
   );
 
   const theatreIds = [...nowPlayingTmdb, ...upcomingTmdb].map((m) => m.id);
