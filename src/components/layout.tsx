@@ -18,6 +18,13 @@ interface layoutProps {
 
 type Tab = "home" | "ratings" | "random" | "stats" | "search" | "about";
 
+// Holidays with their own edge art. The first match wins when a movie or a
+// filtered grid carries more than one.
+const holidayBackgrounds: [string, string][] = [
+  ["Christmas", "/christmas.png"],
+  ["Halloween", "/halloween.png"],
+];
+
 const searchHref = { pathname: "/movie-grid", query: { focus: "search" } };
 
 const tabs = [
@@ -47,6 +54,9 @@ const activeTab = (pathname: string, focus: unknown): Tab | null => {
 const Layout = (props: layoutProps) => {
   const router = useRouter();
   const holidays = [router.query.holiday, props.holiday].flat();
+  const background = holidayBackgrounds.find(([holiday]) =>
+    holidays.includes(holiday),
+  )?.[1];
   const active = activeTab(router.pathname, router.query.focus);
   const navClass = (key: Tab) =>
     `py-1 border-b-2 ${active === key ? "border-secondary" : "border-transparent"}`;
@@ -59,9 +69,7 @@ const Layout = (props: layoutProps) => {
     <div
       className="py-[1%] px-[5%] pb-24 md:pb-[1%] font-sans"
       style={{
-        backgroundImage: holidays.includes("Christmas")
-          ? `url('/christmas.png')`
-          : undefined,
+        backgroundImage: background ? `url('${background}')` : undefined,
         backgroundSize: "100%",
       }}
     >
